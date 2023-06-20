@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="SorterEval.fs" />
+    <Compile Include="SorterSetEval.fs" />
+    <Compile Include="SorterFitness.fs" />
+    <Compile Include="SorterReporting.fs" />
+    <Compile Include="Workflows.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+    <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
+    <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
+  </ItemGroup>
+
+</Project>

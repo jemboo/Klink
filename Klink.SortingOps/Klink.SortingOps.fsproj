@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="SwitchOpTypes.fs" />
+    <Compile Include="SwitchUseTracker.fs" />
+    <Compile Include="SortableBySwitchTracker.fs" />
+    <Compile Include="SorterOpTracker.fs" />
+    <Compile Include="SorterOpOutput.fs" />
+    <Compile Include="SortingWithHistory.fs" />
+    <Compile Include="SortingRollout.fs" />
+    <Compile Include="Library.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+    <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
+  </ItemGroup>
+
+</Project>

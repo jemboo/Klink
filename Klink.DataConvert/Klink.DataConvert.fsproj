@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="JsonUtils.fs" />
+    <Compile Include="WorkspaceDto.fs" />
+    <Compile Include="ComponentDto.fs" />
+    <Compile Include="RolloutDto.fs" />
+    <Compile Include="SorterDto.fs" />
+    <Compile Include="SorterMutatorDto.fs" />
+    <Compile Include="SorterSet\SorterSetDto.fs" />
+    <Compile Include="SorterSet\SorterSetParentMapDto.fs" />
+    <Compile Include="SorterSet\SorterSetConcatMapDto.fs" />
+    <Compile Include="SorterSet\SorterSetMutatorDto.fs" />
+    <Compile Include="SortableSetDto.fs" />
+    <Compile Include="SorterEvalDto.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+    <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
+    <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
+    <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
+  </ItemGroup>
+
+</Project>

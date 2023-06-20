@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Components\SorterSetParentMapCfg.fs" />
+    <Compile Include="Components\SorterSetMutatorCfg.fs" />
+    <Compile Include="SorterSet\SorterSetRndCfg.fs" />
+    <Compile Include="SorterSet\SorterSetMutatedFromRndCfg.fs" />
+    <Compile Include="SorterSet\SorterSetSelfAppendCfg.fs" />
+    <Compile Include="SorterSet\SorterSetCfg.fs" />
+    <Compile Include="SortableSet\SortableSetCfg.fs" />
+    <Compile Include="SorterSetEval\SorterSetRnd_EvalAllBitsCfg.fs" />
+    <Compile Include="SorterSetEval\SsMfr_EvalAllBitsCfg.fs" />
+    <Compile Include="SorterSetEval\SsAfr_EvalAllBitsCfg.fs" />
+    <Compile Include="SorterSetEval\SorterSet_EvalCfg.fs" />
+    <Compile Include="Ss_GenStepCfg.fs" />
+    <Compile Include="Ss_ShcRunCfg.fs" />
+    <Compile Include="Ss_ShcCfg.fs" />
+    <Compile Include="Reports\SorterSetRnd_EvalAllBits_ReportCfg.fs" />
+    <Compile Include="Reports\SsMfr_EvalAllBits_ReportCfg.fs" />
+    <Compile Include="Reports\SsMfr_EvalAllBitsMerge_ReportCfg.fs" />
+    <Compile Include="Reports\SsAfr_EvalAllBits_ReportCfg.fs" />
+    <Compile Include="WsFile.fs" />
+    <Compile Include="WsCfgs.fs" />
+    <Compile Include="WsOps.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+    <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
+    <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
+    <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
+  </ItemGroup>
+
+</Project>

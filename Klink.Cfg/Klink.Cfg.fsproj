@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Components\SorterSetMutatorCfg.fs" />
+    <Compile Include="Components\SorterSetParentMapCfg.fs" />
+    <Compile Include="SortableSet\SortableSetCfg.fs" />
+    <Compile Include="SorterSet\SorterSetRndCfg.fs" />
+    <Compile Include="SorterSet\SorterSetMutatedFromRndCfg.fs" />
+    <Compile Include="SorterSet\SorterSetSelfAppendCfg.fs" />
+    <Compile Include="SorterSet\SorterSetCfg.fs" />
+    <Compile Include="Workspace\WorkspaceTypes.fs" />
+    <Compile Include="Workspace\WorkspaceCfg.fs" />
+    <Compile Include="WsFile.fs" />
+    <Compile Include="WsCfgs.fs" />
+    <Compile Include="WsOps.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+    <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
+    <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
+    <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
+  </ItemGroup>
+
+</Project>
