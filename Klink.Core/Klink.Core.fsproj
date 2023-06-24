@@ -19,7 +19,6 @@
     <Compile Include="CollectionOps.fs" />
     <Compile Include="ByteUtils.fs" />
     <Compile Include="GuidUtils.fs" />
-    <Compile Include="ByteArray.fs" />
     <Compile Include="Rando.fs" />
     <Compile Include="RandVars.fs" />
     <Compile Include="DiscreteSets.fs" />

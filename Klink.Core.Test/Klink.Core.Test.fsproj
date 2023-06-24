@@ -16,7 +16,6 @@
     <Compile Include="CollectionOpsFixture.fs" />
     <Compile Include="GuidUtilsFixture.fs" />
     <Compile Include="ByteUtilsFixture.fs" />
-    <Compile Include="ByteArrayFixture.fs" />
     <Compile Include="RndVarsFixture.fs" />
     <Compile Include="IntSeriesFixture.fs" />
     <Compile Include="PermutationFixture.fs" />

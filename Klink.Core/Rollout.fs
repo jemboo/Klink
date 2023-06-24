@@ -50,6 +50,7 @@ module BooleanRoll =
                   data = data }
         }
 
+
     let toBitPack (booleanRoll: booleanRoll) =
         result {
             let! bitsPerSymbl = 1 |> BitsPerSymbol.create
@@ -245,20 +246,18 @@ module Uint8Roll =
         result {
             let uint8s = 
                 aas |> Seq.concat 
-                |> Seq.map (uint8) 
+                |> Seq.map (byte) 
                 |> Seq.toArray
 
             let! arrayCount =
                 (uint8s.Length / (ArrayLength.value arrayLength)) 
                 |> ArrayCount.create
 
-            let! bigA = uint8s |> ByteArray.convertUint8sToBytes
-
             return
                 { uInt8Roll.arrayCount = arrayCount
                   arrayLength = arrayLength
                   bitsPerSymbol = bitsPerSymbol
-                  data = bigA }
+                  data = uint8s }
         }
 
 

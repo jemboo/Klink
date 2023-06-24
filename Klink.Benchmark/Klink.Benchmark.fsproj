@@ -24,11 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Gort.Core\Gort.Core.fsproj" />
-    <ProjectReference Include="..\Gort.Data\Gort.Data.csproj" />
-    <ProjectReference Include="..\Gort.SortingOps\Gort.SortingOps.fsproj" />
-    <ProjectReference Include="..\Gort.SortingResults\Gort.SortingResults.fsproj" />
-    <ProjectReference Include="..\Gort.Sorting\Gort.Sorting.fsproj" />
+    <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+    <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
+    <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
+    <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
   </ItemGroup>
 
 </Project>
