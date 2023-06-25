@@ -2,20 +2,6 @@
 
 open System
 
-type workspaceId = private WorkspaceId of Guid
-module WorkspaceId =
-    let value (WorkspaceId v) = v
-    let create (v: Guid) = WorkspaceId v
-
-type causeId = private CauseId of Guid
-module CauseId =
-    let value (CauseId v) = v
-    let create (v: Guid) = CauseId v
-    let empty = 
-        [("causeId" :> obj)]
-            |> GuidUtils.guidFromObjs 
-            |> create
-
 type workspace =
     {
         id:workspaceId;

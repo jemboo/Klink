@@ -7,19 +7,13 @@
 
   <ItemGroup>
     <Compile Include="WorkspaceTypes.fs" />
-    <Compile Include="WorkspaceCfg.fs" />
-    <Compile Include="CauseCfg.fs" />
+    <Compile Include="Workspace.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Klink.Cfg\Klink.Cfg.fsproj" />
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
-    <ProjectReference Include="..\Klink.Genome\Klink.Genome.fsproj" />
-    <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
-    <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
-    <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
   </ItemGroup>
 
 </Project>

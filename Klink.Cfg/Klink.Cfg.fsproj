@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Common.fs" />
     <Compile Include="SortableSet\SortableSetCfgOld.fs" />
     <Compile Include="SortableSet\SortableSetCfg.fs" />
     <Compile Include="Components\SorterSetMutatorCfg.fs" />
@@ -15,8 +14,8 @@
     <Compile Include="SorterSet\SorterSetMutatedFromRndCfg.fs" />
     <Compile Include="SorterSet\SorterSetSelfAppendCfg.fs" />
     <Compile Include="SorterSet\SorterSetCfg.fs" />
-    <Compile Include="Workspace\Workspace.fs" />
     <Compile Include="Workspace\WorkspaceCfg.fs" />
+    <Compile Include="Workspace\CauseCfg.fs" />
     <Compile Include="WsFile.fs" />
     <Compile Include="WsCfgs.fs" />
     <Compile Include="WsOps.fs" />
@@ -25,9 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
-    <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
+    <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />
   </ItemGroup>
 
 </Project>

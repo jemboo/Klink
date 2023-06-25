@@ -16,46 +16,23 @@ module CauseId =
             |> GuidUtils.guidFromObjs 
             |> create
 
-type workspace =
-    {
-        id:workspaceId;
-        items: Map<wsComponentName, IWorkspaceComponent>
-    }
 
-module Workspace = 
-    let empty = 
-        {
-            id = [CauseId.empty |> CauseId.value :> obj]            
-                    |> GuidUtils.guidFromObjs 
-                    |> WorkspaceId.create
-            items = Map.empty
-        }
+type wsComponentName = private WsComponentName of string
+module WsComponentName =
+    let value (WsComponentName v) = v
+    let create (v: string) = WsComponentName v
 
-    let addComponent 
-            (workspace:workspace)
-            (newWorkspaceId:workspaceId) 
-            (comp:IWorkspaceComponent)
-        =
-        if (workspace.items.ContainsKey(comp.WsComponentName)) then
-            $"{comp.WsComponentName |> WsComponentName.value} already present" 
-            |> Error
-        else
-        {
-            id = newWorkspaceId
-            items = workspace.items.Add (comp.WsComponentName, comp)
-        } |> Ok
+type workspaceComponentType =
+    | Workspace
+    | SortableSet
+    | SorterSet
+    | SorterSetMutator
+    | SorterSetParentMap
+    | SorterSetConcatMap
+    | SorterSetEval
 
 
-    let removeComponent 
-            (workspace:workspace)
-            (newWorkspaceId:workspaceId) 
-            (comp:IWorkspaceComponent)
-        =
-        if (workspace.items.ContainsKey(comp.WsComponentName)) then
-            $"{comp.WsComponentName |> WsComponentName.value} not present" 
-            |> Error
-        else
-        {
-            id = newWorkspaceId
-            items = workspace.items.Remove comp.WsComponentName
-        } |> Ok
+type IWorkspaceComponent = 
+    abstract member Id:Guid
+    abstract member WsComponentName:wsComponentName
+    abstract member WorkspaceComponentType:workspaceComponentType

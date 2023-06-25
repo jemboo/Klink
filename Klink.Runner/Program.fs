@@ -1,2 +1,11 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-printfn "Hello from F#"
+﻿open System
+
+
+module Program = 
+    let [<EntryPoint>] main _ =
+
+
+        WsOps.makeEm() |> ignore
+        Console.WriteLine("done ...")
+        Console.Read() |> ignore
+        0
