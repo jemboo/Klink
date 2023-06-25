@@ -1,62 +1,37 @@
 ﻿namespace global
 
-type sorterSetMutatorCfg = 
-    private
-        { 
-          order: order
-          switchGenMode: switchGenMode
-          rngGenMutate: rngGen
-          sorterCountMutated: sorterCount
-          mutationRate:mutationRate
-        }
-
-module SorterSetMutatorCfg =
-    let create (order:order)
-               (switchGenMode:switchGenMode)
-               (rngGenMutate:rngGen)
-               (sorterCountMutated:sorterCount)
-               (mutationRate:mutationRate)
-        =
-        {
-            order=order;
-            switchGenMode=switchGenMode;
-            rngGenMutate=rngGenMutate;
-            sorterCountMutated=sorterCountMutated;
-            mutationRate=mutationRate
-        }
-
-    let getOrder (cfg: sorterSetMutatorCfg) =
-            cfg.order
-
-    let getSwitchGenMode 
-            (cfg: sorterSetMutatorCfg) 
-        =
-            cfg.switchGenMode
-
-    let getMutationRate (cfg: sorterSetMutatorCfg) =
-            cfg.mutationRate
-
-    let getSorterCountMutated (cfg: sorterSetMutatorCfg) =
-            cfg.sorterCountMutated
-
-    let getId 
-            (cfg: sorterSetMutatorCfg) 
-        = 
+type sorterSetMutatorCfg
+            (name:wsComponentName,
+             order:order,
+             switchGenMode:switchGenMode,
+             rngGenMutate:rngGen,
+             sorterCountMutated:sorterCount,
+             mutationRate:mutationRate
+            ) =
+    let id =         
         [|
           "sorterSetMutatorCfg" :> obj;
-           cfg :> obj;
+           order :> obj;
+           switchGenMode :> obj;
+           rngGenMutate :> obj;
+           sorterCountMutated :> obj;
         |] |> GuidUtils.guidFromObjs
-           |> SorterSetId.create
+
+    member this.sorterSetMutatorId = id
+    member this.name = name
+    member this.order = order
+    member this.switchGenMode = switchGenMode
+    member this.rngGenMutate = rngGenMutate
+    member this.sorterCountMutated = sorterCountMutated
+    member this.mutationRate = mutationRate
+    interface IWorkspaceComponent with
+        member this.Id = id
+        member this.WsComponentName = name
+        member this.WorkspaceComponentType =
+                workspaceComponentType.SorterSetMutator
 
 
-    let getConfigName 
-            (rdsg:sorterSetMutatorCfg) 
-        =
-        sprintf "%d_%s_%f"
-            (rdsg |> getOrder |> Order.value)
-            (rdsg |> getSwitchGenMode |> string)
-            (rdsg |> getMutationRate |> MutationRate.value )
-
+module SorterSetMutatorCfg =
 
     let getSorterSetMutator 
             (cfg:sorterSetMutatorCfg) 

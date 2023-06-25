@@ -1,31 +1,41 @@
 ﻿namespace global
 
+type sorterSetRndCfg
+            (
+             name:wsComponentName,
+             order: order,
+             rngGen: rngGen,
+             switchGenMode: switchGenMode,
+             switchCount: switchCount,
+             sorterCount: sorterCount
+            ) =
 
-type sorterSetRndCfg = 
-    private
-        { 
-          order: order
-          rngGen: rngGen
-          switchGenMode: switchGenMode
-          switchCount: switchCount
-          sorterCount: sorterCount
-        }
+    let sorterStId =         
+        [|
+          "sorterSetRndCfg" :> obj;
+           order :> obj;
+           rngGen :> obj;
+           switchGenMode :> obj;
+           switchCount :> obj;
+           sorterCount :> obj;
+        |] |> GuidUtils.guidFromObjs
+           |> SorterSetId.create
+
+    member this.sorterSetId = sorterStId
+    member this.name = name
+    member this.order = order
+    member this.rngGen = rngGen
+    member this.switchCount = switchCount
+    member this.switchGenMode = switchGenMode
+    member this.sorterCount = sorterCount
+    interface IWorkspaceComponent with
+        member this.Id = this.sorterSetId |> SorterSetId.value
+        member this.WsComponentName = name
+        member this.WorkspaceComponentType =
+                workspaceComponentType.SorterSetMutator
 
 
 module SorterSetRndCfg =
-    let create (order:order)
-               (rngGen:rngGen)
-               (switchGenMode:switchGenMode)
-               (switchCount:switchCount)
-               (sorterCount:sorterCount)
-        =
-        {
-            order=order;
-            rngGen=rngGen;
-            switchGenMode=switchGenMode;
-            switchCount=switchCount;
-            sorterCount=sorterCount;
-        }
 
     let getProperties (rdsg: sorterSetRndCfg) = 
         [|
@@ -36,50 +46,22 @@ module SorterSetRndCfg =
             ("sorterCount", rdsg.sorterCount :> obj);
         |]
 
-    let getOrder (rdsg: sorterSetRndCfg) = 
-            rdsg.order
-
-    let getRngGen (rdsg: sorterSetRndCfg) = 
-            rdsg.rngGen
-
-    let getSwitchGenMode (rdsg: sorterSetRndCfg) = 
-            rdsg.switchGenMode
-
-    let getSwitchCount (rdsg: sorterSetRndCfg) = 
-            rdsg.switchCount
-
-    let getId 
-            (cfg: sorterSetRndCfg) 
-        = 
-        [|
-          "sorterSetRndCfg" :> obj;
-           cfg :> obj;
-        |] |> GuidUtils.guidFromObjs
-           |> SorterSetId.create
-
     let getFileName
             (cfg:sorterSetRndCfg) 
         =
-        cfg |> getId |> SorterSetId.value |> string
-
+        cfg.sorterSetId |> SorterSetId.value |> string
 
     let getConfigName 
             (rdsg:sorterSetRndCfg) 
         =
         sprintf "%d_%s"
-            (rdsg |> getOrder |> Order.value)
-            (rdsg |> getSwitchGenMode |> string)
-
-
-    let getSorterCount (rdsg: sorterSetRndCfg) = 
-            rdsg.sorterCount
-
+            (rdsg.order |> Order.value)
+            (rdsg.switchGenMode |> string)
 
     let makeSorterSet
             (save: string -> sorterSet -> Result<bool, string>)
             (rdsg: sorterSetRndCfg) 
-        = 
-        let sorterStId = getId rdsg
+        =
         let randy = rdsg.rngGen |> Rando.fromRngGen
         let nextRng () =
             randy |> Rando.nextRngGen
@@ -88,7 +70,7 @@ module SorterSetRndCfg =
                 match rdsg.switchGenMode with
                 | Switch -> 
                     SorterSet.createRandomSwitches
-                        sorterStId
+                        rdsg.sorterSetId
                         rdsg.sorterCount
                         rdsg.order
                         []
@@ -97,7 +79,7 @@ module SorterSetRndCfg =
 
                 | Stage -> 
                     SorterSet.createRandomStages2
-                        sorterStId
+                        rdsg.sorterSetId
                         rdsg.sorterCount
                         rdsg.order
                         []
@@ -106,7 +88,7 @@ module SorterSetRndCfg =
 
                 | StageSymmetric -> 
                     SorterSet.createRandomSymmetric
-                        sorterStId
+                        rdsg.sorterSetId
                         rdsg.sorterCount
                         rdsg.order
                         []

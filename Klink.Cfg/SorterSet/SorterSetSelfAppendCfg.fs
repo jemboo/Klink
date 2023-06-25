@@ -1,37 +1,44 @@
 ﻿namespace global
 
+type sorterSetSelfAppendCfg
+            (
+             name:wsComponentName,
+             order: order,
+             rngGen: rngGen,
+             switchGenMode: switchGenMode,
+             switchCount: switchCount,
+             sorterCountFactor: sorterCount,
+             sorterCount: sorterCount
+            ) =
 
-type sorterSetSelfAppendCfg = 
-    private
-        { 
-          order: order
-          rngGen: rngGen
-          switchGenMode: switchGenMode
-          switchCount: switchCount
-          sorterCountFactor: sorterCount
-          sorterCount: sorterCount
-        }
+    let sorterStId =         
+        [|
+          "sorterSetSelfAppend" :> obj;
+           order :> obj;
+           rngGen :> obj;
+           switchGenMode :> obj;
+           switchCount :> obj;
+           sorterCountFactor :> obj;
+           sorterCount :> obj;
+        |] |> GuidUtils.guidFromObjs
+           |> SorterSetId.create
+
+    member this.sorterSetId = sorterStId
+    member this.name = name
+    member this.order = order
+    member this.rngGen = rngGen
+    member this.switchGenMode = switchGenMode
+    member this.switchCount = switchCount
+    member this.sorterCountFactor = sorterCountFactor
+    member this.sorterCount = sorterCount
+    interface IWorkspaceComponent with
+        member this.Id = this.sorterSetId |> SorterSetId.value
+        member this.WsComponentName = name
+        member this.WorkspaceComponentType =
+                workspaceComponentType.SorterSet
 
 
 module SorterSetSelfAppendCfg =
-    let create (order:order)
-               (rngGen:rngGen)
-               (switchGenMode:switchGenMode)
-               (switchCount:switchCount)
-               (sorterCountFactor:sorterCount)
-        =
-        {
-            order=order;
-            rngGen=rngGen;
-            switchGenMode=switchGenMode;
-            switchCount=switchCount;
-            sorterCountFactor=sorterCountFactor;
-            sorterCount= 
-                ((SorterCount.value sorterCountFactor)
-                *
-                (SorterCount.value sorterCountFactor))
-                |> SorterCount.create;
-        }
 
     let getProperties (rdsg: sorterSetSelfAppendCfg) = 
         [|
@@ -43,17 +50,6 @@ module SorterSetSelfAppendCfg =
             ("sorterCount", rdsg.sorterCount :> obj);
         |]
 
-    let getOrder (rdsg: sorterSetSelfAppendCfg) = 
-            rdsg.order
-
-    let getRngGen (rdsg: sorterSetSelfAppendCfg) = 
-            rdsg.rngGen
-
-    let getSwitchGenMode (rdsg: sorterSetSelfAppendCfg) = 
-            rdsg.switchGenMode
-
-    let getSwitchCount (rdsg: sorterSetSelfAppendCfg) = 
-            rdsg.switchCount
 
     let getSorterSetConcatId (cfg: sorterSetSelfAppendCfg) 
         = 
@@ -72,8 +68,8 @@ module SorterSetSelfAppendCfg =
             (rdsg:sorterSetSelfAppendCfg) 
         =
         sprintf "%d_%s"
-            (rdsg |> getOrder |> Order.value)
-            (rdsg |> getSwitchGenMode |> string)
+            (rdsg.order |> Order.value)
+            (rdsg.switchGenMode |> string)
 
 
     let getSorterSetConcatCount (rdsg: sorterSetSelfAppendCfg) 
@@ -83,17 +79,19 @@ module SorterSetSelfAppendCfg =
 
     let getSorterSetFactorCfg (cfg:sorterSetSelfAppendCfg)
         =
-        SorterSetRndCfg.create 
-            cfg.order
-            cfg.rngGen
-            cfg.switchGenMode
-            cfg.switchCount
-            cfg.sorterCountFactor
+        let wsCompName = "sorterSetFactor" |> WsComponentName.create
+        new sorterSetRndCfg(
+            wsCompName,
+            cfg.order,
+            cfg.rngGen,
+            cfg.switchGenMode,
+            cfg.switchCount,
+            cfg.sorterCountFactor)
 
 
     let getSorterSetFactorId (cfg: sorterSetSelfAppendCfg) 
         = 
-        cfg |> getSorterSetFactorCfg |> SorterSetRndCfg.getId
+        (cfg |> getSorterSetFactorCfg).sorterSetId
 
 
     let makeSorterSetConcatMap

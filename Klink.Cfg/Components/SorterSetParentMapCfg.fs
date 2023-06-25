@@ -1,66 +1,44 @@
 ﻿namespace global
 
 
-type sorterSetParentMapCfg = 
-    private
-        { 
-          parentSorterSetId: sorterSetId
-          parentSorterSetCount: sorterCount
-          childSorterSetId: sorterSetId
-          childSorterSetCount: sorterCount
-        }
+type sorterSetParentMapCfg
+            (name:wsComponentName,
+             parentSorterSetId:sorterSetId,
+             parentSorterSetCount:sorterCount,
+             childSorterSetId:sorterSetId,
+             childSorterSetCount:sorterCount
+            ) =
+
+    member this.sorterSetParentMapId = 
+                    SorterSetParentMap.makeId
+                            parentSorterSetId
+                            childSorterSetId
+    member this.name = name
+    member this.parentSorterSetId = parentSorterSetId
+    member this.parentSorterSetCount = parentSorterSetCount
+    member this.childSorterSetId = childSorterSetId
+    member this.childSorterSetCount = childSorterSetCount
+    interface IWorkspaceComponent with
+        member this.Id = this.sorterSetParentMapId |> SorterSetParentMapId.value
+        member this.WsComponentName = name
+        member this.WorkspaceComponentType =
+                workspaceComponentType.SorterSetMutator
 
 
 module SorterSetParentMapCfg =
-    let create 
-            (parentSorterSetId:sorterSetId)
-            (parentSorterSetCount:sorterCount)
-            (childSorterSetId:sorterSetId)
-            (childSorterSetCount:sorterCount)
-        =
-        {
-            parentSorterSetId=parentSorterSetId;
-            parentSorterSetCount=parentSorterSetCount;
-            childSorterSetId=childSorterSetId;
-            childSorterSetCount=childSorterSetCount;
-        }
-
-    let getParentSorterSetId (cfg: sorterSetParentMapCfg) = 
-            cfg.parentSorterSetId
-
-
-    let getChildSorterSetId (cfg: sorterSetParentMapCfg) = 
-            cfg.childSorterSetId
-
-
-    let getParentSorterSetCount (cfg: sorterSetParentMapCfg) = 
-            cfg.parentSorterSetCount
-
-
-    let getChildSorterSetCount (cfg: sorterSetParentMapCfg) = 
-            cfg.childSorterSetCount
-
-
-    let getId 
-            (cfg:sorterSetParentMapCfg) 
-        =
-        SorterSetParentMap.makeId
-            (cfg |> getParentSorterSetId)
-            (cfg |> getChildSorterSetId)
-
 
     let getFileName
             (cfg: sorterSetParentMapCfg) 
         =
-        cfg |> getId |> SorterSetParentMapId.value |> string
+        cfg.sorterSetParentMapId |> string
 
 
     let makeParentMap 
             (cfg: sorterSetParentMapCfg) = 
 
         SorterSetParentMap.create
-            (cfg |> getChildSorterSetId)
-            (cfg |> getParentSorterSetId)
-            (cfg |> getChildSorterSetCount)
-            (cfg |> getParentSorterSetCount)    
+            cfg.childSorterSetId
+            cfg.parentSorterSetId
+            cfg.childSorterSetCount
+            cfg.parentSorterSetCount
   
