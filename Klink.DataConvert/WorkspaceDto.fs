@@ -2,18 +2,19 @@
 open System
 open Microsoft.FSharp.Core
 
-type workspaceDto = { id:Guid; order:int; switches:byte[] }
+type workspaceDto = { id:Guid; ts:int }
 
 module WorkspaceDto =
 
     let fromDto (dto:workspaceDto) =
         result {
-            let! order = dto.order |> Order.create
-            let bps = order |> Switch.bitsPerSymbolRequired
-            let bitPck = BitPack.fromBytes bps dto.switches
-            let switches = Switch.fromBitPack bitPck
-            let sorterId = dto.id |> SorterId.create
-            return Sorter.fromSwitches sorterId order switches
+            let myEnumValue =  enum<workspaceComponentType>(dto.ts)
+            let ws = 
+                {
+                    workspace.id = dto.id |> WorkspaceId.create; 
+                    items = Map.empty
+                }
+            return ws
         }
 
 
@@ -24,13 +25,12 @@ module WorkspaceDto =
         }
 
 
-    let toDto (sortr: sorter) =
+    let toDto (ws: workspace) =
         { 
-          workspaceDto.id = sortr |> Sorter.getSorterId |> SorterId.value;
-          order =  sortr |> Sorter.getOrder |> Order.value;
-          switches = sortr |> Sorter.toByteArray
+          workspaceDto.id = ws.id |> WorkspaceId.value
+          ts = workspaceComponentType.SortableSet |> int
         }
 
 
-    let toJson (sortr: sorter) =
-        sortr |> toDto |> Json.serialize
+    let toJson (ws: workspace) =
+        ws |> toDto |> Json.serialize

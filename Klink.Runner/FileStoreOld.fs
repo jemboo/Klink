@@ -2,7 +2,51 @@
 open System
 
 
-module WsOps = 
+type wsFile = 
+    | SortableSet
+    | SorterSet
+    | SorterSetEval
+    | SorterEvalReport
+    | SorterEvalMergeReport
+    | SorterSetConcatMap
+    | SorterSetParentMap
+
+
+module WsFile = 
+
+    let wsRootDir = "c:\\GortFilesoo"
+    let fileExt = "txt"
+
+
+    let getFolder (fileType:wsFile) =
+        match fileType with
+        | SortableSet -> "SortableSets"
+        | SorterSet -> "SorterSets"
+        | SorterSetEval -> "SorterSetEvals"
+        | SorterEvalReport -> "SorterEvalReports"
+        | SorterEvalMergeReport -> "SorterEvalMergeReports"
+        | SorterSetConcatMap -> "SorterSetConcatMaps"
+        | SorterSetParentMap -> "SorterSetParentMaps"
+
+
+    let writeToFile (fileType:wsFile) (fileName:string) (data: string) =
+        TextIO.writeToFile "txt" (Some wsRootDir) (getFolder fileType) fileName data
+
+    let writeLinesIfNew (fileType:wsFile) (fileName:string) (data: string seq) =
+        TextIO.writeLinesIfNew "txt" (Some wsRootDir) (getFolder fileType) fileName data
+
+    let appendLines (fileType:wsFile) (fileName:string) (data: string seq) =
+        TextIO.appendLines "txt" (Some wsRootDir) (getFolder fileType) fileName data
+
+    let readAllText (fileType:wsFile) (fileName:string) =
+        TextIO.readAllText "txt" (Some wsRootDir) (getFolder fileType) fileName
+
+    let readAllLines (fileType:wsFile) (fileName:string) =
+        TextIO.readAllLines "txt" (Some wsRootDir) (getFolder fileType) fileName
+
+
+
+module FileStoreOps = 
 
     //********  SortableSet ****************
 
@@ -466,57 +510,3 @@ module WsOps =
 
     //                | Error m -> Console.WriteLine(m)
     //            )
-
-
-
-
-    let makeEm () =
-        let res =
-            WsCfgs.allSortableSetCfgs ()
-            |> Array.map(getSortableSet)
-
-            //WsCfgs.allSorterSetMutatedFromRndCfgs ()
-            //|> Array.map(sorterSetCfg.RndMutated)
-            //|> Array.map(getSorterSet)
-
-            //WsCfgs.allSorterSetRndCfgs ()
-            //|> Array.map(sorterSetCfg.Rnd)
-            //|> Array.map(getSorterSet)
-
-            //WsCfgs.allSorterSetSelfAppendCfgs ()
-            //|> Array.map(sorterSetCfg.SelfAppend)
-            //|> Array.map(getSorterSet)
-
-
-
-            //WsCfgs.allSorterSetRnd_EvalAllBitsCfg ()
-            //|> Array.map(sorterSet_EvalCfg.Rnd)
-            //|> Array.map(getSorterSetEval ( true |> UseParallel.create))
-
-            //WsCfgs.allSsMfr_EvalAllBitsCfg ()
-            //|> Array.map(sorterSet_EvalCfg.RndMutated)
-            //|> Array.map(getSorterSetEval ( true |> UseParallel.create))
-
-
-            //WsCfgs.allSsAfr_EvalAllBitsCfg ()
-            //|> Array.map(sorterSet_EvalCfg.RndAppended)
-            //|> Array.map(getSorterSetEval ( true |> UseParallel.create))
-
-
-            //WsCfgs.allSsMfr_EvalAllBitsCfg ()
-            //|> Array.map(getSsmfr_EvalAllBits)
-
-
-            //WsCfgs.allSorterSetEvalReportCfgs ()
-            //|> Array.map(make_sorterSetRnd_Report)
-
-            //WsCfgs.allssmfrEvalReportCfgs ()
-            //|> Array.map(make_ssMfr_Report)
-
-            //WsCfgs.allssAfrEvalReportCfgs ()
-            //|> Array.map(make_ssAfr_Report)
-
-            //WsCfgs.allssmfrEvalMergeReportCfgs ()
-            //|> Array.map(make_ssmrMerge_Report)
-
-        res

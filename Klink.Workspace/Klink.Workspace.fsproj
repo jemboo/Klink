@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
-    <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
   </ItemGroup>
 
 </Project>

@@ -22,17 +22,25 @@ module WsComponentName =
     let value (WsComponentName v) = v
     let create (v: string) = WsComponentName v
 
+
 type workspaceComponentType =
-    | Workspace
-    | SortableSet
-    | SorterSet
-    | SorterSetMutator
-    | SorterSetParentMap
-    | SorterSetConcatMap
-    | SorterSetEval
+    | Workspace = 1
+    | SortableSet = 2
+    | SorterSet = 3
+    | SorterSetMutator = 4
+    | SorterSetParentMap = 5
+    | SorterSetConcatMap = 6
+    | SorterSetEval = 7
 
 
 type IWorkspaceComponent = 
     abstract member Id:Guid
     abstract member WsComponentName:wsComponentName
     abstract member WorkspaceComponentType:workspaceComponentType
+
+
+type workspaceComponentDescr = 
+        private 
+            { compId:Guid; 
+              compName:wsComponentName; 
+              compType:workspaceComponentType }

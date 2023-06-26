@@ -18,7 +18,6 @@
     <Compile Include="Workspace\CauseCfg.fs" />
     <Compile Include="WsFile.fs" />
     <Compile Include="WsCfgs.fs" />
-    <Compile Include="WsOps.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

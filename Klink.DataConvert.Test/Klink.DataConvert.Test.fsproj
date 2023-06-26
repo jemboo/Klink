@@ -15,6 +15,7 @@
     <Compile Include="sorterSetDtoFixture.fs" />
     <Compile Include="sortableSetDtoFixture.fs" />
     <Compile Include="sorterEvalDtoFixture.fs" />
+    <Compile Include="workspaceDtoFixture.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

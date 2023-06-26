@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="FileStoreOld.fs" />
     <Compile Include="FileStore.fs" />
     <Compile Include="WsOps.fs" />
     <Compile Include="Program.fs" />
