@@ -8,11 +8,19 @@
   <ItemGroup>
     <Compile Include="WorkspaceTypes.fs" />
     <Compile Include="Workspace.fs" />
+    <Compile Include="WorkspaceDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+    <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
+    <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
+    <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
   </ItemGroup>
 
 </Project>

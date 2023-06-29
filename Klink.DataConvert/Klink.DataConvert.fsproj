@@ -17,7 +17,6 @@
     <Compile Include="SorterSet\SorterSetMutatorDto.fs" />
     <Compile Include="SortableSetDto.fs" />
     <Compile Include="SorterEvalDto.fs" />
-    <Compile Include="WorkspaceDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -39,7 +38,6 @@
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
-    <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />
   </ItemGroup>
 
 </Project>

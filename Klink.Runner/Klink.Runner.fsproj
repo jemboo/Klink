@@ -6,10 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="CliArguments.fs" />
+    <None Include="App.config" />
     <Compile Include="FileStoreOld.fs" />
     <Compile Include="FileStore.fs" />
     <Compile Include="WsOps.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Argu" Version="6.1.1" />
   </ItemGroup>
 
   <ItemGroup>

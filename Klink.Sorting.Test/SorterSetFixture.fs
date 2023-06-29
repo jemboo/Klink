@@ -71,6 +71,7 @@ type SorterSetFixture() =
 
       let sorterSetMutator = 
             SorterSetMutator.load
+                (Guid.NewGuid() |> SorterSetMutatorId.create)
                 sorterMutator
                 (Some mutantSorterCt)
                 rngGen

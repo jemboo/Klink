@@ -24,16 +24,16 @@ module WsComponentName =
 
 
 type workspaceComponentType =
-    | Workspace = 1
-    | SortableSet = 2
-    | SorterSet = 3
-    | SorterSetMutator = 4
-    | SorterSetParentMap = 5
-    | SorterSetConcatMap = 6
-    | SorterSetEval = 7
+    | WorkspaceDto = 0
+    | SortableSet = 1
+    | SorterSet = 2
+    | SorterSetMutator = 3
+    | SorterSetParentMap = 4
+    | SorterSetConcatMap = 5
+    | SorterSetEval = 6
 
 
-type IWorkspaceComponent = 
+type IWorkspaceComponentCfg = 
     abstract member Id:Guid
     abstract member WsComponentName:wsComponentName
     abstract member WorkspaceComponentType:workspaceComponentType

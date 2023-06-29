@@ -1,8 +1,10 @@
 ﻿namespace global
 open Microsoft.FSharp.Core
+open System
 
 
 type sorterSetMutatorDto = { 
+        id: Guid
         sorterCountFinal: int; 
         sorterMutatorDto:sorterMutatorDto;
         rngGenDto:rngGenDto; }
@@ -20,6 +22,7 @@ module SorterSetMutatorDto =
             let! rngGen = dto.rngGenDto |> RngGenDto.fromDto
 
             return SorterSetMutator.load
+                        (dto.id |> SorterSetMutatorId.create )
                         sorterMutator
                         sorterCountFinal
                         rngGen
@@ -33,6 +36,10 @@ module SorterSetMutatorDto =
 
     let toDto (sorterSetMutator: sorterSetMutator) =
         {
+            id = sorterSetMutator 
+                 |> SorterSetMutator.getId 
+                 |> SorterSetMutatorId.value
+
             sorterCountFinal =
                 match (sorterSetMutator |> SorterSetMutator.getSorterCountFinal) with
                 | None -> -1
@@ -43,8 +50,7 @@ module SorterSetMutatorDto =
                 |> SorterSetMutator.getSorterMutator
                 |> SorterMutatorDto.toDto
 
-            rngGenDto =
-                sorterSetMutator 
+            rngGenDto = sorterSetMutator
                 |> SorterSetMutator.getRngGen
                 |> RngGenDto.toDto
         }

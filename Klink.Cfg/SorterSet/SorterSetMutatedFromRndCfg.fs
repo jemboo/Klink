@@ -37,7 +37,7 @@ type sorterSetMutatedFromRndCfg
     member this.rngGenMutate = rngGenMutate
     member this.sorterCount = sorterCount
     member this.mutationRate = mutationRate
-    interface IWorkspaceComponent with
+    interface IWorkspaceComponentCfg with
         member this.Id = this.sorterSetId |> SorterSetId.value
         member this.WsComponentName = name
         member this.WorkspaceComponentType =

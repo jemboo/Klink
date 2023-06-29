@@ -15,7 +15,9 @@ type sorterSetMutatorCfg
            switchGenMode :> obj;
            rngGenMutate :> obj;
            sorterCountMutated :> obj;
-        |] |> GuidUtils.guidFromObjs
+        |] 
+        |> GuidUtils.guidFromObjs
+        |> SorterSetMutatorId.create
 
     member this.sorterSetMutatorId = id
     member this.name = name
@@ -24,8 +26,8 @@ type sorterSetMutatorCfg
     member this.rngGenMutate = rngGenMutate
     member this.sorterCountMutated = sorterCountMutated
     member this.mutationRate = mutationRate
-    interface IWorkspaceComponent with
-        member this.Id = id
+    interface IWorkspaceComponentCfg with
+        member this.Id = (id |> SorterSetMutatorId.value)
         member this.WsComponentName = name
         member this.WorkspaceComponentType =
                 workspaceComponentType.SorterSetMutator
@@ -45,6 +47,7 @@ module SorterSetMutatorCfg =
             |> sorterMutator.Uniform
 
         SorterSetMutator.load
+            cfg.sorterSetMutatorId
             sorterUniformMutator
             (Some cfg.sorterCountMutated)
             cfg.rngGenMutate

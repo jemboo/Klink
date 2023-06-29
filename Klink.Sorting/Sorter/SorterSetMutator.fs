@@ -1,11 +1,15 @@
 ﻿namespace global
 
 open System
-
+type sorterSetMutatorId = private SorterSetMutatorId of Guid
+module SorterSetMutatorId =
+    let value (SorterSetMutatorId v) = v
+    let create (v: Guid) = SorterSetMutatorId v
 
 type sorterSetMutator = 
     private
         { 
+          id: sorterSetMutatorId
           sorterMutator: sorterMutator
           sorterCountFinal: sorterCount Option
           rngGen: rngGen
@@ -14,15 +18,19 @@ type sorterSetMutator =
 module SorterSetMutator =
 
     let load
+            (id:sorterSetMutatorId)
             (sorterMutator:sorterMutator) 
             (sorterCountFinal:sorterCount option) 
             (rngGen:rngGen) 
         =
         { 
+          id = id
           sorterMutator = sorterMutator
           sorterCountFinal = sorterCountFinal
           rngGen = rngGen
         }
+        
+    let getId (sum: sorterSetMutator) = sum.id
 
     let getSorterMutator (sum: sorterSetMutator) = sum.sorterMutator
 

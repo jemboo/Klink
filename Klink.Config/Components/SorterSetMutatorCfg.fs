@@ -46,7 +46,7 @@ module SorterSetMutatorCfg =
           "sorterSetMutatorCfg" :> obj;
            cfg :> obj;
         |] |> GuidUtils.guidFromObjs
-           |> SorterSetId.create
+           |> SorterSetMutatorId.create
 
 
     let getConfigName 
@@ -70,6 +70,7 @@ module SorterSetMutatorCfg =
             |> sorterMutator.Uniform
 
         SorterSetMutator.load
+            (cfg |> getId)
             sorterUniformMutator
             (Some cfg.sorterCountMutated)
             cfg.rngGenMutate

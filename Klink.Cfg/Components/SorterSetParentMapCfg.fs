@@ -18,7 +18,7 @@ type sorterSetParentMapCfg
     member this.parentSorterSetCount = parentSorterSetCount
     member this.childSorterSetId = childSorterSetId
     member this.childSorterSetCount = childSorterSetCount
-    interface IWorkspaceComponent with
+    interface IWorkspaceComponentCfg with
         member this.Id = this.sorterSetParentMapId |> SorterSetParentMapId.value
         member this.WsComponentName = name
         member this.WorkspaceComponentType =

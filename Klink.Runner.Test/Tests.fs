@@ -1,4 +1,4 @@
-namespace Gort.Runner.Test
+namespace Klink.Runner.Test
 
 open System
 open Microsoft.VisualStudio.TestTools.UnitTesting
