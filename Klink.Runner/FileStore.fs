@@ -8,7 +8,7 @@ module FileStore =
 
 
     let getFolderName (wsCompType:workspaceComponentType) =
-        nameof wsCompType
+        wsCompType |> string
 
     let writeToFile (wsCompType:workspaceComponentType) (fileName:string) (data: string) =
         TextIO.writeToFile fileExt (Some wsRootDir) (getFolderName wsCompType) fileName data
@@ -26,8 +26,7 @@ module FileStore =
         TextIO.readAllLines fileExt (Some wsRootDir) (getFolderName wsCompType) fileName
 
 
-    let compStore
-            (wsComp:workspaceComponent) 
+    let compStore (wsComp:workspaceComponent) 
         = 
         result {
             let cereal, wsCompType = wsComp |> WorkspaceComponent.toJsonT
@@ -35,7 +34,6 @@ module FileStore =
             let! res = writeToFile wsCompType fileName cereal
             return fileName
         }
-
 
 
     let compRetreive
@@ -88,6 +86,7 @@ module FileStore =
         result {
             let fileName = workspace |> Workspace.getId |> WorkspaceId.value |> string
             let wsCereal = workspace |> WorkspaceDto.toJson
+            let! res = writeToFile workspaceComponentType.WorkspaceDto fileName wsCereal
             let _, comps = workspace |> Workspace.getItems |> Map.toArray |> Array.unzip
             let! _ = comps |> Array.toList |> List.map(compStore) |> Result.sequence
             return fileName
