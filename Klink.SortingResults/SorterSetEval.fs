@@ -69,9 +69,7 @@ module SorterSetEval
             |> Array.map (SorterEval.evalSorterWithSortableSet sorterEvalMode sortableSt)
 
 
-
-
-    let create
+    let load
             (sorterSetEvalId: sorterSetEvalId)
             (sorterSetId: sorterSetId)
             (sortableStId: sortableSetId)
@@ -86,19 +84,28 @@ module SorterSetEval
 
 
     let make
-            (sorterSetEvalId: sorterSetEvalId)
             (sorterEvalMode: sorterEvalMode)
             (sorterSet: sorterSet)
-            (sortableSt: sortableSet)
+            (sortableSet: sortableSet)
             (useParallel: useParallel) 
         =
         try
+
+          let sorterSetEvalId  = 
+            [|
+              (sorterSet |> SorterSet.getId |> SorterSetId.value) :> obj;
+              (sortableSet |> SortableSet.getSortableSetId |> SortableSetId.value ) :> obj;
+              (sorterEvalMode) :> obj;
+            |] |> GuidUtils.guidFromObjs
+               |> SorterSetEvalId.create
+
+
           let sorters = sorterSet |> SorterSet.getSorters
-          let sorterEvals = evalSorters sorterEvalMode sortableSt sorters useParallel
-          create
+          let sorterEvals = evalSorters sorterEvalMode sortableSet sorters useParallel
+          load
                 sorterSetEvalId
                 (sorterSet |> SorterSet.getId)
-                (sortableSt |> SortableSet.getSortableSetId)
+                (sortableSet |> SortableSet.getSortableSetId)
                 sorterEvals
           |> Ok
         with ex ->

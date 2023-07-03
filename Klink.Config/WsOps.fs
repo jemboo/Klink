@@ -288,7 +288,6 @@ module WsOps =
         }
 
 
-
     //********  ssAfr_EvalAllBitsCfg  ****************
 
     let makeSsAfr_EvalAllBitsCfg

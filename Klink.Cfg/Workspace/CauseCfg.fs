@@ -13,7 +13,7 @@ type causeCfgAddSortableSet
                 let! ssComp = ssCfg
                             |> SortableSetCfg.makeSortableSet 
                             |> Result.map(workspaceComponent.SortableSet)
-                return! w |> Workspace.addComponent newWorkspaceId wsCompName ssComp
+                return w |> Workspace.addComponents newWorkspaceId [(wsCompName, ssComp)]
             }
     member this.id =   
         [
@@ -38,7 +38,7 @@ type causeCfgAddSorterSet
                 let! ssComp = ssCfg
                             |> SorterSetCfg.makeSorterSet 
                             |> Result.map(workspaceComponent.SorterSet)
-                return! w |> Workspace.addComponent newWorkspaceId wsCompName ssComp
+                return w |> Workspace.addComponents newWorkspaceId [(wsCompName, ssComp)]
             }
     member this.id =   
         [
@@ -54,21 +54,21 @@ type causeCfgAddSorterSet
 
 type causeCfgAddSorterSetMutator 
             (wsCompName:wsComponentName,
-            ssCfg:sorterSetMutatorCfg) 
+            ssmCfg:sorterSetMutatorCfg) 
     = 
     member this.name = wsCompName
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
             result {
-                let ssComp = ssCfg
+                let ssComp = ssmCfg
                             |> SorterSetMutatorCfg.getSorterSetMutator 
                             |> workspaceComponent.SorterSetMutator
-                return! w |> Workspace.addComponent newWorkspaceId wsCompName ssComp
+                return w |> Workspace.addComponents newWorkspaceId [(wsCompName, ssComp)]
             }
     member this.id =   
         [
             wsCompName :> obj
-            ssCfg :> obj
+            ssmCfg :> obj
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create
@@ -91,8 +91,37 @@ type causeCfgMutateSorterSet
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
             result {
+                let! sorterSetMutator = 
+                        w |> Workspace.getComponent this.sorterSetMutatorName
+                          |> Result.bind(WorkspaceComponent.asSorterSetMutator)
+                let! sorterSetParent = 
+                        w |> Workspace.getComponent this.sorterSetParentName
+                          |> Result.bind(WorkspaceComponent.asSorterSet)
 
-                return w 
+                let parentSorterSetId = sorterSetParent |> SorterSet.getId
+                let parentSorterSetCount = sorterSetParent |> SorterSet.getSorterCount
+                let mutantSorterSetCount = 
+                        sorterSetMutator 
+                        |> SorterSetMutator.getSorterCountFinal
+                        |> Option.defaultValue parentSorterSetCount
+                let mutantSorterSetId = parentSorterSetId |> SorterSetMutator.getMutantSorterSetId sorterSetMutator
+                let parentMap = SorterSetParentMap.create 
+                                    mutantSorterSetId
+                                    parentSorterSetId
+                                    mutantSorterSetCount
+                                    parentSorterSetCount
+                              
+                let! mutantSorterSet = SorterSetMutator.createMutantSorterSetFromParentMap
+                                        parentMap
+                                        sorterSetMutator
+                                        sorterSetParent
+                                        |> Result.map(workspaceComponent.SorterSet)
+
+                return w |> Workspace.addComponents newWorkspaceId 
+                            [
+                                (this.sorterSetParentMapName, parentMap |> workspaceComponent.SorterSetParentMap);
+                                (this.sorterSetMutatorName, mutantSorterSet);
+                            ]
             }
     member this.id =   
         [
@@ -108,24 +137,33 @@ type causeCfgMutateSorterSet
         member this.Updater = this.updater
 
 
-type causeCfgCreateSorterSetEval
+type causeCfgMakeSorterSetEval
             (wsnSortableSet:wsComponentName,
              wsnSorterSet:wsComponentName,
              sorterEvalMode:sorterEvalMode,
              wsnSorterSetEval:wsComponentName,
-             up:useParallel) 
+             useParallel:useParallel) 
     = 
     member this.sortableSetName = wsnSortableSet
     member this.sorterSetName = wsnSorterSet
     member this.sorterEvalMode = sorterEvalMode
     member this.sorterSetEvalName = wsnSorterSetEval
+    member this.useParallel = useParallel
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
             result {
                 let! sortableSet = w |> Workspace.getComponent this.sortableSetName
+                                     |> Result.bind(WorkspaceComponent.asSortableSet)
                 let! sorterSet = w |> Workspace.getComponent this.sorterSetName
+                                   |> Result.bind(WorkspaceComponent.asSorterSet)
 
-                return w
+                let! wsSorterSetEval = SorterSetEval.make
+                                        this.sorterEvalMode
+                                        sorterSet
+                                        sortableSet
+                                        this.useParallel
+                                     |> Result.map(workspaceComponent.SorterSetEval)
+                return w |> Workspace.addComponents newWorkspaceId [(wsnSorterSetEval, wsSorterSetEval)]
             }
     member this.id =
         [
@@ -158,7 +196,7 @@ type causeCfgAddSorterSetPruneWhole
                                 this.stageWeight
                             |> sorterSetPruner.Whole
                             |> workspaceComponent.SorterSetPruner
-                return! w |> Workspace.addComponent newWorkspaceId this.name ssph
+                return w |> Workspace.addComponents newWorkspaceId [(this.name, ssph)]
             }
     member this.id =
         [

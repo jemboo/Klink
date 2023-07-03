@@ -103,7 +103,6 @@ module SorterSet_EvalCfg =
                                                       |> sortableSetCfg.Certain )
             let! ssEval = 
                    SorterSetEval.make
-                        (getId cfg)
                         (getSorterEvalMode cfg)
                         sorterSet
                         sortableSet
@@ -112,7 +111,7 @@ module SorterSet_EvalCfg =
             let ordr = cfg |> getOrder
             let tCmod = cfg |> getStagePrefixCount
             return
-                SorterSetEval.create
+                SorterSetEval.load
                     (ssEval |> SorterSetEval.getSorterSetEvalId)
                     (ssEval |> SorterSetEval.getSorterSetlId)
                     (ssEval |> SorterSetEval.getSortableSetId)

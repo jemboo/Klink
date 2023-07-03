@@ -179,20 +179,34 @@ module Workspace =
             items = Map.empty
         }
 
-    let addComponent 
+    //let addComponents
+    //        (newWorkspaceId:workspaceId) 
+    //        (compName:wsComponentName)
+    //        (comp:workspaceComponent)
+    //        (workspace:workspace)
+    //    =
+    //    if (workspace.items.ContainsKey(compName)) then
+    //        $"{compName |> WsComponentName.value} already present" 
+    //        |> Error
+    //    else
+    //    {
+    //        id = newWorkspaceId
+    //        items = workspace.items.Add (compName, comp)
+    //    } |> Ok
+
+
+    let addComponents
             (newWorkspaceId:workspaceId) 
-            (compName:wsComponentName)
-            (comp:workspaceComponent)
-            (workspace:workspace)
-        =
-        if (workspace.items.ContainsKey(compName)) then
-            $"{compName |> WsComponentName.value} already present" 
-            |> Error
-        else
+            (tupes:seq<wsComponentName*workspaceComponent>)
+            (workspace:workspace)  =
+        let newMap =
+            tupes |> Seq.fold (fun a t -> a |> Map.add (fst t) (snd t)) 
+                              (workspace |> getItems)
         {
             id = newWorkspaceId
-            items = workspace.items.Add (compName, comp)
-        } |> Ok
+            items = newMap
+        }
+
 
     let getComponent
             (compName:wsComponentName)

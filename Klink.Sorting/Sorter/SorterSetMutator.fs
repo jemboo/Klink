@@ -107,7 +107,7 @@ module SorterSetMutator =
     let createMutantSorterSetFromParentMap
             (sorterSetParentMap:sorterSetParentMap)
             (sorterSetMutator:sorterSetMutator)
-            (sortersToMutate:sorterSet)
+            (sorterSetToMutate:sorterSet)
         =
         result {
             let! mutants = 
@@ -115,13 +115,13 @@ module SorterSetMutator =
                     (sorterSetMutator |> getSorterMutator)
                     (sorterSetMutator |> getRngGen |> Rando.fromRngGen)
                     (sorterSetParentMap |> SorterSetParentMap.getParentMap)
-                    (sortersToMutate |> SorterSet.getSorters)
+                    (sorterSetToMutate |> SorterSet.getSorters)
 
 
             return
                 SorterSet.load
                     (sorterSetParentMap |> SorterSetParentMap.getChildSorterSetId)
-                    (sortersToMutate |> SorterSet.getOrder)
+                    (sorterSetToMutate |> SorterSet.getOrder)
                     mutants
         }
 
