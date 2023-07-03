@@ -15,6 +15,7 @@
     <Compile Include="Sorter\SorterMutator.fs" />
     <Compile Include="Sorter\SorterSet.fs" />
     <Compile Include="Sorter\SorterSetParentMap.fs" />
+    <Compile Include="Sorter\SorterAncestry.fs" />
     <Compile Include="Sorter\SorterSetMutator.fs" />
     <Compile Include="Sorter\SorterSetConcatMap.fs" />
     <Compile Include="SortableArrays.fs" />

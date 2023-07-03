@@ -46,11 +46,6 @@ module SorterSetRndCfg =
             ("sorterCount", rdsg.sorterCount :> obj);
         |]
 
-    let getFileName
-            (cfg:sorterSetRndCfg) 
-        =
-        cfg.sorterSetId |> SorterSetId.value |> string
-
     let getConfigName 
             (rdsg:sorterSetRndCfg) 
         =
@@ -59,7 +54,6 @@ module SorterSetRndCfg =
             (rdsg.switchGenMode |> string)
 
     let makeSorterSet
-            (save: string -> sorterSet -> Result<bool, string>)
             (rdsg: sorterSetRndCfg) 
         =
         let randy = rdsg.rngGen |> Rando.fromRngGen
@@ -94,24 +88,23 @@ module SorterSetRndCfg =
                         []
                         rdsg.switchCount
                         nextRng
-            let! wasSaved = save (rdsg |> getFileName) ssRet
             return ssRet
         }
 
 
-    let getSorterSet
-            (lookup: string -> Result<sorterSet, string>)
-            (save: string -> sorterSet -> Result<bool, string>)
-            (rdsg: sorterSetRndCfg)
-        =
-        result {
-            let loadRes  = 
-                result {
-                    let! mut = lookup (rdsg |> getFileName)
-                    return mut
-                }
+    //let getSorterSet
+    //        (lookup: string -> Result<sorterSet, string>)
+    //        (save: string -> sorterSet -> Result<bool, string>)
+    //        (rdsg: sorterSetRndCfg)
+    //    =
+    //    result {
+    //        let loadRes  = 
+    //            result {
+    //                let! mut = lookup (rdsg |> getFileName)
+    //                return mut
+    //            }
 
-            match loadRes with
-            | Ok mut -> return mut
-            | Error _ -> return! (makeSorterSet save rdsg)
-        }
+    //        match loadRes with
+    //        | Ok mut -> return mut
+    //        | Error _ -> return! (makeSorterSet save rdsg)
+    //    }

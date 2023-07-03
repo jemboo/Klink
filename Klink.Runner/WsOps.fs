@@ -5,10 +5,67 @@ open System
 module WsOps = 
 
 
-    let makeEm () =
-        let res =
-            WsCfgs.allSortableSetCfgs ()
-            |> Array.map(FileStoreOps.getSortableSet)
+    let makeEm (rootDir:string) =
+        let res() =
+
+            result {
+                let order = 16 |> Order.createNr
+                let wsCompName1 = "test1" |> WsComponentName.create
+                let wsCompName2 = "test2" |> WsComponentName.create
+                let ssCfg = sortableSetCertainCfg.All_Bits order
+                            |> sortableSetCfg.Certain
+                let causeCfg1 =  new causeCfgAddSortableSet(wsCompName1, ssCfg)
+                let causeCfg2 =  new causeCfgAddSortableSet(wsCompName2, ssCfg)
+
+                let emptyWsCfg = WorkspaceCfg.Empty
+                let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg causeCfg1
+                let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg causeCfg2
+
+                let! workspace = 
+                        secondWsCfg 
+                            |> WorkspaceCfg.makeWorkspace
+
+                let fs = new WorkspaceFileStore(rootDir)
+                return! fs.saveWorkSpace workspace
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //    result {
+        //        let wsEmpty = Workspace.empty
+
+        //        let order = Order.createNr 10
+        //        let ssRecId = Guid.NewGuid() |> SortableSetId.create
+        //        let wcSS = SortableSet.makeAllBits ssRecId rolloutFormat.RfU8 order 
+        //                    |> Result.ExtractOrThrow
+        //                    |> workspaceComponent.SortableSet
+
+        //        let wsCompName = "sortableSet" |> WsComponentName.create
+        //        let ssWsId = Guid.NewGuid() |> WorkspaceId.create
+
+        //        let! wsIn = wsEmpty 
+        //                        |> Workspace.addComponent ssWsId wsCompName wcSS
+
+        //        let fs = new WorkspaceFileStore(rootDir)
+
+        //        return! fs.saveWorkSpace wsIn
+        //    }
+
+
+            //WsCfgs.allSortableSetCfgs ()
+            //|> Array.map(FileStoreOps.getSortableSet)
 
             //WsCfgs.allSorterSetMutatedFromRndCfgs ()
             //|> Array.map(sorterSetCfg.RndMutated)
@@ -54,4 +111,4 @@ module WsOps =
             //WsCfgs.allssmfrEvalMergeReportCfgs ()
             //|> Array.map(make_ssmrMerge_Report)
 
-        res
+        res()

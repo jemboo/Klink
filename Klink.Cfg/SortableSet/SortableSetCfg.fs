@@ -33,7 +33,6 @@ module SortableSetCertainCfg =
         sscc |> getId |> SortableSetId.value |> string
 
 
-
     let getConfigName 
             (sscc:sortableSetCertainCfg) 
         =

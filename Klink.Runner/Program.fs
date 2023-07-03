@@ -6,8 +6,7 @@ module Program =
     let [<EntryPoint>] main _ =
 
         let parser = ArgumentParser.Create<CliArguments>(programName = "gadget.exe")
-        let usage = parser.PrintUsage()
-
+        Console.WriteLine(parser.PrintUsage())
         let argResults = parser.Parse [||] // [| "--detach" ; "--listener" ; "localhost" ; "8080" |]
 
         let all = argResults.GetAllResults()
@@ -15,9 +14,14 @@ module Program =
         let logLevel = argResults.GetResults Log_Level
         let ears = argResults.GetResults Listener
 
-        Console.WriteLine(usage)
 
-        //WsOps.makeEm() |> ignore
-        Console.WriteLine("done ...")
+
+
+        let yow = WsOps.makeEm(rootDir |> List.head)
+        match yow with
+        | Ok msg -> Console.WriteLine($"done ... {msg}")
+        | Error yow -> Console.WriteLine($"done ... {yow}")
+
+
         Console.Read() |> ignore
         0

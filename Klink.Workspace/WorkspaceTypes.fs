@@ -31,6 +31,7 @@ type workspaceComponentType =
     | SorterSetParentMap = 4
     | SorterSetConcatMap = 5
     | SorterSetEval = 6
+    | SorterSetPruner = 7
 
 
 type IWorkspaceComponentCfg = 

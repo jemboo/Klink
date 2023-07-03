@@ -2,8 +2,11 @@
       
 type sorterSetCfg = 
      | Rnd of sorterSetRndCfg
-     | RndMutated of sorterSetMutatedFromRndCfg
-     | SelfAppend of sorterSetSelfAppendCfg
 
 module SorterSetCfg =
-    ()
+
+    let makeSorterSet
+            (sscfg: sorterSetCfg) 
+        =
+        match sscfg with
+        | Rnd rdsg -> rdsg |> SorterSetRndCfg.makeSorterSet

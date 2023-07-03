@@ -7,10 +7,11 @@ type workspaceDtoFixture() =
 
     [<TestMethod>]
     member this.Empty_Workspace_to_workSpaceDto() =
+        let fs = new WorkspaceFileStore("c:\\Boinky")
         let wsIn = Workspace.empty
         let wsCereal = wsIn |> WorkspaceDto.toJson
         let wsBack = wsCereal 
-                        |> WorkspaceDto.fromJson FileStore.compRetreive
+                        |> WorkspaceDto.fromJson fs.compRetreive
                         |> Result.ExtractOrThrow
 
         Assert.AreEqual(wsIn |> Workspace.getId, wsBack|> Workspace.getId)
@@ -38,10 +39,12 @@ type workspaceDtoFixture() =
                         |> Workspace.addComponent ssWsId wsCompName wcSS
                         |> Result.ExtractOrThrow
 
-        let _ = FileStore.saveWorkSpace wsIn
+        let fs = new WorkspaceFileStore("c:\\Boinky")
+
+        let _ = fs.saveWorkSpace wsIn
                 |> Result.ExtractOrThrow
 
-        let wsBack = FileStore.loadWorkSpaceFromId ssWsId
+        let wsBack = fs.loadWorkSpace ssWsId
                      |> Result.ExtractOrThrow
 
         Assert.AreEqual(wsIn |> Workspace.getId, wsBack|> Workspace.getId)

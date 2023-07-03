@@ -6,10 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Old\FileStoreOld.fs" />
     <Compile Include="CliArguments.fs" />
     <None Include="App.config" />
-    <Compile Include="FileStoreOld.fs" />
-    <Compile Include="FileStore.fs" />
     <Compile Include="WsOps.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -19,9 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\KIink.DataStore\KIink.DataStore.fsproj" />
     <ProjectReference Include="..\Klink.Cfg\Klink.Cfg.fsproj" />
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
+    <ProjectReference Include="..\Klink.DataStore\Klink.FileDataStore.fsproj" />
     <ProjectReference Include="..\Klink.Genome\Klink.Genome.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />

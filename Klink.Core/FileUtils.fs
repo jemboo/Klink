@@ -172,8 +172,11 @@ module TextIO =
 
             Directory.CreateDirectory(fldr) |> ignore
             let fp = Path.Combine(fldr, fne)
-            File.WriteAllText(fp, data)
-            true |> Ok
+            if File.Exists(fp) then
+                true |> Ok
+            else
+                File.WriteAllText(fp, data)
+                true |> Ok
         with ex ->
             ("error in TextIO.writeToFile: " + ex.Message) |> Result.Error
 

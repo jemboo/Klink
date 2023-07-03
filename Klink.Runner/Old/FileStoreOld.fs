@@ -2,127 +2,127 @@
 open System
 
 
-type wsFile = 
-    | SortableSet
-    | SorterSet
-    | SorterSetEval
-    | SorterEvalReport
-    | SorterEvalMergeReport
-    | SorterSetConcatMap
-    | SorterSetParentMap
+//type wsFile = 
+//    | SortableSet
+//    | SorterSet
+//    | SorterSetEval
+//    | SorterEvalReport
+//    | SorterEvalMergeReport
+//    | SorterSetConcatMap
+//    | SorterSetParentMap
 
 
-module WsFile = 
+//module WsFile = 
 
-    let wsRootDir = "c:\\KlinkFiles"
-    let fileExt = "txt"
-
-
-    let getFolder (fileType:wsFile) =
-        match fileType with
-        | SortableSet -> "SortableSets"
-        | SorterSet -> "SorterSets"
-        | SorterSetEval -> "SorterSetEvals"
-        | SorterEvalReport -> "SorterEvalReports"
-        | SorterEvalMergeReport -> "SorterEvalMergeReports"
-        | SorterSetConcatMap -> "SorterSetConcatMaps"
-        | SorterSetParentMap -> "SorterSetParentMaps"
+//    let wsRootDir = "c:\\KlinkFiles"
+//    let fileExt = "txt"
 
 
-    let writeToFile (fileType:wsFile) (fileName:string) (data: string) =
-        TextIO.writeToFile fileExt (Some wsRootDir) (getFolder fileType) fileName data
-
-    let writeLinesIfNew (fileType:wsFile) (fileName:string) (data: string seq) =
-        TextIO.writeLinesIfNew fileExt (Some wsRootDir) (getFolder fileType) fileName data
-
-    let appendLines (fileType:wsFile) (fileName:string) (data: string seq) =
-        TextIO.appendLines fileExt (Some wsRootDir) (getFolder fileType) fileName data
-
-    let readAllText (fileType:wsFile) (fileName:string) =
-        TextIO.readAllText fileExt (Some wsRootDir) (getFolder fileType) fileName
-
-    let readAllLines (fileType:wsFile) (fileName:string) =
-        TextIO.readAllLines fileExt (Some wsRootDir) (getFolder fileType) fileName
+//    let getFolder (fileType:wsFile) =
+//        match fileType with
+//        | SortableSet -> "SortableSets"
+//        | SorterSet -> "SorterSets"
+//        | SorterSetEval -> "SorterSetEvals"
+//        | SorterEvalReport -> "SorterEvalReports"
+//        | SorterEvalMergeReport -> "SorterEvalMergeReports"
+//        | SorterSetConcatMap -> "SorterSetConcatMaps"
+//        | SorterSetParentMap -> "SorterSetParentMaps"
 
 
+//    let writeToFile (fileType:wsFile) (fileName:string) (data: string) =
+//        TextIO.writeToFile fileExt (Some wsRootDir) (getFolder fileType) fileName data
 
-module FileStoreOps = 
+//    let writeLinesIfNew (fileType:wsFile) (fileName:string) (data: string seq) =
+//        TextIO.writeLinesIfNew fileExt (Some wsRootDir) (getFolder fileType) fileName data
 
-    //********  SortableSet ****************
+//    let appendLines (fileType:wsFile) (fileName:string) (data: string seq) =
+//        TextIO.appendLines fileExt (Some wsRootDir) (getFolder fileType) fileName data
 
-    let saveSortableSet 
-            (fileName:string)
-            (sst:sortableSet) 
-        =
-        WsFile.writeToFile 
-                wsFile.SortableSet 
-                fileName 
-                (sst |> SortableSetDto.toJson )
+//    let readAllText (fileType:wsFile) (fileName:string) =
+//        TextIO.readAllText fileExt (Some wsRootDir) (getFolder fileType) fileName
 
-
-    let loadSortableSet (fileName:string) =
-          result {
-            let! txtD = WsFile.readAllText  
-                            wsFile.SortableSet
-                            fileName
-            return! txtD |> SortableSetDto.fromJson
-          }
+//    let readAllLines (fileType:wsFile) (fileName:string) =
+//        TextIO.readAllLines fileExt (Some wsRootDir) (getFolder fileType) fileName
 
 
-    let getSortableSet (cfg:sortableSetCfg) =
-        cfg |> SortableSetCfg.getSortableSet saveSortableSet loadSortableSet
+
+//module FileStoreOps = 
+
+//    //********  SortableSet ****************
+
+//    let saveSortableSet 
+//            (fileName:string)
+//            (sst:sortableSet) 
+//        =
+//        WsFile.writeToFile 
+//                wsFile.SortableSet 
+//                fileName 
+//                (sst |> SortableSetDto.toJson )
 
 
-    //********  ParentMap  ****************
+//    let loadSortableSet (fileName:string) =
+//          result {
+//            let! txtD = WsFile.readAllText  
+//                            wsFile.SortableSet
+//                            fileName
+//            return! txtD |> SortableSetDto.fromJson
+//          }
+
+
+//    let getSortableSet (cfg:sortableSetCfg) =
+//        cfg |> SortableSetCfg.getSortableSet saveSortableSet loadSortableSet
+
+
+//    //********  ParentMap  ****************
     
-    let saveSorterSetParentMap
-            (cfg:sorterSetParentMapCfg)
-            (sst:sorterSetParentMap) 
-        =
-        WsFile.writeToFile wsFile.SorterSetParentMap
-            (cfg |> SorterSetParentMapCfg.getFileName) 
-            (sst |> SorterSetParentMapDto.toJson)
+//    let saveSorterSetParentMap
+//            (cfg:sorterSetParentMapCfg)
+//            (sst:sorterSetParentMap) 
+//        =
+//        WsFile.writeToFile wsFile.SorterSetParentMap
+//            (cfg |> SorterSetParentMapCfg.getFileName) 
+//            (sst |> SorterSetParentMapDto.toJson)
 
 
-    let loadSorterSetParentMap
-            (cfg:sorterSetParentMapCfg) 
-          =
-          result {
-            let! txtD = 
-                WsFile.readAllText  
-                    wsFile.SorterSetParentMap
-                    (cfg |> SorterSetParentMapCfg.getFileName)
-            return! txtD |> SorterSetParentMapDto.fromJson
-          }
+//    let loadSorterSetParentMap
+//            (cfg:sorterSetParentMapCfg) 
+//          =
+//          result {
+//            let! txtD = 
+//                WsFile.readAllText  
+//                    wsFile.SorterSetParentMap
+//                    (cfg |> SorterSetParentMapCfg.getFileName)
+//            return! txtD |> SorterSetParentMapDto.fromJson
+//          }
 
 
-    let makeSorterSetParentMap
-            (cfg:sorterSetParentMapCfg) 
-        =
-        result {
-            let parentMap = 
-                    SorterSetParentMapCfg.makeParentMap
-                        cfg
+//    let makeSorterSetParentMap
+//            (cfg:sorterSetParentMapCfg) 
+//        =
+//        result {
+//            let parentMap = 
+//                    SorterSetParentMapCfg.makeParentMap
+//                        cfg
 
-            let! resSs = parentMap |> saveSorterSetParentMap cfg
-            return parentMap
-        }
+//            let! resSs = parentMap |> saveSorterSetParentMap cfg
+//            return parentMap
+//        }
 
 
-    let getParentMap
-            (cfg:sorterSetParentMapCfg) 
-        =
-        result {
-            let loadRes  = 
-                result {
-                    let! mut = loadSorterSetParentMap cfg
-                    return mut
-                }
+//    let getParentMap
+//            (cfg:sorterSetParentMapCfg) 
+//        =
+//        result {
+//            let loadRes  = 
+//                result {
+//                    let! mut = loadSorterSetParentMap cfg
+//                    return mut
+//                }
 
-            match loadRes with
-            | Ok mut -> return mut
-            | Error _ -> return! (makeSorterSetParentMap cfg)
-        }
+//            match loadRes with
+//            | Ok mut -> return mut
+//            | Error _ -> return! (makeSorterSetParentMap cfg)
+//        }
 
 
 
