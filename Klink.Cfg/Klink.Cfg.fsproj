@@ -16,7 +16,8 @@
     <Compile Include="SorterSet\SorterSetSelfAppendCfg.fs" />
     <Compile Include="SorterSet\SorterSetCfg.fs" />
     <Compile Include="Workspace\WorkspaceCfg.fs" />
-    <Compile Include="Workspace\CauseCfg.fs" />
+    <Compile Include="Workspace\AddCauseCfg.fs" />
+    <Compile Include="Workspace\MakeCauseCfg.fs" />
     <Compile Include="WsFile.fs" />
     <Compile Include="WsCfgs.fs" />
     <Compile Include="Program.fs" />

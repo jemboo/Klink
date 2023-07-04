@@ -5,7 +5,8 @@ open System
 
 type sorterSetPrunerWholeDto = { 
         id: Guid
-        selectionFraction: float; 
+        selectionFraction: float;
+        temp: float; 
         stageWeight:float;}
 
 module SorterSetPrunerWholeDto =
@@ -15,6 +16,7 @@ module SorterSetPrunerWholeDto =
             return SorterSetPrunerWhole.load
                         (dto.id |> SorterSetPrunerId.create )
                         (dto.selectionFraction |> SelectionFraction.create)
+                        (dto.temp |> Temp.create)
                         (dto.stageWeight |> StageWeight.create)
         }
 
@@ -32,13 +34,61 @@ module SorterSetPrunerWholeDto =
             selectionFraction = sorterSetPrunerWhole
                 |> SorterSetPrunerWhole.getSelectionFraction
                 |> SelectionFraction.value
+            temp = sorterSetPrunerWhole
+                |> SorterSetPrunerWhole.getTemp
+                |> Temp.value
             stageWeight = sorterSetPrunerWhole
                  |> SorterSetPrunerWhole.getStageWeight
                  |> StageWeight.value
         }
 
-    let toJson (sorterSetMutator: sorterSetPrunerWhole) =
-        sorterSetMutator |> toDto |> Json.serialize
+    let toJson (sorterSetPrunerWhole: sorterSetPrunerWhole) =
+        sorterSetPrunerWhole |> toDto |> Json.serialize
+
+
+
+type sorterSetPrunerShcDto = { 
+        id: Guid
+        selectionFraction: float;
+        temp: float; 
+        stageWeight:float;}
+
+
+module SorterSetPrunerShcDto =
+
+    let fromDto (dto:sorterSetPrunerShcDto) =
+        result {
+            return SorterSetPrunerShc.load
+                        (dto.id |> SorterSetPrunerId.create )
+                        (dto.selectionFraction |> SelectionFraction.create)
+                        (dto.temp |> Temp.create)
+                        (dto.stageWeight |> StageWeight.create)
+        }
+
+    let fromJson (jstr: string) =
+        result {
+            let! dto = Json.deserialize<sorterSetPrunerShcDto> jstr
+            return! fromDto dto
+        }
+
+    let toDto (sorterSetPrunerShc: sorterSetPrunerShc) =
+        {
+            id = sorterSetPrunerShc 
+                 |> SorterSetPrunerShc.getId 
+                 |> SorterSetPrunerId.value
+            selectionFraction = sorterSetPrunerShc
+                |> SorterSetPrunerShc.getSelectionFraction
+                |> SelectionFraction.value
+            temp = sorterSetPrunerShc
+                |> SorterSetPrunerShc.getTemp
+                |> Temp.value
+            stageWeight = sorterSetPrunerShc
+                 |> SorterSetPrunerShc.getStageWeight
+                 |> StageWeight.value
+        }
+
+    let toJson (sorterSetPrunerShc: sorterSetPrunerShc) =
+        sorterSetPrunerShc |> toDto |> Json.serialize
 
 
 
@@ -72,6 +122,11 @@ module SorterSetPrunerDto =
             {
                 duType = "Whole"
                 cereal = w |> SorterSetPrunerWholeDto.toJson
+            }
+        | Lhc w ->
+            {
+                duType = "Lhc"
+                cereal = w |> SorterSetPrunerShcDto.toJson
             }
 
     let toJson (sorterSetPruner: sorterSetPruner) =

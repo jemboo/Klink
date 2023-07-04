@@ -59,11 +59,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmark", "Benchmark", "{
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.Benchmark", "Klink.Benchmark\Klink.Benchmark.fsproj", "{213C2A36-064C-4352-AB6C-522E9389370D}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.FileDataStore", "Klink.DataStore\Klink.FileDataStore.fsproj", "{47BE5DD5-D148-4DAB-B930-1EF6DA302724}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.FileDataStore", "Klink.FileDataStore\Klink.FileDataStore.fsproj", "{47BE5DD5-D148-4DAB-B930-1EF6DA302724}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "KIink.DataStore", "KIink.DataStore\KIink.DataStore.fsproj", "{391916EA-2134-4E4D-A49D-C970280BD750}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "KIink.DataStore", "KIink.DataStore\KIink.DataStore.fsproj", "{391916EA-2134-4E4D-A49D-C970280BD750}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Klink.Cfg.Test", "Klink.Cfg.Test\Klink.Cfg.Test.fsproj", "{A7D836A3-E67B-44CC-8FE2-6147956374C6}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.Cfg.Test", "Klink.Cfg.Test\Klink.Cfg.Test.fsproj", "{A7D836A3-E67B-44CC-8FE2-6147956374C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

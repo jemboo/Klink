@@ -1,13 +1,5 @@
 ﻿namespace global
 open System
-//type sorterEvalsSelector = private { selector: (sorterEval array -> sorterEval array) }
-
-//module SorterEvalsSelector = 
-//    let getSelector (sorterEvalsSelectr:sorterEvalsSelector) = 
-//        sorterEvalsSelectr.selector
-
-//    let make (selectr: (sorterEval array -> sorterEval array)) = 
-//        { selector = selectr }
 
 type sorterSetEvalId = private SorterSetEvalId of Guid
 
