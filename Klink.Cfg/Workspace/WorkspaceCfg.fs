@@ -31,7 +31,7 @@ module WorkspaceCfg =
                      |> WorkspaceId.create
                 _makeWorkspaceId nextId t
 
-        _makeWorkspaceId curId (future |> List.rev)
+        _makeWorkspaceId curId future
 
 
     let makeWorkspaceCfg (history:ICauseCfg list) =
@@ -40,16 +40,24 @@ module WorkspaceCfg =
           history = history
         }
 
+
     let Empty = makeWorkspaceCfg []
 
+
     let addCauseCfg (ccfg:ICauseCfg) (wscfg:workspaceCfg) =
-        makeWorkspaceCfg (ccfg :: wscfg.history)
+        makeWorkspaceCfg ([ccfg] |> List.append wscfg.history)
+
 
     let removeLastCauseCfg (wscfg:workspaceCfg) =
-        makeWorkspaceCfg (wscfg.history |> List.tail)
+        match wscfg.history with
+        | [] ->   (makeWorkspaceCfg [], [])
+        | h::t -> (
+                   makeWorkspaceCfg 
+                            (wscfg.history |> List.removeAt (wscfg.history.Length - 1)),
+                   [wscfg.history.[wscfg.history.Length - 1]])
 
 
-    let makeWorkspace (workspaceCfg:workspaceCfg) 
+    let makeWorkspace (causeHist:ICauseCfg list) (startingWs:workspace) 
         =
         let rec _makeWorkspace 
                 (wksR:Result<workspace,string>) 
@@ -65,4 +73,38 @@ module WorkspaceCfg =
                 let nextWs = h.Updater wsCur nextId
                 _makeWorkspace nextWs t
 
-        _makeWorkspace (Workspace.empty |> Ok) (workspaceCfg.history |> List.rev)
+        _makeWorkspace (startingWs |> Ok) causeHist
+
+
+    let getLastSavedWorspaceIdAndFuture (workspaceCfg:workspaceCfg) (fileStore:IWorkspaceStore)
+        =
+        let rec _lastWorkspaceCfg
+                (wksCfgCurrent:workspaceCfg) 
+                (future:ICauseCfg list)
+            =
+            let chkLatest = fileStore.WorkSpaceExists(wksCfgCurrent.id)
+            match chkLatest with
+            | Error m -> $"Error in getLastSavedWorspaceIdAndFuture (1) {m}" |> Error
+            | Ok wasFound ->
+                if wasFound then
+                    (wksCfgCurrent.id, future) |> Ok
+                elif wksCfgCurrent.history.Length = 0 then
+                    (Empty.id, []) |> Ok
+                else
+                    let lastWksCfg, lastCause = removeLastCauseCfg wksCfgCurrent
+                    _lastWorkspaceCfg lastWksCfg (lastCause@future)
+
+        _lastWorkspaceCfg workspaceCfg []
+
+
+    let updateWorkspace (workspaceCfg:workspaceCfg) (fileStore:IWorkspaceStore)
+        =
+        result {
+            let! latestSavedId, future = getLastSavedWorspaceIdAndFuture workspaceCfg fileStore
+            let! restoredWs = 
+                if (latestSavedId = Empty.id) then
+                    Workspace.empty |> Ok
+                else
+                    fileStore.LoadWorkSpace(latestSavedId)
+            return! restoredWs |> makeWorkspace future
+        }

@@ -19,6 +19,9 @@ type WorkspaceFileStore (wsRootDir:string) =
     member this.appendLines (wsCompType:workspaceComponentType) (fileName:string) (data: string seq) =
         TextIO.appendLines this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
 
+    member this.fileExists (wsCompType:workspaceComponentType) (fileName:string) =
+        TextIO.fileExists this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName
+
     member this.readAllText (wsCompType:workspaceComponentType) (fileName:string) =
         TextIO.readAllText this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName
 
@@ -72,6 +75,12 @@ type WorkspaceFileStore (wsRootDir:string) =
                     -> $"{wsCompType} not handled" |> Error
         }
 
+    member this.workSpaceExists (id:workspaceId) =
+        result {
+            let fileName = id |> WorkspaceId.value |> string
+            return!                   
+                this.fileExists workspaceComponentType.WorkspaceDto fileName
+        }
 
     member this.loadWorkSpace (id:workspaceId) =
         result {
@@ -94,3 +103,4 @@ type WorkspaceFileStore (wsRootDir:string) =
     interface IWorkspaceStore with
         member this.SaveWorkSpace(ws) = this.saveWorkSpace(ws)
         member this.LoadWorkSpace(wsId) = this.loadWorkSpace(wsId)
+        member this.WorkSpaceExists(wsId) = this.workSpaceExists(wsId)

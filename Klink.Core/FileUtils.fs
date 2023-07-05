@@ -81,6 +81,25 @@ module TextIO =
             ("error in TextIO.readAllLines: " + ex.Message) |> Result.Error
 
 
+    let fileExists
+            (ext:string) 
+            (root:string option) 
+            (folder:string) 
+            (fileName:string)
+        =
+        try
+            let fne = sprintf "%s.%s" fileName ext
+            let fp = 
+                match root with
+                | Some p ->
+                     Path.Combine(p, folder, fne)
+                | None ->
+                    Path.Combine(folder, fne)
+            File.Exists(fp) |> Ok
+        with ex ->
+            ("error in TextIO.fileExists: " + ex.Message) |> Result.Error
+
+
     let readAllText
             (ext:string) 
             (root:string option) 
@@ -100,7 +119,7 @@ module TextIO =
             else
                 sprintf "not found: %s" fp |> Error
         with ex ->
-            ("error in TextIO.readAll: " + ex.Message) |> Result.Error
+            ("error in TextIO.readAllText: " + ex.Message) |> Result.Error
 
 
     let appendLines
@@ -151,7 +170,7 @@ module TextIO =
                 File.AppendAllLines(fp, data)
                 true |> Ok
         with ex ->
-            ("error in TextIO.appendLines: " + ex.Message) |> Result.Error
+            ("error in TextIO.writeLinesIfNew: " + ex.Message) |> Result.Error
 
 
     let writeToFile

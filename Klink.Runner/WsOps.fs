@@ -22,8 +22,8 @@ module WsOps =
                 let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg causeCfg2
 
                 let! workspace = 
-                        secondWsCfg 
-                            |> WorkspaceCfg.makeWorkspace
+                        Workspace.empty 
+                            |> WorkspaceCfg.makeWorkspace secondWsCfg.history
 
                 let fs = new WorkspaceFileStore(rootDir)
                 return! fs.saveWorkSpace workspace
