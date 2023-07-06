@@ -72,8 +72,8 @@ type causeCfgAddSorterSetMutator
             wsCompName :> obj
             ssmCfg :> obj
         ]
-             |> GuidUtils.guidFromObjs
-             |> CauseId.create
+        |> GuidUtils.guidFromObjs
+        |> CauseId.create
     interface ICauseCfg with
         member this.Id = this.id
         member this.Updater = this.updater
@@ -81,20 +81,20 @@ type causeCfgAddSorterSetMutator
         
 type causeCfgAddSorterSetPruneWhole
             (wsnName:wsComponentName,
-             selectionFraction:selectionFraction,
-             temp:temp,
+             prunedCount:sorterCount,
+             noiseFraction:float option,
              stageWeight:stageWeight) 
     = 
     member this.name = wsnName
-    member this.selectionFraction = selectionFraction
-    member this.temp = temp
+    member this.prunedCount = prunedCount
+    member this.noiseFraction = noiseFraction
     member this.stageWeight = stageWeight
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
             result {
                 let ssph = SorterSetPrunerWhole.make 
-                                this.selectionFraction
-                                this.temp
+                                this.prunedCount
+                                this.noiseFraction
                                 this.stageWeight
                             |> sorterSetPruner.Whole
                             |> workspaceComponent.SorterSetPruner
@@ -103,7 +103,8 @@ type causeCfgAddSorterSetPruneWhole
     member this.id =
         [
             this.name |> WsComponentName.value :> obj
-            this.selectionFraction |> SelectionFraction.value :> obj
+            this.prunedCount |> SorterCount.value :> obj
+            this.noiseFraction :> obj
             this.stageWeight |> StageWeight.value :> obj
         ]
              |> GuidUtils.guidFromObjs
@@ -114,31 +115,32 @@ type causeCfgAddSorterSetPruneWhole
 
 
         
-type causeCfgAddSorterSetPruneLhc
+type causeCfgAddSorterSetPruneShc
             (wsnName:wsComponentName,
-             selectionFraction:selectionFraction,
-             temp:temp,
+             prunedCount:sorterCount,
+             noiseFraction:float option,
              stageWeight:stageWeight)
     = 
     member this.name = wsnName
-    member this.selectionFraction = selectionFraction
-    member this.temp = temp
+    member this.prunedCount = prunedCount
+    member this.noiseFraction = noiseFraction
     member this.stageWeight = stageWeight
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
             result {
                 let ssph = SorterSetPrunerShc.make 
-                                this.selectionFraction
-                                this.temp
+                                this.prunedCount
+                                this.noiseFraction
                                 this.stageWeight
-                            |> sorterSetPruner.Lhc
+                            |> sorterSetPruner.Shc
                             |> workspaceComponent.SorterSetPruner
                 return w |> Workspace.addComponents newWorkspaceId [(this.name, ssph)]
             }
     member this.id =
         [
             this.name |> WsComponentName.value :> obj
-            this.selectionFraction |> SelectionFraction.value :> obj
+            this.prunedCount |> SorterCount.value :> obj
+            this.noiseFraction :> obj
             this.stageWeight |> StageWeight.value :> obj
         ]
              |> GuidUtils.guidFromObjs

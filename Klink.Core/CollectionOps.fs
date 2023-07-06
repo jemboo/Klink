@@ -43,6 +43,16 @@ module CollectionOps =
         |> Seq.takeWhile (fun tup -> (fst tup) < maxCt)
         |> Seq.map (snd)
 
+    //takes up to maxCt items from the array, returns less if it runs out
+    let takeUptoArray<'a> 
+            (maxCt: int) 
+            (source: array<'a>) 
+            =
+        if source.Length < maxCt then
+            source
+        else
+            source |> Array.take(maxCt)
+
 
     let infinteLoop 
             (robbin:seq<'a>) 

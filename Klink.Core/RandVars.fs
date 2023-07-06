@@ -11,7 +11,7 @@ module RandVars =
     let rndBitsUint64 (order: order) (rnd: IRando) =
         rnd.NextULong &&& (order |> Order.bitMaskUint64)
 
-
+    // For making a 2d Gaussian distribution
     let polarBoxMullerDist meanX stdDevX meanY stdDevY (rnd: IRando) =
         let rec getRands () =
             let u = (2.0 * rnd.NextFloat) - 1.0
@@ -25,6 +25,12 @@ module RandVars =
         let x = scale * u
         let y = scale * v
         (meanX + x * stdDevX, meanY + y * stdDevY)
+
+
+    // For making a 1d Gaussian distribution
+    let gaussianDistribution meanX stdDevX (rnd: IRando) =
+        let rnd2d = polarBoxMullerDist meanX stdDevX meanX stdDevX rnd
+        ()
 
 
     let randOneOrZero (pctOnes: float) (rnd: IRando) (len: int) =
@@ -175,6 +181,7 @@ module RandVars =
                 successCount <- successCount + _draw rnd
                 i <- i + 1
             successCount
+
 
 
 type rndChoice = private RndChoice of float

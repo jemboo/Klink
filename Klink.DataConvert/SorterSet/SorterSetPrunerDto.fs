@@ -5,8 +5,8 @@ open System
 
 type sorterSetPrunerWholeDto = { 
         id: Guid
-        selectionFraction: float;
-        temp: float; 
+        prunedCount: int;
+        noiseFraction: float option; 
         stageWeight:float;}
 
 module SorterSetPrunerWholeDto =
@@ -15,8 +15,8 @@ module SorterSetPrunerWholeDto =
         result {
             return SorterSetPrunerWhole.load
                         (dto.id |> SorterSetPrunerId.create )
-                        (dto.selectionFraction |> SelectionFraction.create)
-                        (dto.temp |> Temp.create)
+                        (dto.prunedCount |> SorterCount.create)
+                        (dto.noiseFraction)
                         (dto.stageWeight |> StageWeight.create)
         }
 
@@ -31,12 +31,11 @@ module SorterSetPrunerWholeDto =
             id = sorterSetPrunerWhole 
                  |> SorterSetPrunerWhole.getId 
                  |> SorterSetPrunerId.value
-            selectionFraction = sorterSetPrunerWhole
-                |> SorterSetPrunerWhole.getSelectionFraction
-                |> SelectionFraction.value
-            temp = sorterSetPrunerWhole
-                |> SorterSetPrunerWhole.getTemp
-                |> Temp.value
+            prunedCount = sorterSetPrunerWhole
+                |> SorterSetPrunerWhole.getPrunedCount
+                |> SorterCount.value
+            noiseFraction = sorterSetPrunerWhole
+                |> SorterSetPrunerWhole.getNoiseFraction
             stageWeight = sorterSetPrunerWhole
                  |> SorterSetPrunerWhole.getStageWeight
                  |> StageWeight.value
@@ -49,8 +48,8 @@ module SorterSetPrunerWholeDto =
 
 type sorterSetPrunerShcDto = { 
         id: Guid
-        selectionFraction: float;
-        temp: float; 
+        prunedCount: int;
+        noiseFraction: float option; 
         stageWeight:float;}
 
 
@@ -60,8 +59,8 @@ module SorterSetPrunerShcDto =
         result {
             return SorterSetPrunerShc.load
                         (dto.id |> SorterSetPrunerId.create )
-                        (dto.selectionFraction |> SelectionFraction.create)
-                        (dto.temp |> Temp.create)
+                        (dto.prunedCount |> SorterCount.create)
+                        (dto.noiseFraction)
                         (dto.stageWeight |> StageWeight.create)
         }
 
@@ -76,12 +75,11 @@ module SorterSetPrunerShcDto =
             id = sorterSetPrunerShc 
                  |> SorterSetPrunerShc.getId 
                  |> SorterSetPrunerId.value
-            selectionFraction = sorterSetPrunerShc
-                |> SorterSetPrunerShc.getSelectionFraction
-                |> SelectionFraction.value
-            temp = sorterSetPrunerShc
-                |> SorterSetPrunerShc.getTemp
-                |> Temp.value
+            prunedCount = sorterSetPrunerShc
+                |> SorterSetPrunerShc.getPrunedCount
+                |> SorterCount.value
+            noiseFraction = sorterSetPrunerShc
+                |> SorterSetPrunerShc.getNoiseFraction
             stageWeight = sorterSetPrunerShc
                  |> SorterSetPrunerShc.getStageWeight
                  |> StageWeight.value
@@ -123,11 +121,12 @@ module SorterSetPrunerDto =
                 duType = "Whole"
                 cereal = w |> SorterSetPrunerWholeDto.toJson
             }
-        | Lhc w ->
+        | Shc w ->
             {
                 duType = "Lhc"
                 cereal = w |> SorterSetPrunerShcDto.toJson
             }
+        | Batch b -> failwith "not implemented"
 
     let toJson (sorterSetPruner: sorterSetPruner) =
         sorterSetPruner |> toDto |> Json.serialize

@@ -19,8 +19,8 @@ type WorkspaceCfgFixture () =
         let emptyWsCfg = WorkspaceCfg.Empty
         let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg causeCfg1
         let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg causeCfg2
-        let reFirstWsCfg = secondWsCfg |> WorkspaceCfg.removeLastCauseCfg
-        let emptied = firstWsCfg |> WorkspaceCfg.removeLastCauseCfg
+        let reFirstWsCfg, future = secondWsCfg |> WorkspaceCfg.removeLastCauseCfg
+        let emptied, futureNo = firstWsCfg |> WorkspaceCfg.removeLastCauseCfg
 
         Assert.AreEqual(firstWsCfg.id, reFirstWsCfg.id);
         Assert.AreEqual(emptyWsCfg.id, emptied.id);

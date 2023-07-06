@@ -75,6 +75,12 @@ module CollectionProps =
             |> Error
 
 
+    let stdDeviation (vals:float[]) =
+        let avg = vals |> Array.average
+        let cumo = vals |> Array.sumBy(fun v -> (v - avg) * (v - avg))
+        Math.Sqrt(cumo/(float vals.Length))
+
+
     let inline distanceSquared  (a: ^a[]) (b: ^a[]) =
         let mutable i = 0
         let mutable acc = zero_of a.[0]

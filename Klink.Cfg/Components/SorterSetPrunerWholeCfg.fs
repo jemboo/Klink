@@ -2,23 +2,23 @@
 
 type sorterSetPrunerWholeCfg
             (name:wsComponentName,
-             selectionFraction:selectionFraction,
-             stageWeight:stageWeight,
-             temp:temp
+             prunedCount:sorterCount,
+             noiseFraction:float option,
+             stageWeight:stageWeight
             ) =
     let id =         
         [|
           "sorterSetPrunerWholeCfg" :> obj;
-           selectionFraction :> obj;
-           stageWeight :> obj;
+           prunedCount :> obj;
+           noiseFraction :> obj;
         |] 
         |> GuidUtils.guidFromObjs
         |> SorterSetPrunerId.create
 
     member this.sorterSetPrunerId = id
     member this.name = name
-    member this.selectionFraction = selectionFraction
-    member this.temp = temp
+    member this.prunedCount = prunedCount
+    member this.noiseFraction = noiseFraction
     member this.stageWeight = stageWeight
     interface IWorkspaceComponentCfg with
         member this.Id = (id |> SorterSetPrunerId.value)
@@ -34,21 +34,21 @@ module SorterSetPrunerWholeCfg =
         =
         SorterSetPrunerWhole.load
             cfg.sorterSetPrunerId
-            cfg.selectionFraction
-            cfg.temp
+            cfg.prunedCount
+            cfg.noiseFraction
             cfg.stageWeight
 
 
 type sorterSetPrunerShcCfg
             (name:wsComponentName,
-             selectionFraction:selectionFraction,
-             temp:temp,
+             prunedCount:sorterCount,
+             noiseFraction:float option,
              stageWeight:stageWeight
             ) =
     let id =         
         [|
           "sorterSetPrunerShcCfg" :> obj;
-           selectionFraction :> obj;
+           prunedCount :> obj;
            stageWeight :> obj;
         |] 
         |> GuidUtils.guidFromObjs
@@ -56,8 +56,8 @@ type sorterSetPrunerShcCfg
 
     member this.sorterSetPrunerId = id
     member this.name = name
-    member this.selectionFraction = selectionFraction
-    member this.temp = temp
+    member this.prunedCount = prunedCount
+    member this.noiseFraction = noiseFraction
     member this.stageWeight = stageWeight
     interface IWorkspaceComponentCfg with
         member this.Id = (id |> SorterSetPrunerId.value)
@@ -73,8 +73,8 @@ module SorterSetPrunerShcCfg =
         =
         SorterSetPrunerWhole.load
             cfg.sorterSetPrunerId
-            cfg.selectionFraction
-            cfg.temp
+            cfg.prunedCount
+            cfg.noiseFraction
             cfg.stageWeight
 
 

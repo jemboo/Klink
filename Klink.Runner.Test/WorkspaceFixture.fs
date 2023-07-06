@@ -26,9 +26,7 @@ type WorkspaceFixture () =
 
         Assert.AreEqual(ws |> Workspace.getId, secondWsCfg.id);
 
-
         let rootDir = "C:\\Klinkster"
-
         let fs = new WorkspaceFileStore(rootDir)
         let res = fs.saveWorkSpace ws |> Result.ExtractOrThrow
 
