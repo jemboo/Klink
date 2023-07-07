@@ -7,11 +7,13 @@ type causeCfgMutateSorterSet
             (wsnSorterSetParent:wsComponentName,
              wsnSorterSetMutated:wsComponentName,
              wsnSorterSetMutator:wsComponentName,
+             wsnRandomProvider:wsComponentName,
              wsnSorterSetParentMap:wsComponentName) 
     = 
     member this.sorterSetParentName = wsnSorterSetParent
     member this.sorterSetMutatedName = wsnSorterSetMutated
     member this.sorterSetMutatorName = wsnSorterSetMutator
+    member this.randomProviderName = wsnRandomProvider
     member this.sorterSetParentMapName = wsnSorterSetParentMap
 
     member this.updater = 
@@ -23,14 +25,24 @@ type causeCfgMutateSorterSet
                 let! sorterSetParent = 
                         w |> Workspace.getComponent this.sorterSetParentName
                           |> Result.bind(WorkspaceComponent.asSorterSet)
+                let! rngGenProvider = 
+                        w |> Workspace.getComponent this.randomProviderName
+                          |> Result.bind(WorkspaceComponent.asRandomProvider)
 
+                let rngGen = rngGenProvider |> RngGenProvider.nextRngGen
                 let parentSorterSetId = sorterSetParent |> SorterSet.getId
                 let parentSorterSetCount = sorterSetParent |> SorterSet.getSorterCount
                 let mutantSorterSetCount = 
                         sorterSetMutator 
                         |> SorterSetMutator.getSorterCountFinal
                         |> Option.defaultValue parentSorterSetCount
-                let mutantSorterSetId = parentSorterSetId |> SorterSetMutator.getMutantSorterSetId sorterSetMutator
+
+                let mutantSorterSetId = 
+                        parentSorterSetId 
+                        |> SorterSetMutator.getMutantSorterSetId 
+                                    sorterSetMutator 
+                                    rngGen
+
                 let parentMap = SorterSetParentMap.create 
                                     mutantSorterSetId
                                     parentSorterSetId
@@ -40,6 +52,7 @@ type causeCfgMutateSorterSet
                 let! mutantSorterSet = SorterSetMutator.createMutantSorterSetFromParentMap
                                         parentMap
                                         sorterSetMutator
+                                        rngGen
                                         sorterSetParent
                                         |> Result.map(workspaceComponent.SorterSet)
 

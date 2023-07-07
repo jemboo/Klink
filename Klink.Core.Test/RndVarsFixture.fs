@@ -81,15 +81,24 @@ type RndGenFixture() =
         let rndy = Rando.fromRngGen (RngGen.lcgFromNow ())
 
         let initialList = Array.init arrayLen id
-
         for dex = 0 to 10 do
             let perm =
                 RandVars.fisherYatesReflShuffle rndy initialList
                 |> Permutation.createNr
             
-
-
             Assert.IsTrue(8 = 8)
 
 
 
+    [<TestMethod>]
+    member this.gaussianDistribution() =
+        let meanX = 5.0
+        let stDevX = 1.0
+        let rndy = Rando.fromRngGen (RngGen.lcgFromNow ())
+        let res =
+            RandVars.gaussianDistribution meanX stDevX rndy
+            |> Seq.take(10)
+            |> Seq.toArray
+
+
+        Assert.IsTrue(res.Length = 10)

@@ -73,4 +73,3 @@ module SorterSetMutatorCfg =
             (cfg |> getId)
             sorterUniformMutator
             (Some cfg.sorterCountMutated)
-            cfg.rngGenMutate

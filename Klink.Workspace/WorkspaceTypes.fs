@@ -25,13 +25,14 @@ module WsComponentName =
 
 type workspaceComponentType =
     | WorkspaceDto = 0
-    | SortableSet = 1
-    | SorterSet = 2
-    | SorterSetMutator = 3
-    | SorterSetParentMap = 4
-    | SorterSetConcatMap = 5
-    | SorterSetEval = 6
-    | SorterSetPruner = 7
+    | RandomProvider = 1
+    | SortableSet = 10
+    | SorterSet = 20
+    | SorterSetMutator = 21
+    | SorterSetParentMap = 22
+    | SorterSetConcatMap = 23
+    | SorterSetEval = 30
+    | SorterSetPruner = 40
 
 
 type IWorkspaceComponentCfg = 

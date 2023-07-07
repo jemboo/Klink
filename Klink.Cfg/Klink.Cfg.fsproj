@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="SortableSet\SortableSetCfgOld.fs" />
     <Compile Include="SortableSet\SortableSetCfg.fs" />
+    <Compile Include="Components\RandomProviderCfg.fs" />
     <Compile Include="Components\SorterSetPrunerWholeCfg.fs" />
     <Compile Include="Components\SorterSetMutatorCfg.fs" />
     <Compile Include="Components\SorterSetParentMapCfg.fs" />

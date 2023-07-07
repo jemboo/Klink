@@ -177,7 +177,7 @@ module SorterMutator =
         | Uniform sum -> sum |> SorterUniformMutator.getSwitchCountFinal
 
 
-    let makeMutants2 
+    let makeMutants
             (sorterMutator:sorterMutator) 
             (randy:IRando)
             (parentIdMap:Map<sorterId, sorterParentId>)
@@ -207,29 +207,3 @@ module SorterMutator =
         |> Seq.map (fst >> _pid_mutant)
         |> Seq.toList
         |> Result.sequence
-
-
-    let makeMutants
-            (sorterMutator:sorterMutator) 
-            (randy:IRando)
-            (sorterCount:sorterCount)
-            (parents:sorter seq)
-        =
-        let _pid_mutant (parent:sorter) =
-            result {
-                let! mutant =
-                    (sorterMutator |> getMutatorFunc)
-                            parent
-                            (Guid.NewGuid() |> SorterId.create)
-                            randy
-                return
-                    (  parent |> Sorter.getSorterId,
-                       mutant                         )
-            }
-
-        parents |> CollectionOps.infinteLoop
-                |> Seq.map (_pid_mutant)
-                |> Seq.take (SorterCount.value sorterCount)
-                |> Seq.toList
-                |> Result.sequence
-        

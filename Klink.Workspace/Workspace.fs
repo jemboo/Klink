@@ -3,6 +3,7 @@
 open System
 
 type workspaceComponent =
+    | RandomProvider of rngGenProvider
     | SortableSet of sortableSet
     | SorterSet of sorterSet
     | SorterSetMutator of sorterSetMutator
@@ -16,6 +17,9 @@ module WorkspaceComponent =
 
     let toJsonT (comp:workspaceComponent) =
         match comp with
+        | RandomProvider rngGenProvider -> 
+            (rngGenProvider |> RngGenProviderDto.toJson, 
+             workspaceComponentType.RandomProvider)
         | SortableSet sortableSet -> 
             (sortableSet |> SortableSetDto.toJson, 
              workspaceComponentType.SortableSet)
@@ -41,6 +45,8 @@ module WorkspaceComponent =
 
     let fromJsonT (cerealT:string*workspaceComponentType) =
         match cerealT with
+        | (c, workspaceComponentType.RandomProvider) ->
+            c |> RngGenProviderDto.fromJson |> Result.map(workspaceComponent.RandomProvider)
         | (c, workspaceComponentType.SortableSet) ->
             c |> SortableSetDto.fromJson |> Result.map(workspaceComponent.SortableSet)
         | (c, workspaceComponentType.SorterSet) ->
@@ -60,6 +66,9 @@ module WorkspaceComponent =
 
     let getId (comp:workspaceComponent) =
         match comp with
+        | RandomProvider rngGenProvider -> 
+            rngGenProvider 
+                |> RngGenProvider.getId |> RngGenProviderId.value
         | SortableSet sortableSet -> 
             sortableSet 
                 |> SortableSet.getSortableSetId |> SortableSetId.value
@@ -86,6 +95,8 @@ module WorkspaceComponent =
 
     let getWorkspaceComponentType (comp:workspaceComponent) =
         match comp with
+        | RandomProvider randomProvider -> 
+             workspaceComponentType.RandomProvider
         | SortableSet sortableSet -> 
              workspaceComponentType.SortableSet
         | SorterSet sorterSet -> 
@@ -100,6 +111,15 @@ module WorkspaceComponent =
              workspaceComponentType.SorterSetEval
         | SorterSetPruner sorterSetPruner ->
             workspaceComponentType.SorterSetPruner
+
+
+    let asRandomProvider (comp:workspaceComponent) =
+        match comp with
+        | RandomProvider rngGenProvider -> 
+             rngGenProvider |> Ok
+        | _  -> 
+             $"Workspace component type is {nameof comp}, not rngGenProvider" |> Error
+
 
 
     let asSortableSet (comp:workspaceComponent) =

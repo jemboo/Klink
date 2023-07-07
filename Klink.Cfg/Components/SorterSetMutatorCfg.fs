@@ -4,7 +4,6 @@ type sorterSetMutatorCfg
             (name:wsComponentName,
              order:order,
              switchGenMode:switchGenMode,
-             rngGenMutate:rngGen,
              sorterCountMutated:sorterCount,
              mutationRate:mutationRate
             ) =
@@ -13,7 +12,6 @@ type sorterSetMutatorCfg
           "sorterSetMutatorCfg" :> obj;
            order :> obj;
            switchGenMode :> obj;
-           rngGenMutate :> obj;
            sorterCountMutated :> obj;
         |] 
         |> GuidUtils.guidFromObjs
@@ -23,7 +21,6 @@ type sorterSetMutatorCfg
     member this.name = name
     member this.order = order
     member this.switchGenMode = switchGenMode
-    member this.rngGenMutate = rngGenMutate
     member this.sorterCountMutated = sorterCountMutated
     member this.mutationRate = mutationRate
     interface IWorkspaceComponentCfg with
@@ -50,4 +47,3 @@ module SorterSetMutatorCfg =
             cfg.sorterSetMutatorId
             sorterUniformMutator
             (Some cfg.sorterCountMutated)
-            cfg.rngGenMutate

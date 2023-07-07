@@ -81,6 +81,7 @@ type causeCfgAddSorterSetMutator
         
 type causeCfgAddSorterSetPruneWhole
             (wsnName:wsComponentName,
+             wsnRndGenName:wsComponentName,
              prunedCount:sorterCount,
              noiseFraction:float option,
              stageWeight:stageWeight) 
@@ -92,6 +93,8 @@ type causeCfgAddSorterSetPruneWhole
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
             result {
+                let! rngGen = w |> Workspace.getComponent wsnRndGenName
+                                |> Result.map(WorkspaceComponent.asSorterSet)
                 let ssph = SorterSetPrunerWhole.make 
                                 this.prunedCount
                                 this.noiseFraction
@@ -119,7 +122,8 @@ type causeCfgAddSorterSetPruneShc
             (wsnName:wsComponentName,
              prunedCount:sorterCount,
              noiseFraction:float option,
-             stageWeight:stageWeight)
+             stageWeight:stageWeight
+             )
     = 
     member this.name = wsnName
     member this.prunedCount = prunedCount

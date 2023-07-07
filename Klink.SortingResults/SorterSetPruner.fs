@@ -13,11 +13,12 @@ module SorterSetPrunerId =
 
 
 type sorterSetPrunerWhole = 
-        private {
-        id: sorterSetPrunerId;
-        prunedCount:sorterCount;
-        noiseFraction:float option;
-        stageWeight:stageWeight; }
+    private {
+            id: sorterSetPrunerId;
+            prunedCount:sorterCount;
+            noiseFraction:float option;
+            stageWeight:stageWeight;
+        }
 
 
 module SorterSetPrunerWhole =
@@ -42,7 +43,6 @@ module SorterSetPrunerWhole =
          =
          sorterSetPruner.stageWeight
 
-
     let load
             (id:sorterSetPrunerId)
             (prunedCount:sorterCount)
@@ -55,6 +55,7 @@ module SorterSetPrunerWhole =
             noiseFraction=noiseFraction
             stageWeight=stageWeight
         }
+
 
     let makeId
             (prunedCount:sorterCount)
@@ -73,13 +74,13 @@ module SorterSetPrunerWhole =
 
     let make (prunedCount:sorterCount)
              (noiseFraction:float option)
-             (stageWeight:stageWeight) 
+             (stageWeight:stageWeight)
         =
         {
             id = makeId prunedCount stageWeight noiseFraction;
             prunedCount = prunedCount;
-            noiseFraction=noiseFraction;
-            stageWeight =  stageWeight; 
+            noiseFraction = noiseFraction;
+            stageWeight = stageWeight; 
         }
 
     let makePrunedSorterSetId
@@ -107,7 +108,9 @@ module SorterSetPrunerWhole =
                 
             [||]
 
-    let run (sorterSetPruner:sorterSetPrunerWhole) 
+
+    let run (sorterSetPruner:sorterSetPrunerWhole)
+            (rngGen:rngGen)
             (meta:sorterSetPrunerGaData)
             (sorterEvalsToPrune:sorterEval[])
          =
@@ -128,16 +131,19 @@ module SorterSetPrunerWhole =
                 |> CollectionOps.takeUpto (sorterSetPruner.prunedCount |> SorterCount.value)
                 |> Seq.toArray
             else
-                sorterEvalsWithFitness |> Array.sortByDescending(snd)
+                sorterEvalsWithFitness 
+                |> Array.sortByDescending(snd)
+                |> CollectionOps.takeUptoArray (sorterSetPruner.prunedCount |> SorterCount.value)
 
 
 
 type sorterSetPrunerBatch = 
         private {
-        id: sorterSetPrunerId;
-        prunedCount:sorterCount;
-        noiseFraction:float option;
-        stageWeight:stageWeight; }
+            id: sorterSetPrunerId;
+            prunedCount:sorterCount;
+            noiseFraction:float option;
+            stageWeight:stageWeight;
+        }
 
 
 module SorterSetPrunerBatch =
@@ -164,13 +170,12 @@ module SorterSetPrunerBatch =
          =
          sorterSetPruner.stageWeight
 
-
     let load
             (id:sorterSetPrunerId)
             (prunedCount:sorterCount)
             (noiseFraction:float option)
             (stageWeight:stageWeight)
-        =
+         =
         {   
             id=id
             prunedCount=prunedCount
@@ -195,13 +200,13 @@ module SorterSetPrunerBatch =
 
     let make (prunedCount:sorterCount)
              (noiseFraction:float option)
-             (stageWeight:stageWeight) 
+             (stageWeight:stageWeight)
         =
         {
             id = makeId prunedCount stageWeight noiseFraction;
             prunedCount = prunedCount;
             noiseFraction=noiseFraction;
-            stageWeight =  stageWeight; 
+            stageWeight =  stageWeight;
         }
 
     let makePrunedSorterSetId
@@ -217,6 +222,7 @@ module SorterSetPrunerBatch =
 
 
     let run (sorterSetPruner:sorterSetPrunerBatch) 
+            (rngGen:rngGen)
             (meta:sorterSetPrunerGaData)
             (sorterEvalsToPrune:sorterEval[])
          =
@@ -226,10 +232,11 @@ module SorterSetPrunerBatch =
 
 type sorterSetPrunerShc = 
         private {
-        id: sorterSetPrunerId;
-        prunedCount:sorterCount;
-        noiseFraction:float option;
-        stageWeight:stageWeight; }
+            id: sorterSetPrunerId;
+            prunedCount:sorterCount;
+            noiseFraction:float option;
+            stageWeight:stageWeight;
+        }
 
 
 module SorterSetPrunerShc =
@@ -255,7 +262,6 @@ module SorterSetPrunerShc =
                 (sorterSetPruner:sorterSetPrunerShc) 
          =
          sorterSetPruner.stageWeight
-
 
     let load
             (id:sorterSetPrunerId)
@@ -287,13 +293,13 @@ module SorterSetPrunerShc =
 
     let make (prunedCount:sorterCount)
              (noiseFraction:float option)
-             (stageWeight:stageWeight) 
+             (stageWeight:stageWeight)
         =
         {
             id = makeId prunedCount stageWeight noiseFraction;
             prunedCount = prunedCount;
-            noiseFraction=noiseFraction;
-            stageWeight =  stageWeight; 
+            noiseFraction = noiseFraction;
+            stageWeight =  stageWeight;        
         }
 
     let makePrunedSorterSetId
@@ -308,7 +314,8 @@ module SorterSetPrunerShc =
         |> SorterSetId.create
 
 
-    let run (sorterSetPruner:sorterSetPrunerShc) 
+    let run (sorterSetPruner:sorterSetPrunerShc)              
+            (rngGen:rngGen)
             (meta:sorterSetPrunerGaData)
             (sorterEvalsToPrune:sorterEval[])
          =
@@ -358,11 +365,12 @@ module SorterSetPruner =
          | Shc ssphW ->  ssphW.stageWeight
 
     let run
-            (sorterSetPruner:sorterSetPruner) 
-            (sorterEvalsToPrune:sorterEval[])
+            (sorterSetPruner:sorterSetPruner)              
+            (rngGen:rngGen)
             (meta:sorterSetPrunerGaData)
+            (sorterEvalsToPrune:sorterEval[])
          =
          match sorterSetPruner with
-         | Whole ssphW ->  sorterEvalsToPrune |> SorterSetPrunerWhole.run ssphW meta
-         | Batch ssphS ->  sorterEvalsToPrune |> SorterSetPrunerBatch.run ssphS meta
-         | Shc ssphS ->  sorterEvalsToPrune |> SorterSetPrunerShc.run ssphS meta
+         | Whole ssphW ->  sorterEvalsToPrune |> SorterSetPrunerWhole.run ssphW rngGen meta
+         | Batch ssphS ->  sorterEvalsToPrune |> SorterSetPrunerBatch.run ssphS rngGen meta
+         | Shc ssphS ->  sorterEvalsToPrune |> SorterSetPrunerShc.run ssphS rngGen meta

@@ -31,12 +31,12 @@ type SorterSetFixture() =
 
     [<TestMethod>]
     member this.createMutationSet() = 
-      let sorterSetId = Guid.NewGuid() |> SorterSetId.create
+      let parentSorterSetId = Guid.NewGuid() |> SorterSetId.create
       let ordr = 16 |> Order.createNr
       let wPfx = Seq.empty<switch>
       let swFreq = 1.0 |> SwitchFrequency.create
       let switchCt = 20 |> SwitchCount.create
-      let baseSorterCt = 2 |> SorterCount.create
+      let parentSorterCt = 2 |> SorterCount.create
       let mutantSorterCt = 6 |> SorterCount.create
       let rngGen = RngGen.createLcg (123 |> RandomSeed.create)
       let randy = Rando.create rngType.Lcg (123 |> RandomSeed.create)
@@ -44,50 +44,37 @@ type SorterSetFixture() =
         randy |> Rando.nextRngGen
       let mutationRate = MutationRate.create 0.15
 
-      let sorterStBase = SorterSet.createRandomStages 
-                                sorterSetId baseSorterCt swFreq ordr wPfx switchCt rndGn
+      let sorterSetParent = 
+        SorterSet.createRandomStages 
+             parentSorterSetId parentSorterCt swFreq ordr wPfx switchCt rndGn
 
       let sorterMutator = 
         SorterUniformMutator.create 
              None None switchGenMode.Stage mutationRate
         |> sorterMutator.Uniform
 
-      let baseSorters = sorterStBase |> SorterSet.getSorters 
-                        |> Seq.take(baseSorterCt |> SorterCount.value)
-                        |> Seq.toArray
-
-      let sorterSetOfMutants =
-        SorterSet.createMutationSet 
-                    baseSorters
-                    mutantSorterCt
-                    ordr
-                    sorterMutator
-                    sorterSetId
-                    randy
- 
-      Assert.AreEqual(
-        mutantSorterCt |> SorterCount.value, 
-        sorterSetOfMutants |> SorterSet.getSorters |> Seq.length)
 
       let sorterSetMutator = 
             SorterSetMutator.load
                 (Guid.NewGuid() |> SorterSetMutatorId.create)
                 sorterMutator
                 (Some mutantSorterCt)
-                rngGen
 
+      let mutantSorterSetId = parentSorterSetId
+                              |> SorterSetMutator.getMutantSorterSetId  sorterSetMutator rngGen
 
-      let tupR =  
-        sorterStBase |> SorterSetMutator.createMutantSorterSetAndParentMap
-                            sorterSetMutator
+      let parentMap = SorterSetParentMap.create 
+                            mutantSorterSetId
+                            parentSorterSetId
+                            mutantSorterCt
+                            parentSorterCt
 
+      let mutantSet =  
+        sorterSetParent |> SorterSetMutator.createMutantSorterSetFromParentMap
+                            parentMap sorterSetMutator rngGen
+                        |> Result.ExtractOrThrow
 
-      let mss, pm =  tupR |> Result.ExtractOrThrow
-
-
-      Assert.AreEqual(1,1)
-
-
+      Assert.AreEqual(mutantSet |> SorterSet.getSorterCount, mutantSorterCt)
 
 
     [<TestMethod>]

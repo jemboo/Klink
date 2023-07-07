@@ -75,7 +75,6 @@ module SorterSetMutatedFromRndCfg =
             "sorterSetMutator" |> WsComponentName.create,
             cfg.order,
             cfg.switchGenMode,
-            cfg.rngGenMutate,
             cfg.sorterCount,
             cfg.mutationRate)
 
@@ -114,4 +113,4 @@ module SorterSetMutatedFromRndCfg =
     let getSorterSetMutator (cfg:sorterSetMutatedFromRndCfg) 
         =
         cfg |> getSorterSetMutatorCfg 
-            |> SorterSetMutatorCfg.getSorterSetMutator
+            |> SorterSetMutatorCfg.getSorterSetMutator 

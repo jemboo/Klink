@@ -26,6 +26,7 @@ module RngGen =
     let lcgFromNow () = RandomSeed.fromNow () |> createLcg
 
 
+
 type IRando =
     abstract member Count: int
     abstract member Seed: randomSeed
@@ -34,6 +35,10 @@ type IRando =
     abstract member NextULong: uint64
     abstract member NextFloat: float
     abstract member rngType: rngType
+
+
+
+
 
 
 type randomNet(seed: randomSeed) =
@@ -101,6 +106,7 @@ module Rando =
         match rngtype with
         | rngType.Lcg -> new randomLcg(seed) :> IRando
         | rngType.Net -> new randomNet(seed) :> IRando
+        | _ -> failwith "not handled in Rando.create"
 
     let fromRngGen (rg: rngGen) = create rg.rngType rg.seed
 
@@ -151,3 +157,51 @@ module RndGuid =
         GuidUtils.fromUint32s 
             rndGud.r1.NextUInt rndGud.r2.NextUInt
             rndGud.r3.NextUInt rndGud.r4.NextUInt
+
+
+
+type rngGenProviderId = private RngGenProviderId of Guid
+module RngGenProviderId =
+    let value (RngGenProviderId v) = v
+    let create vl = RngGenProviderId vl
+
+type rngGenProvider = 
+    private {
+            id: rngGenProviderId;
+            rngGen: rngGen
+            randy: IRando
+        }
+
+module RngGenProvider =
+
+    let load (id:rngGenProviderId) 
+             (rngGen:rngGen)
+        =
+        {
+            id = id;
+            rngGen = rngGen;
+            randy = rngGen |> Rando.fromRngGen
+        }
+
+    let getId (rngGenProvider:rngGenProvider) 
+        =  rngGenProvider.id
+
+
+    let getFixedRngGen(rngGenProvider:rngGenProvider) 
+        =  rngGenProvider.rngGen
+
+    let nextRngGen (rngGenProvider:rngGenProvider) 
+        =  rngGenProvider.randy |> Rando.nextRngGen
+
+
+
+
+
+
+
+
+
+
+
+
+

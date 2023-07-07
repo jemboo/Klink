@@ -7,7 +7,8 @@ type sorterSetPrunerWholeDto = {
         id: Guid
         prunedCount: int;
         noiseFraction: float option; 
-        stageWeight:float;}
+        stageWeight:float;
+        }
 
 module SorterSetPrunerWholeDto =
 
@@ -50,7 +51,8 @@ type sorterSetPrunerShcDto = {
         id: Guid
         prunedCount: int;
         noiseFraction: float option; 
-        stageWeight:float;}
+        stageWeight:float;
+        }
 
 
 module SorterSetPrunerShcDto =
@@ -83,6 +85,7 @@ module SorterSetPrunerShcDto =
             stageWeight = sorterSetPrunerShc
                  |> SorterSetPrunerShc.getStageWeight
                  |> StageWeight.value
+
         }
 
     let toJson (sorterSetPrunerShc: sorterSetPrunerShc) =

@@ -11,6 +11,7 @@ type sorterSetPrunerWholeCfg
           "sorterSetPrunerWholeCfg" :> obj;
            prunedCount :> obj;
            noiseFraction :> obj;
+           stageWeight :> obj;
         |] 
         |> GuidUtils.guidFromObjs
         |> SorterSetPrunerId.create
@@ -69,7 +70,8 @@ type sorterSetPrunerShcCfg
 module SorterSetPrunerShcCfg =
 
     let getSorterSetPruner
-            (cfg:sorterSetPrunerShcCfg) 
+            (cfg:sorterSetPrunerShcCfg)
+            (rngGenNoise:rngGen) 
         =
         SorterSetPrunerWhole.load
             cfg.sorterSetPrunerId

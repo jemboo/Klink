@@ -19,18 +19,21 @@ module RandVars =
             let w = u * u + v * v
             if w >= 1.0 then getRands () else u, v, w
 
-        let u, v, w = getRands ()
-
-        let scale = System.Math.Sqrt(-2.0 * System.Math.Log(w) / w)
-        let x = scale * u
-        let y = scale * v
-        (meanX + x * stdDevX, meanY + y * stdDevY)
+        seq {
+            while true do
+                let u, v, w = getRands ()
+                let scale = System.Math.Sqrt(-2.0 * System.Math.Log(w) / w)
+                let x = scale * u
+                let y = scale * v
+                (meanX + x * stdDevX, meanY + y * stdDevY)
+            }
 
 
     // For making a 1d Gaussian distribution
     let gaussianDistribution meanX stdDevX (rnd: IRando) =
-        let rnd2d = polarBoxMullerDist meanX stdDevX meanX stdDevX rnd
-        ()
+        polarBoxMullerDist meanX stdDevX meanX stdDevX rnd
+        |> Seq.map(fun tup -> [fst tup; snd tup])
+        |> Seq.concat
 
 
     let randOneOrZero (pctOnes: float) (rnd: IRando) (len: int) =

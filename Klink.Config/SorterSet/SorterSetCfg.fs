@@ -110,15 +110,16 @@ module SorterSetCfg =
                 match mutantSorterSetFinding with
                 | Ok mutantSS -> return mutantSS
                 | Error _ -> 
-                    let! mutantSorterSet = 
-                            parentSorterSet |>
-                                SorterSetMutator.createMutantSorterSetFromParentMap
-                                    parentMap
-                                    (rmCfg |> SorterSetMutatedFromRndCfg.getSorterSetMutator)
-                    let! isSaved = sorterSetSave 
-                                    mutantSorterSetFileName  
-                                    mutantSorterSet
-                    return mutantSorterSet
+                    //let! mutantSorterSet = 
+                    //        parentSorterSet |>
+                    //            SorterSetMutator.createMutantSorterSetFromParentMap
+                    //                parentMap
+                    //                (rmCfg |> SorterSetMutatedFromRndCfg.getSorterSetMutator)
+                    //let! isSaved = sorterSetSave 
+                    //                mutantSorterSetFileName  
+                    //                mutantSorterSet
+                    //return mutantSorterSet
+                    return parentSorterSet
             }
         | SelfAppend saCfg ->
             result {
