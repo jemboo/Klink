@@ -63,7 +63,6 @@ module SorterSetMutatedFromRndCfg =
         new sorterSetRndCfg(
             "sorterSetParent" |> WsComponentName.create,
             cfg.order,
-            cfg.rngGenCreate,
             cfg.switchGenMode,
             cfg.switchCount,
             cfg.sorterCountOriginal)

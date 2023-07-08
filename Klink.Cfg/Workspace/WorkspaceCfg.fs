@@ -47,6 +47,8 @@ module WorkspaceCfg =
     let addCauseCfg (ccfg:ICauseCfg) (wscfg:workspaceCfg) =
         makeWorkspaceCfg ([ccfg] |> List.append wscfg.history)
 
+    let addCauseCfgs (ccfgs:ICauseCfg list) (wscfg:workspaceCfg) =
+        makeWorkspaceCfg (ccfgs |> List.append wscfg.history)
 
     let removeLastCauseCfg (wscfg:workspaceCfg) =
         match wscfg.history with

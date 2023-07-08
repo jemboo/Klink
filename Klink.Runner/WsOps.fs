@@ -10,20 +10,39 @@ module WsOps =
 
             result {
                 let order = 16 |> Order.createNr
-                let wsCompName1 = "test1" |> WsComponentName.create
-                let wsCompName2 = "test2" |> WsComponentName.create
+                let rngGen = 123 |> RandomSeed.create |> RngGen.createLcg
+                let switchCount = SwitchCount.orderTo999SwitchCount order
+                let sorterCount = SorterCount.create 32
+                let wnRando = "rando" |> WsComponentName.create
+                let wnSortableSet = "sortableSet" |> WsComponentName.create
+                let wnSorterSet = "sorterSet" |> WsComponentName.create
+
+                
+                let randPvCfg = new randomProviderCfg(wnRando, rngGen)
                 let ssCfg = sortableSetCertainCfg.All_Bits order
                             |> sortableSetCfg.Certain
-                let causeCfg1 =  new causeCfgAddSortableSet(wsCompName1, ssCfg)
-                let causeCfg2 =  new causeCfgAddSortableSet(wsCompName2, ssCfg)
+                let srCfg = new sorterSetRndCfg(
+                                wnSorterSet,
+                                order,
+                                switchGenMode.Stage,
+                                switchCount,
+                                sorterCount)
+                            |> sorterSetCfg.Rnd
+
+
+                let causeCfgAddRando =  new causeCfgAddRndGenProvider(wnRando, randPvCfg)
+                let causeCfgAddSortableSet =  new causeCfgAddSortableSet(wnSortableSet, ssCfg)
+                let causeCfgAddSorterSet =  new causeCfgAddSorterSet(wnSorterSet, wnRando, srCfg)
 
                 let emptyWsCfg = WorkspaceCfg.Empty
-                let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg causeCfg1
-                let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg causeCfg2
+                let fullWsCfg = 
+                        emptyWsCfg 
+                        |> WorkspaceCfg.addCauseCfgs 
+                            [causeCfgAddRando; causeCfgAddSortableSet; causeCfgAddSorterSet]
 
                 let! workspace = 
                         Workspace.empty 
-                            |> WorkspaceCfg.makeWorkspace secondWsCfg.history
+                            |> WorkspaceCfg.makeWorkspace fullWsCfg.history
 
                 let fs = new WorkspaceFileStore(rootDir)
                 return! fs.saveWorkSpace workspace

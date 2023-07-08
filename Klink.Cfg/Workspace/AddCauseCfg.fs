@@ -2,13 +2,40 @@
 
 open System
 
-type causeCfgAddSortableSet 
+type causeCfgAddRndGenProvider 
             (wsCompName:wsComponentName,
-            ssCfg:sortableSetCfg) 
+            rndPvCfg:randomProviderCfg) 
     = 
     member this.name = wsCompName
     member this.updater = 
-            fun (w :workspace) (newWorkspaceId :workspaceId) ->
+            fun (w:workspace) (newWorkspaceId:workspaceId) ->
+            result {
+                let rngProviderId = rndPvCfg.id |> RngGenProviderId.create
+                let ssComp = 
+                    (RngGenProvider.load rngProviderId rndPvCfg.rngGen)
+                            |> workspaceComponent.RandomProvider
+                return w |> Workspace.addComponents newWorkspaceId [(wsCompName, ssComp)]
+            }
+    member this.id =
+        [
+            wsCompName :> obj
+            rndPvCfg :> obj
+        ]
+             |> GuidUtils.guidFromObjs
+             |> CauseId.create
+    interface ICauseCfg with
+        member this.Id = this.id
+        member this.Updater = this.updater
+
+
+
+type causeCfgAddSortableSet 
+            (wsCompName:wsComponentName,
+             ssCfg:sortableSetCfg) 
+    = 
+    member this.name = wsCompName
+    member this.updater = 
+            fun (w:workspace) (newWorkspaceId:workspaceId) ->
             result {
                 let! ssComp = ssCfg
                             |> SortableSetCfg.makeSortableSet 
@@ -30,16 +57,23 @@ type causeCfgAddSortableSet
 
 type causeCfgAddSorterSet 
             (wsCompName:wsComponentName,
-            ssCfg:sorterSetCfg) 
+             wsCompNameRando:wsComponentName,
+             ssCfg:sorterSetCfg) 
     = 
     member this.name = wsCompName
+    member this.wsCompNameRando = wsCompNameRando
     member this.updater = 
             fun (w :workspace) (newWorkspaceId :workspaceId) ->
             result {
-                let! ssComp = ssCfg
-                            |> SorterSetCfg.makeSorterSet 
+                let! wsCompRando = 
+                        w |> Workspace.getComponent this.wsCompNameRando
+                          |> Result.bind(WorkspaceComponent.asRandomProvider)
+                let! wsCompSorterSet = 
+                      ssCfg |> SorterSetCfg.makeSorterSet wsCompRando
                             |> Result.map(workspaceComponent.SorterSet)
-                return w |> Workspace.addComponents newWorkspaceId [(wsCompName, ssComp)]
+                return w |> Workspace.addComponents 
+                                newWorkspaceId 
+                                [(wsCompName, wsCompSorterSet)]
             }
     member this.id =   
         [

@@ -5,8 +5,9 @@ type sorterSetCfg =
 
 module SorterSetCfg =
 
-    let makeSorterSet
+    let makeSorterSet            
+            (rngGenProvider: rngGenProvider)
             (sscfg: sorterSetCfg) 
         =
         match sscfg with
-        | Rnd rdsg -> rdsg |> SorterSetRndCfg.makeSorterSet
+        | Rnd rdsg -> rdsg |> SorterSetRndCfg.makeSorterSet rngGenProvider

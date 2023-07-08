@@ -1,5 +1,6 @@
 ﻿namespace global
 
+// 1.0 is neutral, higher numbers emphasize stageCount
 type stageWeight = private StageWeight of float
 module StageWeight =
     let value (StageWeight v) = v

@@ -25,7 +25,7 @@ type sorterSetPrunerWholeCfg
         member this.Id = (id |> SorterSetPrunerId.value)
         member this.WsComponentName = name
         member this.WorkspaceComponentType =
-                workspaceComponentType.SorterSetMutator
+                workspaceComponentType.SorterSetPruner
 
 
 module SorterSetPrunerWholeCfg =
@@ -64,7 +64,7 @@ type sorterSetPrunerShcCfg
         member this.Id = (id |> SorterSetPrunerId.value)
         member this.WsComponentName = name
         member this.WorkspaceComponentType =
-                workspaceComponentType.SorterSetMutator
+                workspaceComponentType.SorterSetPruner
 
 
 module SorterSetPrunerShcCfg =

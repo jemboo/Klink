@@ -83,7 +83,6 @@ module SorterSetSelfAppendCfg =
         new sorterSetRndCfg(
             wsCompName,
             cfg.order,
-            cfg.rngGen,
             cfg.switchGenMode,
             cfg.switchCount,
             cfg.sorterCountFactor)

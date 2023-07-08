@@ -98,15 +98,27 @@ module SorterSetPrunerWhole =
     let getSigmaSelection 
             (sorterEvalsWithFitness:(sorterEval*float)[])
             (sigmaRatio:float)
-
+            (rngGen:rngGen)
         =
             let deviation = 
                 sorterEvalsWithFitness 
                 |> Array.map(snd)
                 |> CollectionProps.stdDeviation
-            let noiseMaker = ()
-                
-            [||]
+
+            let average = 
+                sorterEvalsWithFitness 
+                |> Array.map(snd)
+                |> Array.average
+
+            let noiseLevel = deviation * sigmaRatio
+
+            let randy = rngGen |> Rando.fromRngGen
+            let noiseMaker = RandVars.gaussianDistribution 0.0 noiseLevel randy
+
+            sorterEvalsWithFitness 
+            |> Seq.zip noiseMaker 
+            |> Seq.map(fun (n, (srtrEval, f)) ->((srtrEval, f), n + f) )
+            |> Seq.sortByDescending(snd)
 
 
     let run (sorterSetPruner:sorterSetPrunerWhole)
@@ -119,7 +131,7 @@ module SorterSetPrunerWhole =
                 sorterEvalsToPrune 
                 |> Array.filter(SorterEval.getSorterSpeed >> Option.isSome)
                 |> Array.map(fun sEv -> 
-                     ( sEv, 
+                     ( sEv,
                        sEv |> SorterEval.getSorterSpeed |> Option.get |> SorterFitness.fromSpeed stageWgt
                      )
                    )
@@ -127,11 +139,12 @@ module SorterSetPrunerWhole =
             if (sorterEvalsWithFitness.Length = 0) then
                 [||]
             elif sorterSetPruner.noiseFraction |> Option.isSome then
-                getSigmaSelection sorterEvalsWithFitness (sorterSetPruner.noiseFraction |> Option.get)
+                getSigmaSelection sorterEvalsWithFitness (sorterSetPruner.noiseFraction |> Option.get) rngGen
                 |> CollectionOps.takeUpto (sorterSetPruner.prunedCount |> SorterCount.value)
                 |> Seq.toArray
             else
                 sorterEvalsWithFitness 
+                |> Array.map(fun (sev, ft) -> ((sev, 0.0), ft))
                 |> Array.sortByDescending(snd)
                 |> CollectionOps.takeUptoArray (sorterSetPruner.prunedCount |> SorterCount.value)
 

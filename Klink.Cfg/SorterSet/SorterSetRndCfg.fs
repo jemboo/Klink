@@ -4,27 +4,24 @@ type sorterSetRndCfg
             (
              name:wsComponentName,
              order: order,
-             rngGen: rngGen,
              switchGenMode: switchGenMode,
              switchCount: switchCount,
              sorterCount: sorterCount
             ) =
 
-    let sorterStId =         
+    let sorterSetRndCfgId =         
         [|
           "sorterSetRndCfg" :> obj;
            order :> obj;
-           rngGen :> obj;
            switchGenMode :> obj;
            switchCount :> obj;
            sorterCount :> obj;
         |] |> GuidUtils.guidFromObjs
            |> SorterSetId.create
 
-    member this.sorterSetId = sorterStId
+    member this.sorterSetId = sorterSetRndCfgId
     member this.name = name
     member this.order = order
-    member this.rngGen = rngGen
     member this.switchCount = switchCount
     member this.switchGenMode = switchGenMode
     member this.sorterCount = sorterCount
@@ -37,14 +34,19 @@ type sorterSetRndCfg
 
 module SorterSetRndCfg =
 
-    let getProperties (rdsg: sorterSetRndCfg) = 
+    let makeSorterSetId
+            (rdsg:sorterSetRndCfg)
+            (rngGen:rngGen)
+        =
         [|
-            ("order", rdsg.order :> obj);
-            ("rngGen", rdsg.rngGen :> obj);
-            ("switchGenMode", rdsg.switchGenMode :> obj);
-            ("switchCount", rdsg.switchCount :> obj);
-            ("sorterCount", rdsg.sorterCount :> obj);
-        |]
+          "sorterSetRndCfg" :> obj;
+           rdsg.order :> obj;
+           rngGen :> obj;
+           rdsg.switchGenMode :> obj;
+           rdsg.switchCount :> obj;
+           rdsg.sorterCount :> obj;
+        |] |> GuidUtils.guidFromObjs
+           |> SorterSetId.create
 
     let getConfigName 
             (rdsg:sorterSetRndCfg) 
@@ -54,11 +56,12 @@ module SorterSetRndCfg =
             (rdsg.switchGenMode |> string)
 
     let makeSorterSet
+            (rngGenProvider: rngGenProvider)
             (rdsg: sorterSetRndCfg) 
         =
-        let randy = rdsg.rngGen |> Rando.fromRngGen
-        let nextRng () =
-            randy |> Rando.nextRngGen
+        let rndGenF () = 
+            rngGenProvider |> RngGenProvider.nextRngGen
+
         result {
             let ssRet =
                 match rdsg.switchGenMode with
@@ -69,7 +72,7 @@ module SorterSetRndCfg =
                         rdsg.order
                         []
                         rdsg.switchCount
-                        nextRng
+                        rndGenF
 
                 | Stage -> 
                     SorterSet.createRandomStages2
@@ -78,7 +81,7 @@ module SorterSetRndCfg =
                         rdsg.order
                         []
                         rdsg.switchCount
-                        nextRng
+                        rndGenF
 
                 | StageSymmetric -> 
                     SorterSet.createRandomSymmetric
@@ -87,24 +90,6 @@ module SorterSetRndCfg =
                         rdsg.order
                         []
                         rdsg.switchCount
-                        nextRng
+                        rndGenF
             return ssRet
         }
-
-
-    //let getSorterSet
-    //        (lookup: string -> Result<sorterSet, string>)
-    //        (save: string -> sorterSet -> Result<bool, string>)
-    //        (rdsg: sorterSetRndCfg)
-    //    =
-    //    result {
-    //        let loadRes  = 
-    //            result {
-    //                let! mut = lookup (rdsg |> getFileName)
-    //                return mut
-    //            }
-
-    //        match loadRes with
-    //        | Ok mut -> return mut
-    //        | Error _ -> return! (makeSorterSet save rdsg)
-    //    }
