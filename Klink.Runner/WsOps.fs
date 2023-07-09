@@ -17,6 +17,9 @@ module WsOps =
 
                 let sorterCountMutated = SorterCount.create 64
                 let mutationRate = 0.1 |> MutationRate.create
+                //let noiseFraction = Some 0.5
+                let noiseFraction = None
+                let stageWeight = 1.0 |> StageWeight.create
 
                 let wnRando = "rando" |> WsComponentName.create
                 let wnSortableSet = "sortableSet" |> WsComponentName.create
@@ -24,6 +27,7 @@ module WsOps =
                 let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
                 let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
                 let wnParentMap = "parentMap" |> WsComponentName.create
+                let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
 
      
                 let ssCfg = sortableSetCertainCfg.All_Bits order
@@ -58,6 +62,14 @@ module WsOps =
                             wnRando,
                             wnParentMap)
 
+                let causeAddSorterSetPruneWhole = 
+                    new causeAddSorterSetPruneWhole(
+                            wnSorterSetPruner,
+                            wnRando,
+                            sorterCount,
+                            noiseFraction,
+                            stageWeight)
+
 
 
                 let emptyWsCfg = WorkspaceCfg.Empty
@@ -68,7 +80,8 @@ module WsOps =
                             causeAddSortableSet; 
                             causeAddSorterSet; 
                             causeAddSorterSetMutator;
-                            causeMutateSorterSet]
+                            causeMutateSorterSet;
+                            causeAddSorterSetPruneWhole]
 
                 let! workspace = 
                         Workspace.empty 

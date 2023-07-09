@@ -105,11 +105,6 @@ module SorterSetPrunerWhole =
                 |> Array.map(snd)
                 |> CollectionProps.stdDeviation
 
-            let average = 
-                sorterEvalsWithFitness 
-                |> Array.map(snd)
-                |> Array.average
-
             let noiseLevel = deviation * sigmaRatio
 
             let randy = rngGen |> Rando.fromRngGen

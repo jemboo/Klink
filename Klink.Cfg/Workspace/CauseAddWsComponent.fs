@@ -181,8 +181,6 @@ type causeAddSorterSetPruneWhole
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
             result {
-                let! rngGen = w |> Workspace.getComponent wsnRndGenName
-                                |> Result.map(WorkspaceComponent.asSorterSet)
                 let ssph = SorterSetPrunerWhole.make 
                                 this.prunedCount
                                 this.noiseFraction
