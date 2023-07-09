@@ -13,12 +13,12 @@ type WorkspaceFixture () =
         let wsCompName2 = "test2" |> WsComponentName.create
         let ssCfg = sortableSetCertainCfg.All_Bits order
                     |> sortableSetCfg.Certain
-        let causeCfg1 =  new causeCfgAddSortableSet(wsCompName1, ssCfg)
-        let causeCfg2 =  new causeCfgAddSortableSet(wsCompName2, ssCfg)
+        let cause1 =  new causeAddSortableSet(wsCompName1, ssCfg)
+        let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg)
 
         let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg causeCfg1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg causeCfg2
+        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg cause1
+        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
 
         let ws = Workspace.empty 
                     |> WorkspaceCfg.makeWorkspace secondWsCfg.history
@@ -52,17 +52,17 @@ type WorkspaceFixture () =
         let ssCfg4 = SortableSetCertainCfg.makeAllBitsReducedOneStage orderN
                     |> sortableSetCfg.Certain
 
-        let causeCfg1 =  new causeCfgAddSortableSet(wsCompName1, ssCfg1)
-        let causeCfg2 =  new causeCfgAddSortableSet(wsCompName2, ssCfg2)
-        let causeCfg3 =  new causeCfgAddSortableSet(wsCompName3, ssCfg3)
-        let causeCfg4 =  new causeCfgAddSortableSet(wsCompName4, ssCfg4)
+        let cause1 =  new causeAddSortableSet(wsCompName1, ssCfg1)
+        let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg2)
+        let cause3 =  new causeAddSortableSet(wsCompName3, ssCfg3)
+        let cause4 =  new causeAddSortableSet(wsCompName4, ssCfg4)
 
 
         let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg causeCfg1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg causeCfg2
-        let thirdWsCfg = secondWsCfg |> WorkspaceCfg.addCauseCfg causeCfg3
-        let fourthWsCfg = thirdWsCfg |> WorkspaceCfg.addCauseCfg causeCfg4
+        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg cause1
+        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
+        let thirdWsCfg = secondWsCfg |> WorkspaceCfg.addCauseCfg cause3
+        let fourthWsCfg = thirdWsCfg |> WorkspaceCfg.addCauseCfg cause4
 
 
         let firstWs = Workspace.empty 

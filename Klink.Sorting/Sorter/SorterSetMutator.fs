@@ -26,17 +26,6 @@ module SorterSetMutator =
           sorterCountFinal = sorterCountFinal
         }
 
-    let refreshRndGen
-            (id:sorterSetMutatorId)
-            (sorterMutator:sorterMutator) 
-            (sorterCountFinal:sorterCount option) 
-        =
-        { 
-          id = id
-          sorterMutator = sorterMutator
-          sorterCountFinal = sorterCountFinal
-        }
-
     let getId (sum: sorterSetMutator) = sum.id
 
     let getSorterMutator (sum: sorterSetMutator) = sum.sorterMutator

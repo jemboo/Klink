@@ -2,65 +2,76 @@
 
 open System
 
-type causeCfgAddRndGenProvider 
-            (wsCompName:wsComponentName,
-            rndPvCfg:randomProviderCfg) 
+type causeAddRndGenProvider 
+            (wsnRngGen:wsComponentName,
+             rngGen:rngGen) 
     = 
-    member this.name = wsCompName
+    member this.wsnRngGen = wsnRngGen
+    member this.rngGen = rngGen
     member this.updater = 
             fun (w:workspace) (newWorkspaceId:workspaceId) ->
             result {
-                let rngProviderId = rndPvCfg.id |> RngGenProviderId.create
+                let _id =         
+                    [|
+                       rngGen :> obj;
+                    |] 
+                    |> GuidUtils.guidFromObjs
+
+                let rngProviderId = _id |> RngGenProviderId.create
                 let ssComp = 
-                    (RngGenProvider.load rngProviderId rndPvCfg.rngGen)
+                    (RngGenProvider.load rngProviderId this.rngGen)
                             |> workspaceComponent.RandomProvider
-                return w |> Workspace.addComponents newWorkspaceId [(wsCompName, ssComp)]
+                return w |> Workspace.addComponents 
+                                newWorkspaceId 
+                                [(this.wsnRngGen, ssComp)]
             }
     member this.id =
         [
-            wsCompName :> obj
-            rndPvCfg :> obj
+            this.wsnRngGen :> obj
+            this.rngGen :> obj
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create
-    interface ICauseCfg with
+    interface ICause with
         member this.Id = this.id
         member this.Updater = this.updater
 
 
 
-type causeCfgAddSortableSet 
-            (wsCompName:wsComponentName,
+type causeAddSortableSet 
+            (wsnSortableSet:wsComponentName,
              ssCfg:sortableSetCfg) 
     = 
-    member this.name = wsCompName
+    member this.wsnSortableSet = wsnSortableSet
     member this.updater = 
             fun (w:workspace) (newWorkspaceId:workspaceId) ->
             result {
                 let! ssComp = ssCfg
                             |> SortableSetCfg.makeSortableSet 
                             |> Result.map(workspaceComponent.SortableSet)
-                return w |> Workspace.addComponents newWorkspaceId [(wsCompName, ssComp)]
+                return w |> Workspace.addComponents 
+                                newWorkspaceId 
+                                [(this.wsnSortableSet, ssComp)]
             }
     member this.id =
         [
-            wsCompName :> obj
+            this.wsnSortableSet :> obj
             ssCfg :> obj
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create
-    interface ICauseCfg with
+    interface ICause with
         member this.Id = this.id
         member this.Updater = this.updater
 
 
 
-type causeCfgAddSorterSet 
-            (wsCompName:wsComponentName,
+type causeAddSorterSet 
+            (wsnSorterSet:wsComponentName,
              wsCompNameRando:wsComponentName,
              ssCfg:sorterSetCfg) 
     = 
-    member this.name = wsCompName
+    member this.wsnSorterSet = wsnSorterSet
     member this.wsCompNameRando = wsCompNameRando
     member this.updater = 
             fun (w :workspace) (newWorkspaceId :workspaceId) ->
@@ -73,54 +84,97 @@ type causeCfgAddSorterSet
                             |> Result.map(workspaceComponent.SorterSet)
                 return w |> Workspace.addComponents 
                                 newWorkspaceId 
-                                [(wsCompName, wsCompSorterSet)]
+                                [(this.wsnSorterSet, wsCompSorterSet)]
             }
-    member this.id =   
+    member this.id =
         [
-            wsCompName :> obj
+            this.wsnSorterSet :> obj
             ssCfg :> obj
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create
-    interface ICauseCfg with
+    interface ICause with
         member this.Id = this.id
         member this.Updater = this.updater
 
 
 
-type causeCfgAddSorterSetMutator 
-            (wsCompName:wsComponentName,
-            ssmCfg:sorterSetMutatorCfg) 
+type causeAddSorterSetMutator 
+            (wsnSorterSetMutator:wsComponentName,
+             order:order,
+             switchGenMode:switchGenMode,
+             sorterCountMutated:sorterCount,
+             mutationRate:mutationRate) 
     = 
-    member this.name = wsCompName
+    member this.wsnSorterSetMutator = wsnSorterSetMutator
+    member this.order = order
+    member this.switchGenMode = switchGenMode
+    member this.sorterCountMutated = sorterCountMutated
+    member this.mutationRate = mutationRate
+
+    member this._id =
+                [|
+                  "sorterSetMutatorCfg" :> obj;
+                   order :> obj;
+                   switchGenMode :> obj;
+                   sorterCountMutated :> obj;
+                |] 
+                |> GuidUtils.guidFromObjs
+                |> SorterSetMutatorId.create
+
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
             result {
-                let ssComp = ssmCfg
-                            |> SorterSetMutatorCfg.getSorterSetMutator 
+
+              let _id =       
+                [|
+                  "sorterSetMutator" :> obj;
+                   order :> obj;
+                   switchGenMode :> obj;
+                   sorterCountMutated :> obj;
+                |] 
+                |> GuidUtils.guidFromObjs
+                |> SorterSetMutatorId.create
+
+
+              let sorterUniformMutator = 
+                    SorterUniformMutator.create
+                            None
+                            None
+                            switchGenMode
+                            mutationRate
+                    |> sorterMutator.Uniform
+
+              let ssComp =
+                        SorterSetMutator.load
+                            _id
+                            sorterUniformMutator
+                            (Some sorterCountMutated)
                             |> workspaceComponent.SorterSetMutator
-                return w |> Workspace.addComponents newWorkspaceId [(wsCompName, ssComp)]
+              return w |> Workspace.addComponents 
+                                newWorkspaceId 
+                                [(this.wsnSorterSetMutator, ssComp)]
             }
     member this.id =   
         [
-            wsCompName :> obj
-            ssmCfg :> obj
+            this.wsnSorterSetMutator :> obj
+            this._id |> SorterSetMutatorId.value :> obj
         ]
         |> GuidUtils.guidFromObjs
         |> CauseId.create
-    interface ICauseCfg with
+    interface ICause with
         member this.Id = this.id
         member this.Updater = this.updater
 
         
-type causeCfgAddSorterSetPruneWhole
-            (wsnName:wsComponentName,
+type causeAddSorterSetPruneWhole
+            (wsnSorterSetPrune:wsComponentName,
              wsnRndGenName:wsComponentName,
              prunedCount:sorterCount,
              noiseFraction:float option,
              stageWeight:stageWeight) 
     = 
-    member this.name = wsnName
+    member this.wsnSorterSetPrune = wsnSorterSetPrune
     member this.prunedCount = prunedCount
     member this.noiseFraction = noiseFraction
     member this.stageWeight = stageWeight
@@ -135,31 +189,33 @@ type causeCfgAddSorterSetPruneWhole
                                 this.stageWeight
                             |> sorterSetPruner.Whole
                             |> workspaceComponent.SorterSetPruner
-                return w |> Workspace.addComponents newWorkspaceId [(this.name, ssph)]
+                return w |> Workspace.addComponents 
+                                newWorkspaceId 
+                                [(this.wsnSorterSetPrune, ssph)]
             }
     member this.id =
         [
-            this.name |> WsComponentName.value :> obj
+            this.wsnSorterSetPrune |> WsComponentName.value :> obj
             this.prunedCount |> SorterCount.value :> obj
             this.noiseFraction :> obj
             this.stageWeight |> StageWeight.value :> obj
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create
-    interface ICauseCfg with
+    interface ICause with
         member this.Id = this.id
         member this.Updater = this.updater
 
 
         
-type causeCfgAddSorterSetPruneShc
-            (wsnName:wsComponentName,
+type causeAddSorterSetPruneShc
+            (wsnSorterSetShc:wsComponentName,
              prunedCount:sorterCount,
              noiseFraction:float option,
              stageWeight:stageWeight
              )
     = 
-    member this.name = wsnName
+    member this.wsnSorterSetShc = wsnSorterSetShc
     member this.prunedCount = prunedCount
     member this.noiseFraction = noiseFraction
     member this.stageWeight = stageWeight
@@ -172,19 +228,19 @@ type causeCfgAddSorterSetPruneShc
                                 this.stageWeight
                             |> sorterSetPruner.Shc
                             |> workspaceComponent.SorterSetPruner
-                return w |> Workspace.addComponents newWorkspaceId [(this.name, ssph)]
+                return w |> Workspace.addComponents 
+                                newWorkspaceId 
+                                [(this.wsnSorterSetShc, ssph)]
             }
     member this.id =
         [
-            this.name |> WsComponentName.value :> obj
+            this.wsnSorterSetShc |> WsComponentName.value :> obj
             this.prunedCount |> SorterCount.value :> obj
             this.noiseFraction :> obj
             this.stageWeight |> StageWeight.value :> obj
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create
-    interface ICauseCfg with
+    interface ICause with
         member this.Id = this.id
         member this.Updater = this.updater
-
-

@@ -37,11 +37,6 @@ type sorterSetMutatedFromRndCfg
     member this.rngGenMutate = rngGenMutate
     member this.sorterCount = sorterCount
     member this.mutationRate = mutationRate
-    interface IWorkspaceComponentCfg with
-        member this.Id = this.sorterSetId |> SorterSetId.value
-        member this.WsComponentName = name
-        member this.WorkspaceComponentType =
-                workspaceComponentType.SorterSet
 
 
 module SorterSetMutatedFromRndCfg =
@@ -68,15 +63,6 @@ module SorterSetMutatedFromRndCfg =
             cfg.sorterCountOriginal)
 
 
-    let getSorterSetMutatorCfg (cfg:sorterSetMutatedFromRndCfg)
-        =
-        new sorterSetMutatorCfg(
-            "sorterSetMutator" |> WsComponentName.create,
-            cfg.order,
-            cfg.switchGenMode,
-            cfg.sorterCount,
-            cfg.mutationRate)
-
 
     let getFileName
             (cfg: sorterSetMutatedFromRndCfg) 
@@ -96,20 +82,3 @@ module SorterSetMutatedFromRndCfg =
     let getSorterSetOriginalId (cfg: sorterSetMutatedFromRndCfg) 
         = 
         (cfg |> getSorterSetParentCfg).sorterSetId
-
-
-    let getSorterSetParentMapCfg (cfg:sorterSetMutatedFromRndCfg)
-        =
-        new sorterSetParentMapCfg
-            (
-                "sorterSetParentMap" |> WsComponentName.create,
-                (cfg |> getSorterSetOriginalId),
-                (cfg.sorterCountOriginal),
-                (cfg.sorterSetId),
-                (cfg.sorterCount)
-            )
-
-    let getSorterSetMutator (cfg:sorterSetMutatedFromRndCfg) 
-        =
-        cfg |> getSorterSetMutatorCfg 
-            |> SorterSetMutatorCfg.getSorterSetMutator 

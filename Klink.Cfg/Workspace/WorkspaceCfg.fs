@@ -3,8 +3,8 @@ open System
 
 type workspaceCfg =
     { id:workspaceId;
-      history:ICauseCfg list }
-and ICauseCfg =
+      history:ICause list }
+and ICause =
     abstract member Id:causeId
     abstract member Updater:(workspace->workspaceId->Result<workspace, string>)
 
@@ -13,11 +13,11 @@ module WorkspaceCfg =
 
     let makeWorkspaceId 
             (curId:workspaceId) 
-            (future:ICauseCfg list) 
+            (future:ICause list) 
         =
         let rec _makeWorkspaceId 
                 (curId:workspaceId) 
-                (future:ICauseCfg list) 
+                (future:ICause list) 
             =
             match future with
             | [] -> curId
@@ -34,7 +34,7 @@ module WorkspaceCfg =
         _makeWorkspaceId curId future
 
 
-    let makeWorkspaceCfg (history:ICauseCfg list) =
+    let makeWorkspaceCfg (history:ICause list) =
         { 
           id = makeWorkspaceId (Workspace.empty |> Workspace.getId) history;
           history = history
@@ -44,10 +44,10 @@ module WorkspaceCfg =
     let Empty = makeWorkspaceCfg []
 
 
-    let addCauseCfg (ccfg:ICauseCfg) (wscfg:workspaceCfg) =
+    let addCauseCfg (ccfg:ICause) (wscfg:workspaceCfg) =
         makeWorkspaceCfg ([ccfg] |> List.append wscfg.history)
 
-    let addCauseCfgs (ccfgs:ICauseCfg list) (wscfg:workspaceCfg) =
+    let addCauseCfgs (ccfgs:ICause list) (wscfg:workspaceCfg) =
         makeWorkspaceCfg (ccfgs |> List.append wscfg.history)
 
     let removeLastCauseCfg (wscfg:workspaceCfg) =
@@ -59,11 +59,11 @@ module WorkspaceCfg =
                    [wscfg.history.[wscfg.history.Length - 1]])
 
 
-    let makeWorkspace (causeHist:ICauseCfg list) (startingWs:workspace) 
+    let makeWorkspace (causeHist:ICause list) (startingWs:workspace) 
         =
         let rec _makeWorkspace 
                 (wksR:Result<workspace,string>) 
-                (history:ICauseCfg list)
+                (history:ICause list)
             =
             match history with 
             | [] -> wksR
@@ -82,7 +82,7 @@ module WorkspaceCfg =
         =
         let rec _lastWorkspaceCfg
                 (wksCfgCurrent:workspaceCfg) 
-                (future:ICauseCfg list)
+                (future:ICause list)
             =
             let chkLatest = fileStore.WorkSpaceExists(wksCfgCurrent.id)
             match chkLatest with

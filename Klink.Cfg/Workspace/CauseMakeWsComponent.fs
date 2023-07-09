@@ -3,7 +3,7 @@
 open System
 
 
-type causeCfgMutateSorterSet
+type causeMutateSorterSet
             (wsnSorterSetParent:wsComponentName,
              wsnSorterSetMutated:wsComponentName,
              wsnSorterSetMutator:wsComponentName,
@@ -59,7 +59,7 @@ type causeCfgMutateSorterSet
                 return w |> Workspace.addComponents newWorkspaceId 
                             [
                                 (this.sorterSetParentMapName, parentMap |> workspaceComponent.SorterSetParentMap);
-                                (this.sorterSetMutatorName, mutantSorterSet);
+                                (this.sorterSetMutatedName, mutantSorterSet);
                             ]
             }
     member this.id =   
@@ -71,13 +71,13 @@ type causeCfgMutateSorterSet
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create
-    interface ICauseCfg with
+    interface ICause with
         member this.Id = this.id
         member this.Updater = this.updater
 
 
 
-type causeCfgMakeSorterSetEval
+type causeMakeSorterSetEval
             (wsnSortableSet:wsComponentName,
              wsnSorterSet:wsComponentName,
              sorterEvalMode:sorterEvalMode,
@@ -114,7 +114,7 @@ type causeCfgMakeSorterSetEval
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create
-    interface ICauseCfg with
+    interface ICause with
         member this.Id = this.id
         member this.Updater = this.updater
 

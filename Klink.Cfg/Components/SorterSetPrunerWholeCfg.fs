@@ -21,11 +21,11 @@ type sorterSetPrunerWholeCfg
     member this.prunedCount = prunedCount
     member this.noiseFraction = noiseFraction
     member this.stageWeight = stageWeight
-    interface IWorkspaceComponentCfg with
-        member this.Id = (id |> SorterSetPrunerId.value)
-        member this.WsComponentName = name
-        member this.WorkspaceComponentType =
-                workspaceComponentType.SorterSetPruner
+    //interface IWorkspaceComponent with
+    //    member this.Id = (id |> SorterSetPrunerId.value)
+    //    member this.WsComponentName = name
+    //    member this.WorkspaceComponentType =
+    //            workspaceComponentType.SorterSetPruner
 
 
 module SorterSetPrunerWholeCfg =
@@ -60,11 +60,6 @@ type sorterSetPrunerShcCfg
     member this.prunedCount = prunedCount
     member this.noiseFraction = noiseFraction
     member this.stageWeight = stageWeight
-    interface IWorkspaceComponentCfg with
-        member this.Id = (id |> SorterSetPrunerId.value)
-        member this.WsComponentName = name
-        member this.WorkspaceComponentType =
-                workspaceComponentType.SorterSetPruner
 
 
 module SorterSetPrunerShcCfg =

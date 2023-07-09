@@ -13,32 +13,62 @@ module WsOps =
                 let rngGen = 123 |> RandomSeed.create |> RngGen.createLcg
                 let switchCount = SwitchCount.orderTo999SwitchCount order
                 let sorterCount = SorterCount.create 32
+                let switchGenMode = switchGenMode.Stage
+
+                let sorterCountMutated = SorterCount.create 64
+                let mutationRate = 0.1 |> MutationRate.create
+
                 let wnRando = "rando" |> WsComponentName.create
                 let wnSortableSet = "sortableSet" |> WsComponentName.create
-                let wnSorterSet = "sorterSet" |> WsComponentName.create
+                let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
+                let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
+                let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
+                let wnParentMap = "parentMap" |> WsComponentName.create
 
-                
-                let randPvCfg = new randomProviderCfg(wnRando, rngGen)
+     
                 let ssCfg = sortableSetCertainCfg.All_Bits order
                             |> sortableSetCfg.Certain
                 let srCfg = new sorterSetRndCfg(
-                                wnSorterSet,
+                                wnSorterSetParent,
                                 order,
-                                switchGenMode.Stage,
+                                switchGenMode,
                                 switchCount,
                                 sorterCount)
                             |> sorterSetCfg.Rnd
 
+               // let sorterSetMutatorCfg = new sorterSetMutatorCfg()
 
-                let causeCfgAddRando =  new causeCfgAddRndGenProvider(wnRando, randPvCfg)
-                let causeCfgAddSortableSet =  new causeCfgAddSortableSet(wnSortableSet, ssCfg)
-                let causeCfgAddSorterSet =  new causeCfgAddSorterSet(wnSorterSet, wnRando, srCfg)
+
+                let causeAddRando =  new causeAddRndGenProvider(wnRando, rngGen)
+                let causeAddSortableSet =  new causeAddSortableSet(wnSortableSet, ssCfg)
+                let causeAddSorterSet =  new causeAddSorterSet(wnSorterSetParent, wnRando, srCfg)
+                let causeAddSorterSetMutator = 
+                    new causeAddSorterSetMutator(
+                            wnSorterSetMutator, 
+                            order, 
+                            switchGenMode,
+                            sorterCountMutated, 
+                            mutationRate)
+
+                let causeMutateSorterSet = 
+                    new causeMutateSorterSet(
+                            wnSorterSetParent,
+                            wnSorterSetMutated,
+                            wnSorterSetMutator,
+                            wnRando,
+                            wnParentMap)
+
+
 
                 let emptyWsCfg = WorkspaceCfg.Empty
                 let fullWsCfg = 
                         emptyWsCfg 
                         |> WorkspaceCfg.addCauseCfgs 
-                            [causeCfgAddRando; causeCfgAddSortableSet; causeCfgAddSorterSet]
+                            [causeAddRando; 
+                            causeAddSortableSet; 
+                            causeAddSorterSet; 
+                            causeAddSorterSetMutator;
+                            causeMutateSorterSet]
 
                 let! workspace = 
                         Workspace.empty 

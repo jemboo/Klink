@@ -25,11 +25,6 @@ type sorterSetRndCfg
     member this.switchCount = switchCount
     member this.switchGenMode = switchGenMode
     member this.sorterCount = sorterCount
-    interface IWorkspaceComponentCfg with
-        member this.Id = this.sorterSetId |> SorterSetId.value
-        member this.WsComponentName = name
-        member this.WorkspaceComponentType =
-                workspaceComponentType.SorterSetMutator
 
 
 module SorterSetRndCfg =

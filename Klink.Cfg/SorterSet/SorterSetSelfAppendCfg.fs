@@ -31,11 +31,6 @@ type sorterSetSelfAppendCfg
     member this.switchCount = switchCount
     member this.sorterCountFactor = sorterCountFactor
     member this.sorterCount = sorterCount
-    interface IWorkspaceComponentCfg with
-        member this.Id = this.sorterSetId |> SorterSetId.value
-        member this.WsComponentName = name
-        member this.WorkspaceComponentType =
-                workspaceComponentType.SorterSet
 
 
 module SorterSetSelfAppendCfg =

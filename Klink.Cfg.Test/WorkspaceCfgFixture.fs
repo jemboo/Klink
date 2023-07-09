@@ -13,12 +13,12 @@ type WorkspaceCfgFixture () =
         let wsCompName2 = "test2" |> WsComponentName.create
         let ssCfg = sortableSetCertainCfg.All_Bits order
                     |> sortableSetCfg.Certain
-        let causeCfg1 =  new causeCfgAddSortableSet(wsCompName1, ssCfg)
-        let causeCfg2 =  new causeCfgAddSortableSet(wsCompName2, ssCfg)
+        let cause1 =  new causeAddSortableSet(wsCompName1, ssCfg)
+        let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg)
 
         let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg causeCfg1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg causeCfg2
+        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg cause1
+        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
         let reFirstWsCfg, future = secondWsCfg |> WorkspaceCfg.removeLastCauseCfg
         let emptied, futureNo = firstWsCfg |> WorkspaceCfg.removeLastCauseCfg
 
@@ -34,12 +34,12 @@ type WorkspaceCfgFixture () =
         let wsCompName2 = "test2" |> WsComponentName.create
         let ssCfg = sortableSetCertainCfg.All_Bits order
                     |> sortableSetCfg.Certain
-        let causeCfg1 =  new causeCfgAddSortableSet(wsCompName1, ssCfg)
-        let causeCfg2 =  new causeCfgAddSortableSet(wsCompName2, ssCfg)
+        let cause1 =  new causeAddSortableSet(wsCompName1, ssCfg)
+        let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg)
 
         let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg causeCfg1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg causeCfg2
+        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg cause1
+        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
 
         let ws = Workspace.empty 
                     |> WorkspaceCfg.makeWorkspace secondWsCfg.history

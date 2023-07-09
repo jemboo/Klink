@@ -34,13 +34,6 @@ type workspaceComponentType =
     | SorterSetEval = 30
     | SorterSetPruner = 40
 
-
-type IWorkspaceComponentCfg = 
-    abstract member Id:Guid
-    abstract member WsComponentName:wsComponentName
-    abstract member WorkspaceComponentType:workspaceComponentType
-
-
 type workspaceComponentDescr = 
         private 
             { compId:Guid; 

@@ -8,17 +8,14 @@
   <ItemGroup>
     <Compile Include="SortableSet\SortableSetCfgOld.fs" />
     <Compile Include="SortableSet\SortableSetCfg.fs" />
-    <Compile Include="Components\RandomProviderCfg.fs" />
     <Compile Include="Components\SorterSetPrunerWholeCfg.fs" />
-    <Compile Include="Components\SorterSetMutatorCfg.fs" />
-    <Compile Include="Components\SorterSetParentMapCfg.fs" />
     <Compile Include="SorterSet\SorterSetRndCfg.fs" />
     <Compile Include="SorterSet\SorterSetMutatedFromRndCfg.fs" />
     <Compile Include="SorterSet\SorterSetSelfAppendCfg.fs" />
     <Compile Include="SorterSet\SorterSetCfg.fs" />
     <Compile Include="Workspace\WorkspaceCfg.fs" />
-    <Compile Include="Workspace\AddCauseCfg.fs" />
-    <Compile Include="Workspace\MakeCauseCfg.fs" />
+    <Compile Include="Workspace\CauseAddWsComponent.fs" />
+    <Compile Include="Workspace\CauseMakeWsComponent.fs" />
     <Compile Include="WsFile.fs" />
     <Compile Include="WsCfgs.fs" />
     <Compile Include="Program.fs" />
@@ -30,6 +27,10 @@
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SorterSetEval\" />
   </ItemGroup>
 
 </Project>
