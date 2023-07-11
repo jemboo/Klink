@@ -60,7 +60,7 @@ module WsCfgs =
         | 20 -> sorterCountBase * 25   |> SorterCount.create
         | 22 -> sorterCountBase * 5    |> SorterCount.create
         | 24 -> sorterCountBase        |> SorterCount.create
-        | _ -> failwith "not handled"
+        | _ -> failwith "not handled (004)"
 
 
     let sorterCountBase2 = 5
@@ -73,7 +73,7 @@ module WsCfgs =
         | 20 -> sorterCountBase2 * 25   |> SorterCount.create
         | 22 -> sorterCountBase2 * 5    |> SorterCount.create
         | 24 -> sorterCountBase2        |> SorterCount.create
-        | _ -> failwith "not handled"
+        | _ -> failwith "not handled (005)"
 
     //let sorterCounts (order:order) = 
     //    match (order |> Order.value) with
@@ -83,7 +83,7 @@ module WsCfgs =
     //    | 20 -> sorterCountBase * 25   |> SorterCount.create
     //    | 22 -> sorterCountBase * 5    |> SorterCount.create
     //    | 24 -> sorterCountBase        |> SorterCount.create
-    //    | _ -> failwith "not handled"
+    //    | _ -> failwith "not handled (006)"
 
 
     let makeSorterSetRndCfg 

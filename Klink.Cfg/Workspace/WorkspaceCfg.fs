@@ -6,6 +6,7 @@ type workspaceCfg =
       history:ICause list }
 and ICause =
     abstract member Id:causeId
+    abstract member Name:string
     abstract member Updater:(workspace->workspaceId->Result<workspace, string>)
 
 
@@ -59,7 +60,10 @@ module WorkspaceCfg =
                    [wscfg.history.[wscfg.history.Length - 1]])
 
 
-    let makeWorkspace (causeHist:ICause list) (startingWs:workspace) 
+    let makeWorkspace 
+            (causeHist:ICause list) 
+            (logger: string->unit)
+            (startingWs:workspace)
         =
         let rec _makeWorkspace 
                 (wksR:Result<workspace,string>) 
@@ -73,12 +77,16 @@ module WorkspaceCfg =
                 | Ok wsCur ->
                 let nextId = makeWorkspaceId (wsCur |> Workspace.getId) [h]
                 let nextWs = h.Updater wsCur nextId
+                logger $"updating: {h.Name}"
                 _makeWorkspace nextWs t
 
         _makeWorkspace (startingWs |> Ok) causeHist
 
 
-    let getLastSavedWorspaceIdAndFuture (workspaceCfg:workspaceCfg) (fileStore:IWorkspaceStore)
+    let getLastSavedWorspaceIdAndFuture 
+                (fileStore:IWorkspaceStore)
+                (logger: string->unit)
+                (workspaceCfg:workspaceCfg) 
         =
         let rec _lastWorkspaceCfg
                 (wksCfgCurrent:workspaceCfg) 
@@ -89,9 +97,11 @@ module WorkspaceCfg =
             | Error m -> $"Error in getLastSavedWorspaceIdAndFuture (1) {m}" |> Error
             | Ok wasFound ->
                 if wasFound then
+                    logger $"found {wksCfgCurrent.id |> WorkspaceId.value }"
                     (wksCfgCurrent.id, future) |> Ok
                 elif wksCfgCurrent.history.Length = 0 then
-                    (Empty.id, []) |> Ok
+                    logger $"no prior workspace found"
+                    (Empty.id, future) |> Ok
                 else
                     let lastWksCfg, lastCause = removeLastCauseCfg wksCfgCurrent
                     _lastWorkspaceCfg lastWksCfg (lastCause@future)
@@ -99,14 +109,20 @@ module WorkspaceCfg =
         _lastWorkspaceCfg workspaceCfg []
 
 
-    let updateWorkspace (workspaceCfg:workspaceCfg) (fileStore:IWorkspaceStore)
+    let updateWorkspace 
+            (fileStore:IWorkspaceStore)
+            (logger: string->unit)
+            (workspaceCfg:workspaceCfg)
         =
         result {
-            let! latestSavedId, future = getLastSavedWorspaceIdAndFuture workspaceCfg fileStore
+            let! latestSavedId, future = 
+                    workspaceCfg |>
+                        getLastSavedWorspaceIdAndFuture fileStore logger
+
             let! restoredWs = 
                 if (latestSavedId = Empty.id) then
                     Workspace.empty |> Ok
                 else
                     fileStore.LoadWorkSpace(latestSavedId)
-            return! restoredWs |> makeWorkspace future
+            return! restoredWs |> makeWorkspace future logger
         }

@@ -21,7 +21,7 @@ type WorkspaceFixture () =
         let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
 
         let ws = Workspace.empty 
-                    |> WorkspaceCfg.makeWorkspace secondWsCfg.history
+                    |> WorkspaceCfg.makeWorkspace secondWsCfg.history (fun s->())
                     |> Result.ExtractOrThrow
 
         Assert.AreEqual(ws |> Workspace.getId, secondWsCfg.id);
@@ -66,7 +66,7 @@ type WorkspaceFixture () =
 
 
         let firstWs = Workspace.empty 
-                    |> WorkspaceCfg.makeWorkspace firstWsCfg.history
+                    |> WorkspaceCfg.makeWorkspace firstWsCfg.history (fun s->())
                     |> Result.ExtractOrThrow
 
         Assert.AreEqual(firstWs |> Workspace.getId, firstWsCfg.id);
@@ -76,7 +76,7 @@ type WorkspaceFixture () =
 
 
         let res = fileStore.saveWorkSpace firstWs |> Result.ExtractOrThrow
-        let fourthWs =  WorkspaceCfg.updateWorkspace fourthWsCfg fileStore
+        let fourthWs = fourthWsCfg |> WorkspaceCfg.updateWorkspace fileStore (fun s->())
                         |> Result.ExtractOrThrow
 
         let resR = fileStore.saveWorkSpace fourthWs

@@ -1,9 +1,54 @@
 ﻿namespace global
 open System
 
-type sorterSetPrunerGaData =
+type gaMetaDataId = private GaMetaDataId of Guid
+module GaMetaDataId =
+    let value (GaMetaDataId v) = v
+    let create vl = GaMetaDataId vl
+
+type _gaMetaData =
     | NoData
     | ParentMap of sorterSetParentMap
+
+type gaMetaData =
+    private 
+        { id: gaMetaDataId; 
+          data: _gaMetaData }
+
+module GaMetaData =
+
+    let getId (gaMetaData:gaMetaData) =
+        gaMetaData.id
+
+    let getData (gaMetaData:gaMetaData) =
+        gaMetaData.data
+
+    let makeNoData =
+        let id =
+            [|
+                "NoData" :> obj
+            |] 
+            |> GuidUtils.guidFromObjs
+            |> GaMetaDataId.create
+        {
+            id=id;
+            data = _gaMetaData.NoData
+        }
+
+    let makeParentMap 
+            (parentMap:sorterSetParentMap)
+        =
+        let id =
+            [|
+                "NoData" :> obj
+                parentMap :> obj
+            |] 
+            |> GuidUtils.guidFromObjs
+            |> GaMetaDataId.create
+        {
+            id=id;
+            data =  parentMap |> _gaMetaData.ParentMap
+        }
 
 
 type sorterSetPrunerId = private SorterSetPrunerId of Guid
@@ -12,7 +57,7 @@ module SorterSetPrunerId =
     let create vl = SorterSetPrunerId vl
 
 
-type sorterSetPrunerWhole = 
+type sorterSetPruner = 
     private {
             id: sorterSetPrunerId;
             prunedCount:sorterCount;
@@ -21,25 +66,25 @@ type sorterSetPrunerWhole =
         }
 
 
-module SorterSetPrunerWhole =
+module SorterSetPruner =
 
     let getId
-            (sorterSetPruner:sorterSetPrunerWhole) 
+            (sorterSetPruner:sorterSetPruner) 
          =
          sorterSetPruner.id
 
     let getPrunedCount
-             (sorterSetPruner:sorterSetPrunerWhole) 
+             (sorterSetPruner:sorterSetPruner) 
          =
          sorterSetPruner.prunedCount
 
     let getNoiseFraction
-             (sorterSetPruner:sorterSetPrunerWhole) 
+             (sorterSetPruner:sorterSetPruner) 
          =
          sorterSetPruner.noiseFraction
 
     let getStageWeight
-                (sorterSetPruner:sorterSetPrunerWhole) 
+                (sorterSetPruner:sorterSetPruner) 
          =
          sorterSetPruner.stageWeight
 
@@ -83,16 +128,37 @@ module SorterSetPrunerWhole =
             stageWeight = stageWeight; 
         }
 
+
     let makePrunedSorterSetId
-            (sorterSetPruner:sorterSetPrunerWhole)
-            (sorterSetToPrune:sorterSet)
-        =
+                (sorterSetPrunerId:sorterSetPrunerId) 
+                (sorterSetIdParent:sorterSetId) 
+                (sorterSetIdChild:sorterSetId) 
+                (rngGen:rngGen) 
+         =
         [|
-            sorterSetPruner |> getId :> obj
-            sorterSetToPrune |> SorterSet.getId :> obj;
+            sorterSetPrunerId |> SorterSetPrunerId.value :> obj
+            sorterSetIdParent |> SorterSetId.value :> obj;
+            sorterSetIdChild |> SorterSetId.value :> obj;
+            rngGen :> obj;
         |] 
         |> GuidUtils.guidFromObjs
         |> SorterSetId.create
+
+
+    let makePrunedSorterSetEvalId
+                (sorterSetPrunerId:sorterSetPrunerId) 
+                (sorterSetEvalIdParent:sorterSetEvalId) 
+                (sorterSetEvalIdChild:sorterSetEvalId) 
+                (rngGen:rngGen) 
+         =
+        [|
+            sorterSetPrunerId |> SorterSetPrunerId.value :> obj
+            sorterSetEvalIdParent |> SorterSetEvalId.value :> obj;
+            sorterSetEvalIdChild |> SorterSetEvalId.value :> obj;
+            rngGen :> obj;
+        |] 
+        |> GuidUtils.guidFromObjs
+        |> SorterSetEvalId.create
 
 
     let getSigmaSelection 
@@ -116,9 +182,9 @@ module SorterSetPrunerWhole =
             |> Seq.sortByDescending(snd)
 
 
-    let run (sorterSetPruner:sorterSetPrunerWhole)
+    let runWholePrune
+            (sorterSetPruner:sorterSetPruner)
             (rngGen:rngGen)
-            (meta:sorterSetPrunerGaData)
             (sorterEvalsToPrune:sorterEval[])
          =
             let stageWgt = getStageWeight sorterSetPruner
@@ -145,240 +211,256 @@ module SorterSetPrunerWhole =
 
 
 
-type sorterSetPrunerBatch = 
-        private {
-            id: sorterSetPrunerId;
-            prunedCount:sorterCount;
-            noiseFraction:float option;
-            stageWeight:stageWeight;
-        }
+//type sorterSetPrunerBatch = 
+//        private {
+//            id: sorterSetPrunerId;
+//            prunedCount:sorterCount;
+//            noiseFraction:float option;
+//            stageWeight:stageWeight;
+//        }
 
 
-module SorterSetPrunerBatch =
+//module SorterSetPrunerBatch =
 
-    let getId
-            (sorterSetPruner:sorterSetPrunerBatch) 
-         =
-         sorterSetPruner.id
-
-
-    let getPrunedCount
-             (sorterSetPruner:sorterSetPrunerWhole) 
-         =
-         sorterSetPruner.prunedCount
-
-    let getNoiseFraction
-             (sorterSetPruner:sorterSetPrunerBatch) 
-         =
-         sorterSetPruner.noiseFraction
+//    let getId
+//            (sorterSetPruner:sorterSetPrunerBatch) 
+//         =
+//         sorterSetPruner.id
 
 
-    let getStageWeight
-                (sorterSetPruner:sorterSetPrunerBatch) 
-         =
-         sorterSetPruner.stageWeight
+//    let getPrunedCount
+//             (sorterSetPruner:sorterSetPrunerWhole) 
+//         =
+//         sorterSetPruner.prunedCount
 
-    let load
-            (id:sorterSetPrunerId)
-            (prunedCount:sorterCount)
-            (noiseFraction:float option)
-            (stageWeight:stageWeight)
-         =
-        {   
-            id=id
-            prunedCount=prunedCount
-            noiseFraction=noiseFraction
-            stageWeight=stageWeight
-        }
-
-    let makeId
-            (prunedCount:sorterCount)
-            (stageWeight:stageWeight)
-            (noiseFraction:float option)
-        =
-        [|
-            "sorterSetPrunerShc" :> obj
-            stageWeight |> StageWeight.value :> obj; 
-            noiseFraction :> obj; 
-            prunedCount |> SorterCount.value :> obj
-        |] 
-        |> GuidUtils.guidFromObjs
-        |> SorterSetPrunerId.create
+//    let getNoiseFraction
+//             (sorterSetPruner:sorterSetPrunerBatch) 
+//         =
+//         sorterSetPruner.noiseFraction
 
 
-    let make (prunedCount:sorterCount)
-             (noiseFraction:float option)
-             (stageWeight:stageWeight)
-        =
-        {
-            id = makeId prunedCount stageWeight noiseFraction;
-            prunedCount = prunedCount;
-            noiseFraction=noiseFraction;
-            stageWeight =  stageWeight;
-        }
+//    let getStageWeight
+//                (sorterSetPruner:sorterSetPrunerBatch) 
+//         =
+//         sorterSetPruner.stageWeight
 
-    let makePrunedSorterSetId
-            (sorterSetPruner:sorterSetPrunerBatch)
-            (sorterSetToPrune:sorterSet)
-        =
-        [|
-            sorterSetPruner |> getId :> obj
-            sorterSetToPrune |> SorterSet.getId :> obj;
-        |] 
-        |> GuidUtils.guidFromObjs
-        |> SorterSetId.create
+//    let load
+//            (id:sorterSetPrunerId)
+//            (prunedCount:sorterCount)
+//            (noiseFraction:float option)
+//            (stageWeight:stageWeight)
+//         =
+//        {   
+//            id=id
+//            prunedCount=prunedCount
+//            noiseFraction=noiseFraction
+//            stageWeight=stageWeight
+//        }
 
-
-    let run (sorterSetPruner:sorterSetPrunerBatch) 
-            (rngGen:rngGen)
-            (meta:sorterSetPrunerGaData)
-            (sorterEvalsToPrune:sorterEval[])
-         =
-         [||]
-
-
-
-type sorterSetPrunerShc = 
-        private {
-            id: sorterSetPrunerId;
-            prunedCount:sorterCount;
-            noiseFraction:float option;
-            stageWeight:stageWeight;
-        }
+//    let makeId
+//            (prunedCount:sorterCount)
+//            (stageWeight:stageWeight)
+//            (noiseFraction:float option)
+//        =
+//        [|
+//            "sorterSetPrunerShc" :> obj
+//            stageWeight |> StageWeight.value :> obj; 
+//            noiseFraction :> obj; 
+//            prunedCount |> SorterCount.value :> obj
+//        |] 
+//        |> GuidUtils.guidFromObjs
+//        |> SorterSetPrunerId.create
 
 
-module SorterSetPrunerShc =
+//    let make (prunedCount:sorterCount)
+//             (noiseFraction:float option)
+//             (stageWeight:stageWeight)
+//        =
+//        {
+//            id = makeId prunedCount stageWeight noiseFraction;
+//            prunedCount = prunedCount;
+//            noiseFraction=noiseFraction;
+//            stageWeight =  stageWeight;
+//        }
 
-    let getId
-            (sorterSetPruner:sorterSetPrunerShc) 
-         =
-         sorterSetPruner.id
-
-
-    let getPrunedCount
-             (sorterSetPruner:sorterSetPrunerShc) 
-         =
-         sorterSetPruner.prunedCount
-
-    let getNoiseFraction
-             (sorterSetPruner:sorterSetPrunerShc) 
-         =
-         sorterSetPruner.noiseFraction
-
-
-    let getStageWeight
-                (sorterSetPruner:sorterSetPrunerShc) 
-         =
-         sorterSetPruner.stageWeight
-
-    let load
-            (id:sorterSetPrunerId)
-            (prunedCount:sorterCount)
-            (noiseFraction:float option)
-            (stageWeight:stageWeight)
-        =
-        {   
-            id=id
-            prunedCount=prunedCount
-            noiseFraction=noiseFraction
-            stageWeight=stageWeight
-        }
-
-    let makeId
-            (prunedCount:sorterCount)
-            (stageWeight:stageWeight)
-            (noiseFraction:float option)
-        =
-        [|
-            "sorterSetPrunerShc" :> obj
-            stageWeight |> StageWeight.value :> obj; 
-            noiseFraction :> obj;
-            prunedCount |> SorterCount.value :> obj
-        |] 
-        |> GuidUtils.guidFromObjs
-        |> SorterSetPrunerId.create
+//    let makePrunedSorterSetId
+//            (sorterSetPruner:sorterSetPrunerBatch)
+//            (sorterSetToPrune:sorterSet)
+//        =
+//        [|
+//            sorterSetPruner |> getId :> obj
+//            sorterSetToPrune |> SorterSet.getId :> obj;
+//        |] 
+//        |> GuidUtils.guidFromObjs
+//        |> SorterSetId.create
 
 
-    let make (prunedCount:sorterCount)
-             (noiseFraction:float option)
-             (stageWeight:stageWeight)
-        =
-        {
-            id = makeId prunedCount stageWeight noiseFraction;
-            prunedCount = prunedCount;
-            noiseFraction = noiseFraction;
-            stageWeight =  stageWeight;        
-        }
-
-    let makePrunedSorterSetId
-            (sorterSetPruner:sorterSetPrunerShc)
-            (sorterSetToPrune:sorterSet)
-        =
-        [|
-            sorterSetPruner |> getId :> obj
-            sorterSetToPrune |> SorterSet.getId :> obj;
-        |] 
-        |> GuidUtils.guidFromObjs
-        |> SorterSetId.create
-
-
-    let run (sorterSetPruner:sorterSetPrunerShc)              
-            (rngGen:rngGen)
-            (meta:sorterSetPrunerGaData)
-            (sorterEvalsToPrune:sorterEval[])
-         =
-         [||]
+//    let run (sorterSetPruner:sorterSetPrunerBatch) 
+//            (rngGen:rngGen)
+//            (meta:gaMetaData)
+//            (sorterEvalsToPrune:sorterEval[])
+//         =
+//         [||]
 
 
 
-type sorterSetPruner =
-    | Whole of sorterSetPrunerWhole
-    | Batch of sorterSetPrunerBatch
-    | Shc of sorterSetPrunerShc
+//type sorterSetPrunerShc = 
+//        private {
+//            id: sorterSetPrunerId;
+//            prunedCount:sorterCount;
+//            noiseFraction:float option;
+//            stageWeight:stageWeight;
+//        }
 
 
-module SorterSetPruner =
+//module SorterSetPrunerShc =
 
-    let getId
-            (sorterSetPruner:sorterSetPruner) 
-         =
-         match sorterSetPruner with
-         | Whole ssphW ->  ssphW.id
-         | Batch ssphW ->  ssphW.id
-         | Shc ssphW ->  ssphW.id
+//    let getId
+//            (sorterSetPruner:sorterSetPrunerShc) 
+//         =
+//         sorterSetPruner.id
 
 
-    let getPrunedCount
-            (sorterSetPruner:sorterSetPruner) 
-         =
-         match sorterSetPruner with
-         | Whole ssphW ->  ssphW.prunedCount
-         | Batch ssphW ->  ssphW.prunedCount
-         | Shc ssphW ->  ssphW.prunedCount
+//    let getPrunedCount
+//             (sorterSetPruner:sorterSetPrunerShc) 
+//         =
+//         sorterSetPruner.prunedCount
 
-    let getNoiseFraction
-            (sorterSetPruner:sorterSetPruner) 
-         =
-         match sorterSetPruner with
-         | Whole ssphW ->  ssphW.noiseFraction
-         | Batch ssphW ->  ssphW.noiseFraction
-         | Shc ssphW ->  ssphW.noiseFraction
+//    let getNoiseFraction
+//             (sorterSetPruner:sorterSetPrunerShc) 
+//         =
+//         sorterSetPruner.noiseFraction
 
-    let getStageWeight
-            (sorterSetPruner:sorterSetPruner) 
-         =
-         match sorterSetPruner with
-         | Whole ssphW ->  ssphW.stageWeight
-         | Batch ssphW ->  ssphW.stageWeight
-         | Shc ssphW ->  ssphW.stageWeight
 
-    let run
-            (sorterSetPruner:sorterSetPruner)              
-            (rngGen:rngGen)
-            (meta:sorterSetPrunerGaData)
-            (sorterEvalsToPrune:sorterEval[])
-         =
-         match sorterSetPruner with
-         | Whole ssphW ->  sorterEvalsToPrune |> SorterSetPrunerWhole.run ssphW rngGen meta
-         | Batch ssphS ->  sorterEvalsToPrune |> SorterSetPrunerBatch.run ssphS rngGen meta
-         | Shc ssphS ->  sorterEvalsToPrune |> SorterSetPrunerShc.run ssphS rngGen meta
+//    let getStageWeight
+//                (sorterSetPruner:sorterSetPrunerShc) 
+//         =
+//         sorterSetPruner.stageWeight
+
+//    let load
+//            (id:sorterSetPrunerId)
+//            (prunedCount:sorterCount)
+//            (noiseFraction:float option)
+//            (stageWeight:stageWeight)
+//        =
+//        {   
+//            id=id
+//            prunedCount=prunedCount
+//            noiseFraction=noiseFraction
+//            stageWeight=stageWeight
+//        }
+
+//    let makeId
+//            (prunedCount:sorterCount)
+//            (stageWeight:stageWeight)
+//            (noiseFraction:float option)
+//        =
+//        [|
+//            "sorterSetPrunerShc" :> obj
+//            stageWeight |> StageWeight.value :> obj; 
+//            noiseFraction :> obj;
+//            prunedCount |> SorterCount.value :> obj
+//        |] 
+//        |> GuidUtils.guidFromObjs
+//        |> SorterSetPrunerId.create
+
+
+//    let make (prunedCount:sorterCount)
+//             (noiseFraction:float option)
+//             (stageWeight:stageWeight)
+//        =
+//        {
+//            id = makeId prunedCount stageWeight noiseFraction;
+//            prunedCount = prunedCount;
+//            noiseFraction = noiseFraction;
+//            stageWeight =  stageWeight;        
+//        }
+
+//    let makePrunedSorterSetId
+//            (sorterSetPruner:sorterSetPrunerShc)
+//            (sorterSetToPrune:sorterSet)
+//        =
+//        [|
+//            sorterSetPruner |> getId :> obj
+//            sorterSetToPrune |> SorterSet.getId :> obj;
+//        |] 
+//        |> GuidUtils.guidFromObjs
+//        |> SorterSetId.create
+
+
+//    let run (sorterSetPruner:sorterSetPrunerShc)              
+//            (rngGen:rngGen)
+//            (meta:gaMetaData)
+//            (sorterEvalsToPrune:sorterEval[])
+//         =
+//         [||]
+
+
+
+//type sorterSetPruner =
+//    | Whole of sorterSetPrunerWhole
+//    | Batch of sorterSetPrunerBatch
+//    | Shc of sorterSetPrunerShc
+
+
+//module SorterSetPruner =
+
+//    let getId
+//            (sorterSetPruner:sorterSetPruner) 
+//         =
+//         match sorterSetPruner with
+//         | Whole ssphW ->  ssphW.id
+//         | Batch ssphW ->  ssphW.id
+//         | Shc ssphW ->  ssphW.id
+
+
+//    let makePrunedSorterSetId
+//                (sorterSetPrunerId:sorterSetPrunerId) 
+//                (sorterSetIdParent:sorterSetId) 
+//                (sorterSetIdChild:sorterSetId) 
+//                (rngGen:rngGen) 
+//         =
+//        [|
+//            sorterSetPrunerId |> SorterSetPrunerId.value :> obj
+//            sorterSetIdParent |> SorterSetId.value :> obj;
+//            sorterSetIdChild |> SorterSetId.value :> obj;
+//            rngGen :> obj;
+//        |] 
+//        |> GuidUtils.guidFromObjs
+//        |> SorterSetId.create
+
+
+//    let getPrunedCount
+//            (sorterSetPruner:sorterSetPruner) 
+//         =
+//         match sorterSetPruner with
+//         | Whole ssphW ->  ssphW.prunedCount
+//         | Batch ssphW ->  ssphW.prunedCount
+//         | Shc ssphW ->  ssphW.prunedCount
+
+//    let getNoiseFraction
+//            (sorterSetPruner:sorterSetPruner) 
+//         =
+//         match sorterSetPruner with
+//         | Whole ssphW ->  ssphW.noiseFraction
+//         | Batch ssphW ->  ssphW.noiseFraction
+//         | Shc ssphW ->  ssphW.noiseFraction
+
+//    let getStageWeight
+//            (sorterSetPruner:sorterSetPruner) 
+//         =
+//         match sorterSetPruner with
+//         | Whole ssphW ->  ssphW.stageWeight
+//         | Batch ssphW ->  ssphW.stageWeight
+//         | Shc ssphW ->  ssphW.stageWeight
+
+//    let run
+//            (sorterSetPruner:sorterSetPruner)              
+//            (rngGen:rngGen)
+//            (meta:gaMetaData)
+//            (sorterEvalsToPrune:sorterEval[])
+//         =
+//         match sorterSetPruner with
+//         | Whole ssphW ->  sorterEvalsToPrune |> SorterSetPrunerWhole.run ssphW rngGen meta
+//         | Batch ssphS ->  sorterEvalsToPrune |> SorterSetPrunerBatch.run ssphS rngGen meta
+//         | Shc ssphS ->  sorterEvalsToPrune |> SorterSetPrunerShc.run ssphS rngGen meta

@@ -34,6 +34,7 @@ type causeAddRndGenProvider
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.Name = wsnRngGen |> WsComponentName.value
         member this.Updater = this.updater
 
 
@@ -62,29 +63,36 @@ type causeAddSortableSet
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.Name = wsnSortableSet |> WsComponentName.value
         member this.Updater = this.updater
 
 
 
-type causeAddSorterSet 
+type causeAddSorterSetRnd
             (wsnSorterSet:wsComponentName,
              wsCompNameRando:wsComponentName,
-             ssCfg:sorterSetCfg) 
+             ssCfg:sorterSetRndCfg,
+             rngGen:rngGen) 
     = 
     member this.wsnSorterSet = wsnSorterSet
     member this.wsCompNameRando = wsCompNameRando
+    member this.rngGen = rngGen
     member this.updater = 
             fun (w :workspace) (newWorkspaceId :workspaceId) ->
             result {
-                let! wsCompRando = 
-                        w |> Workspace.getComponent this.wsCompNameRando
-                          |> Result.bind(WorkspaceComponent.asRandomProvider)
+
+                let rngGenProvider = 
+                        RngGenProvider.make this.rngGen
+                let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
                 let! wsCompSorterSet = 
-                      ssCfg |> SorterSetCfg.makeSorterSet wsCompRando
+                      ssCfg |> SorterSetRndCfg.makeSorterSet rngGenProvider
                             |> Result.map(workspaceComponent.SorterSet)
                 return w |> Workspace.addComponents 
-                                newWorkspaceId 
-                                [(this.wsnSorterSet, wsCompSorterSet)]
+                                newWorkspaceId
+                                [
+                                    (this.wsnSorterSet, wsCompSorterSet);
+                                    (this.wsCompNameRando, rngGenProvider |> workspaceComponent.RandomProvider);
+                                ]
             }
     member this.id =
         [
@@ -95,6 +103,7 @@ type causeAddSorterSet
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.Name = wsnSorterSet |> WsComponentName.value
         member this.Updater = this.updater
 
 
@@ -164,81 +173,84 @@ type causeAddSorterSetMutator
         |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.Name = wsnSorterSetMutator |> WsComponentName.value
         member this.Updater = this.updater
 
         
-type causeAddSorterSetPruneWhole
-            (wsnSorterSetPrune:wsComponentName,
-             wsnRndGenName:wsComponentName,
-             prunedCount:sorterCount,
-             noiseFraction:float option,
-             stageWeight:stageWeight) 
-    = 
-    member this.wsnSorterSetPrune = wsnSorterSetPrune
-    member this.prunedCount = prunedCount
-    member this.noiseFraction = noiseFraction
-    member this.stageWeight = stageWeight
-    member this.updater = 
-            fun (w: workspace) (newWorkspaceId: workspaceId) ->
-            result {
-                let ssph = SorterSetPrunerWhole.make 
-                                this.prunedCount
-                                this.noiseFraction
-                                this.stageWeight
-                            |> sorterSetPruner.Whole
-                            |> workspaceComponent.SorterSetPruner
-                return w |> Workspace.addComponents 
-                                newWorkspaceId 
-                                [(this.wsnSorterSetPrune, ssph)]
-            }
-    member this.id =
-        [
-            this.wsnSorterSetPrune |> WsComponentName.value :> obj
-            this.prunedCount |> SorterCount.value :> obj
-            this.noiseFraction :> obj
-            this.stageWeight |> StageWeight.value :> obj
-        ]
-             |> GuidUtils.guidFromObjs
-             |> CauseId.create
-    interface ICause with
-        member this.Id = this.id
-        member this.Updater = this.updater
+//type causeAddSorterSetPruneWhole
+//            (wsnSorterSetPrune:wsComponentName,
+//             wsnRndGenName:wsComponentName,
+//             prunedCount:sorterCount,
+//             noiseFraction:float option,
+//             stageWeight:stageWeight) 
+//    = 
+//    member this.wsnSorterSetPrune = wsnSorterSetPrune
+//    member this.prunedCount = prunedCount
+//    member this.noiseFraction = noiseFraction
+//    member this.stageWeight = stageWeight
+//    member this.updater = 
+//            fun (w: workspace) (newWorkspaceId: workspaceId) ->
+//            result {
+//                let ssph = SorterSetPrunerWhole.make 
+//                                this.prunedCount
+//                                this.noiseFraction
+//                                this.stageWeight
+//                            |> sorterSetPruner.Whole
+//                            |> workspaceComponent.SorterSetPruner
+//                return w |> Workspace.addComponents 
+//                                newWorkspaceId 
+//                                [(this.wsnSorterSetPrune, ssph)]
+//            }
+//    member this.id =
+//        [
+//            this.wsnSorterSetPrune |> WsComponentName.value :> obj
+//            this.prunedCount |> SorterCount.value :> obj
+//            this.noiseFraction :> obj
+//            this.stageWeight |> StageWeight.value :> obj
+//        ]
+//             |> GuidUtils.guidFromObjs
+//             |> CauseId.create
+//    interface ICause with
+//        member this.Id = this.id
+//        member this.Name = wsnSorterSetPrune |> WsComponentName.value
+//        member this.Updater = this.updater
 
 
         
-type causeAddSorterSetPruneShc
-            (wsnSorterSetShc:wsComponentName,
-             prunedCount:sorterCount,
-             noiseFraction:float option,
-             stageWeight:stageWeight
-             )
-    = 
-    member this.wsnSorterSetShc = wsnSorterSetShc
-    member this.prunedCount = prunedCount
-    member this.noiseFraction = noiseFraction
-    member this.stageWeight = stageWeight
-    member this.updater = 
-            fun (w: workspace) (newWorkspaceId: workspaceId) ->
-            result {
-                let ssph = SorterSetPrunerShc.make 
-                                this.prunedCount
-                                this.noiseFraction
-                                this.stageWeight
-                            |> sorterSetPruner.Shc
-                            |> workspaceComponent.SorterSetPruner
-                return w |> Workspace.addComponents 
-                                newWorkspaceId 
-                                [(this.wsnSorterSetShc, ssph)]
-            }
-    member this.id =
-        [
-            this.wsnSorterSetShc |> WsComponentName.value :> obj
-            this.prunedCount |> SorterCount.value :> obj
-            this.noiseFraction :> obj
-            this.stageWeight |> StageWeight.value :> obj
-        ]
-             |> GuidUtils.guidFromObjs
-             |> CauseId.create
-    interface ICause with
-        member this.Id = this.id
-        member this.Updater = this.updater
+//type causeAddSorterSetPruneShc
+//            (wsnSorterSetShc:wsComponentName,
+//             prunedCount:sorterCount,
+//             noiseFraction:float option,
+//             stageWeight:stageWeight
+//             )
+//    = 
+//    member this.wsnSorterSetShc = wsnSorterSetShc
+//    member this.prunedCount = prunedCount
+//    member this.noiseFraction = noiseFraction
+//    member this.stageWeight = stageWeight
+//    member this.updater = 
+//            fun (w: workspace) (newWorkspaceId: workspaceId) ->
+//            result {
+//                let ssph = SorterSetPrunerShc.make 
+//                                this.prunedCount
+//                                this.noiseFraction
+//                                this.stageWeight
+//                            |> sorterSetPruner.Shc
+//                            |> workspaceComponent.SorterSetPruner
+//                return w |> Workspace.addComponents 
+//                                newWorkspaceId 
+//                                [(this.wsnSorterSetShc, ssph)]
+//            }
+//    member this.id =
+//        [
+//            this.wsnSorterSetShc |> WsComponentName.value :> obj
+//            this.prunedCount |> SorterCount.value :> obj
+//            this.noiseFraction :> obj
+//            this.stageWeight |> StageWeight.value :> obj
+//        ]
+//             |> GuidUtils.guidFromObjs
+//             |> CauseId.create
+//    interface ICause with
+//        member this.Id = this.id
+//        member this.Name = wsnSorterSetShc |> WsComponentName.value
+//        member this.Updater = this.updater

@@ -42,7 +42,7 @@ type WorkspaceCfgFixture () =
         let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
 
         let ws = Workspace.empty 
-                    |> WorkspaceCfg.makeWorkspace secondWsCfg.history
+                    |> WorkspaceCfg.makeWorkspace secondWsCfg.history (fun s-> ())
                     |> Result.ExtractOrThrow
 
         Assert.AreEqual(ws |> Workspace.getId, secondWsCfg.id);

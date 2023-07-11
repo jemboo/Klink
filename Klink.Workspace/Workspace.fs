@@ -11,6 +11,7 @@ type workspaceComponent =
     | SorterSetConcatMap of sorterSetConcatMap
     | SorterSetEval of sorterSetEval
     | SorterSetPruner of sorterSetPruner
+    | GaMetaData of gaMetaData
 
 
 module WorkspaceComponent = 
@@ -39,7 +40,10 @@ module WorkspaceComponent =
             (sorterSetEval |> SorterSetEvalDto.toJson, 
              workspaceComponentType.SorterSetEval)
         | SorterSetPruner sorterSetPruner ->
-            (sorterSetPruner |> SorterSetPrunerDto.toJson, 
+            (sorterSetPruner |> SorterSetPrunerWholeDto.toJson, 
+             workspaceComponentType.SorterSetPruner)
+        | GaMetaData gaMetaData ->
+            (gaMetaData |> GaMetaDataDto.toJson, 
              workspaceComponentType.SorterSetPruner)
 
 
@@ -60,7 +64,9 @@ module WorkspaceComponent =
         | (c, workspaceComponentType.SorterSetEval) ->
             c |> SorterSetEvalDto.fromJson |> Result.map(workspaceComponent.SorterSetEval)
         | (c, workspaceComponentType.SorterSetPruner) ->
-            c |> SorterSetPrunerDto.fromJson |> Result.map(workspaceComponent.SorterSetPruner)
+            c |> SorterSetPrunerWholeDto.fromJson |> Result.map(workspaceComponent.SorterSetPruner)
+        | (c, workspaceComponentType.GaMetaData) ->
+            c |> GaMetaDataDto.fromJson |> Result.map(workspaceComponent.GaMetaData)
         | _ -> "unhandled workspaceComponentType" |> Error
 
 
@@ -90,7 +96,9 @@ module WorkspaceComponent =
         | SorterSetPruner sorterSetPruner ->
             sorterSetPruner 
                 |> SorterSetPruner.getId |> SorterSetPrunerId.value
-
+        | GaMetaData gaMetaData ->
+            gaMetaData 
+                |> GaMetaData.getId |> GaMetaDataId.value
 
 
     let getWorkspaceComponentType (comp:workspaceComponent) =
@@ -178,6 +186,12 @@ module WorkspaceComponent =
              $"Workspace component type is {nameof comp}, not SorterSetPruner" |> Error
 
 
+    let asGaMetaData (comp:workspaceComponent) =
+        match comp with
+        | GaMetaData gaMetaData -> 
+             gaMetaData |> Ok
+        | _  -> 
+             $"Workspace component type is {nameof comp}, not GaMetaData" |> Error
 
 
 type workspace = private {
@@ -199,22 +213,6 @@ module Workspace =
             items = Map.empty
         }
 
-    //let addComponents
-    //        (newWorkspaceId:workspaceId) 
-    //        (compName:wsComponentName)
-    //        (comp:workspaceComponent)
-    //        (workspace:workspace)
-    //    =
-    //    if (workspace.items.ContainsKey(compName)) then
-    //        $"{compName |> WsComponentName.value} already present" 
-    //        |> Error
-    //    else
-    //    {
-    //        id = newWorkspaceId
-    //        items = workspace.items.Add (compName, comp)
-    //    } |> Ok
-
-
     let addComponents
             (newWorkspaceId:workspaceId) 
             (tupes:seq<wsComponentName*workspaceComponent>)
@@ -233,7 +231,7 @@ module Workspace =
             (workspace:workspace)
         =
         if (workspace.items.ContainsKey(compName) |> not) then
-            $"{compName |> WsComponentName.value} not present" 
+            $"{compName |> WsComponentName.value} not present (10)" 
             |> Error
         else
            workspace.items.[compName] |> Ok
@@ -245,7 +243,7 @@ module Workspace =
             (workspace:workspace)
         =
         if (workspace.items.ContainsKey(compName)) then
-            $"{compName |> WsComponentName.value} not present" 
+            $"{compName |> WsComponentName.value} not present (11)" 
             |> Error
         else
         {

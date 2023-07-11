@@ -183,6 +183,16 @@ module RngGenProvider =
             randy = rngGen |> Rando.fromRngGen
         }
 
+    let makeId (rngGen:rngGen) = 
+        [|
+            rngGen :> obj
+        |] 
+        |> GuidUtils.guidFromObjs
+        |> RngGenProviderId.create
+
+    let make (rngGen:rngGen) = 
+        load (makeId rngGen) rngGen
+
     let getId (rngGenProvider:rngGenProvider) 
         =  rngGenProvider.id
 

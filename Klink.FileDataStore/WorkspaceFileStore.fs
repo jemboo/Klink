@@ -47,6 +47,10 @@ type WorkspaceFileStore (wsRootDir:string) =
             let fileName = compId |> string
             return!
                 match wsCompType with
+                | workspaceComponentType.RandomProvider ->
+                    this.readAllText wsCompType fileName
+                    |> Result.bind(RngGenProviderDto.fromJson)
+                    |> Result.map(workspaceComponent.RandomProvider)
                 | workspaceComponentType.SortableSet ->
                     this.readAllText wsCompType fileName
                     |> Result.bind(SortableSetDto.fromJson)
@@ -71,8 +75,12 @@ type WorkspaceFileStore (wsRootDir:string) =
                     this.readAllText wsCompType fileName
                     |> Result.bind(SorterSetEvalDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSetEval)
+                | workspaceComponentType.SorterSetPruner ->
+                    this.readAllText wsCompType fileName
+                    |> Result.bind(SorterSetPrunerWholeDto.fromJson)
+                    |> Result.map(workspaceComponent.SorterSetPruner)
                 | _ 
-                    -> $"{wsCompType} not handled" |> Error
+                    -> $"{wsCompType} not handled (001)" |> Error
         }
 
     member this.workSpaceExists (id:workspaceId) =

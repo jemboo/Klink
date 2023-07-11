@@ -10,16 +10,18 @@ type sorterSetPrunerWholeDto = {
         stageWeight:float;
         }
 
+
 module SorterSetPrunerWholeDto =
 
     let fromDto (dto:sorterSetPrunerWholeDto) =
         result {
-            return SorterSetPrunerWhole.load
+            return SorterSetPruner.load
                         (dto.id |> SorterSetPrunerId.create )
                         (dto.prunedCount |> SorterCount.create)
                         (dto.noiseFraction)
                         (dto.stageWeight |> StageWeight.create)
         }
+
 
     let fromJson (jstr: string) =
         result {
@@ -27,109 +29,163 @@ module SorterSetPrunerWholeDto =
             return! fromDto dto
         }
 
-    let toDto (sorterSetPrunerWhole: sorterSetPrunerWhole) =
+
+    let toDto (sorterSetPrunerWhole: sorterSetPruner) =
         {
             id = sorterSetPrunerWhole 
-                 |> SorterSetPrunerWhole.getId 
+                 |> SorterSetPruner.getId
                  |> SorterSetPrunerId.value
             prunedCount = sorterSetPrunerWhole
-                |> SorterSetPrunerWhole.getPrunedCount
+                |> SorterSetPruner.getPrunedCount
                 |> SorterCount.value
             noiseFraction = sorterSetPrunerWhole
-                |> SorterSetPrunerWhole.getNoiseFraction
+                |> SorterSetPruner.getNoiseFraction
             stageWeight = sorterSetPrunerWhole
-                 |> SorterSetPrunerWhole.getStageWeight
+                 |> SorterSetPruner.getStageWeight
                  |> StageWeight.value
         }
 
-    let toJson (sorterSetPrunerWhole: sorterSetPrunerWhole) =
+
+    let toJson (sorterSetPrunerWhole: sorterSetPruner) 
+        =
         sorterSetPrunerWhole |> toDto |> Json.serialize
 
 
 
-type sorterSetPrunerShcDto = { 
+//type sorterSetPrunerShcDto = { 
+//        id: Guid
+//        prunedCount: int;
+//        noiseFraction: float option; 
+//        stageWeight:float;
+//        }
+
+
+//module SorterSetPrunerShcDto =
+
+//    let fromDto (dto:sorterSetPrunerShcDto) =
+//        result {
+//            return SorterSetPrunerShc.load
+//                        (dto.id |> SorterSetPrunerId.create )
+//                        (dto.prunedCount |> SorterCount.create)
+//                        (dto.noiseFraction)
+//                        (dto.stageWeight |> StageWeight.create)
+//        }
+
+//    let fromJson (jstr: string) =
+//        result {
+//            let! dto = Json.deserialize<sorterSetPrunerShcDto> jstr
+//            return! fromDto dto
+//        }
+
+//    let toDto (sorterSetPrunerShc: sorterSetPrunerShc) =
+//        {
+//            id = sorterSetPrunerShc 
+//                 |> SorterSetPrunerShc.getId 
+//                 |> SorterSetPrunerId.value
+//            prunedCount = sorterSetPrunerShc
+//                |> SorterSetPrunerShc.getPrunedCount
+//                |> SorterCount.value
+//            noiseFraction = sorterSetPrunerShc
+//                |> SorterSetPrunerShc.getNoiseFraction
+//            stageWeight = sorterSetPrunerShc
+//                 |> SorterSetPrunerShc.getStageWeight
+//                 |> StageWeight.value
+
+//        }
+
+//    let toJson (sorterSetPrunerShc: sorterSetPrunerShc) =
+//        sorterSetPrunerShc |> toDto |> Json.serialize
+
+
+
+//type sorterSetPrunerDto = { 
+//        duType: string
+//        cereal: string; }
+
+//module SorterSetPrunerDto =
+
+//    let fromDto (dto:sorterSetPrunerDto) =
+//        result {
+//            match dto.duType with
+//            | "Whole" ->
+//                return! dto.cereal 
+//                        |> SorterSetPrunerWholeDto.fromJson
+//                        |> Result.map(sorterSetPruner.Whole)
+                                
+//            | _ -> 
+//                return! "not handled (009)" |> Error
+//        }
+
+//    let fromJson (jstr: string) =
+//        result {
+//            let! dto = Json.deserialize<sorterSetPrunerDto> jstr
+//            return! fromDto dto
+//        }
+
+//    let toDto (sorterSetPruner: sorterSetPruner) =
+//        match sorterSetPruner with
+//        | Whole w ->
+//            {
+//                duType = "Whole"
+//                cereal = w |> SorterSetPrunerWholeDto.toJson
+//            }
+//        | Shc w ->
+//            {
+//                duType = "Lhc"
+//                cereal = w |> SorterSetPrunerShcDto.toJson
+//            }
+//        | Batch b -> failwith "not implemented"
+
+//    let toJson (sorterSetPruner: sorterSetPruner) =
+//        sorterSetPruner |> toDto |> Json.serialize
+
+
+
+type gaMetaDataDto = { 
         id: Guid
-        prunedCount: int;
-        noiseFraction: float option; 
-        stageWeight:float;
-        }
-
-
-module SorterSetPrunerShcDto =
-
-    let fromDto (dto:sorterSetPrunerShcDto) =
-        result {
-            return SorterSetPrunerShc.load
-                        (dto.id |> SorterSetPrunerId.create )
-                        (dto.prunedCount |> SorterCount.create)
-                        (dto.noiseFraction)
-                        (dto.stageWeight |> StageWeight.create)
-        }
-
-    let fromJson (jstr: string) =
-        result {
-            let! dto = Json.deserialize<sorterSetPrunerShcDto> jstr
-            return! fromDto dto
-        }
-
-    let toDto (sorterSetPrunerShc: sorterSetPrunerShc) =
-        {
-            id = sorterSetPrunerShc 
-                 |> SorterSetPrunerShc.getId 
-                 |> SorterSetPrunerId.value
-            prunedCount = sorterSetPrunerShc
-                |> SorterSetPrunerShc.getPrunedCount
-                |> SorterCount.value
-            noiseFraction = sorterSetPrunerShc
-                |> SorterSetPrunerShc.getNoiseFraction
-            stageWeight = sorterSetPrunerShc
-                 |> SorterSetPrunerShc.getStageWeight
-                 |> StageWeight.value
-
-        }
-
-    let toJson (sorterSetPrunerShc: sorterSetPrunerShc) =
-        sorterSetPrunerShc |> toDto |> Json.serialize
-
-
-
-type sorterSetPrunerDto = { 
         duType: string
         cereal: string; }
 
-module SorterSetPrunerDto =
+module GaMetaDataDto =
 
-    let fromDto (dto:sorterSetPrunerDto) =
+    let fromDto (dto:gaMetaDataDto) =
         result {
             match dto.duType with
-            | "Whole" ->
-                return! dto.cereal 
-                        |> SorterSetPrunerWholeDto.fromJson
-                        |> Result.map(sorterSetPruner.Whole)
+            | "NoData" ->
+                return GaMetaData.makeNoData
+
+            | "ParentMap" ->
+                let! parentMap = dto.cereal |> SorterSetParentMapDto.fromJson
+                let parentMap =
+                    GaMetaData.makeParentMap
+                            parentMap
+                return parentMap
                                 
             | _ -> 
-                return! "not handled" |> Error
+                return! "not handled (009)" |> Error
         }
 
     let fromJson (jstr: string) =
         result {
-            let! dto = Json.deserialize<sorterSetPrunerDto> jstr
+            let! dto = Json.deserialize<gaMetaDataDto> jstr
             return! fromDto dto
         }
 
-    let toDto (sorterSetPruner: sorterSetPruner) =
-        match sorterSetPruner with
-        | Whole w ->
+    let toDto (gaMetaData: gaMetaData) =
+        let intData = gaMetaData |> GaMetaData.getData
+        match intData with
+        | NoData  ->
             {
-                duType = "Whole"
-                cereal = w |> SorterSetPrunerWholeDto.toJson
+                id = (gaMetaData |> GaMetaData.getId |> GaMetaDataId.value) 
+                duType = "NoData"
+                cereal = String.Empty
             }
-        | Shc w ->
+        | ParentMap pm ->
             {
-                duType = "Lhc"
-                cereal = w |> SorterSetPrunerShcDto.toJson
+                id = (gaMetaData |> GaMetaData.getId |> GaMetaDataId.value) 
+                duType = "ParentMap"
+                cereal = pm |> SorterSetParentMapDto.toJson
             }
-        | Batch b -> failwith "not implemented"
 
-    let toJson (sorterSetPruner: sorterSetPruner) =
+    let toJson (sorterSetPruner: gaMetaData) =
         sorterSetPruner |> toDto |> Json.serialize
