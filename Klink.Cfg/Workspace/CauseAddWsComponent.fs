@@ -70,12 +70,12 @@ type causeAddSortableSet
 
 type causeAddSorterSetRnd
             (wsnSorterSet:wsComponentName,
-             wsCompNameRando:wsComponentName,
+             wnRandoCreate:wsComponentName,
              ssCfg:sorterSetRndCfg,
              rngGen:rngGen) 
     = 
     member this.wsnSorterSet = wsnSorterSet
-    member this.wsCompNameRando = wsCompNameRando
+    member this.wnRandoCreate = wnRandoCreate
     member this.rngGen = rngGen
     member this.updater = 
             fun (w :workspace) (newWorkspaceId :workspaceId) ->
@@ -91,7 +91,7 @@ type causeAddSorterSetRnd
                                 newWorkspaceId
                                 [
                                     (this.wsnSorterSet, wsCompSorterSet);
-                                    (this.wsCompNameRando, rngGenProvider |> workspaceComponent.RandomProvider);
+                                    (this.wnRandoCreate, rngGenProvider |> workspaceComponent.RandomProvider);
                                 ]
             }
     member this.id =

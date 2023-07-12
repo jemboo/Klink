@@ -240,7 +240,6 @@ type causePruneSorterSetsWhole
 
 
                 return
-
                     w |> Workspace.addComponents
                             newWorkspaceId 
                             [
@@ -254,7 +253,7 @@ type causePruneSorterSetsWhole
 
     member this.id =
         [
-            "causeMakeSorterSetEval" :> obj
+            "causePruneSorterSetsWhole" :> obj
             this.sorterSetParentName |> WsComponentName.value  :> obj
             this.sorterSetChildName |> WsComponentName.value  :> obj
             this.sorterSetEvalParentName |> WsComponentName.value  :> obj
@@ -269,5 +268,58 @@ type causePruneSorterSetsWhole
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
-        member this.Name = $"causePruneSorterSets"
+        member this.Name = $"causePruneSorterSetsWhole"
+        member this.Updater = this.updater
+
+
+
+
+type causePruneSorterSetsNextGen
+            (
+             wnSorterSetParent:wsComponentName,
+             wnSorterSetPruned:wsComponentName,
+             wnSorterSetEvalParent:wsComponentName,
+             wnSorterSetEvalPruned:wsComponentName) 
+    = 
+    member this.wnSorterSetParent = wnSorterSetParent
+    member this.wnSorterSetPruned = wnSorterSetPruned
+    member this.wnSorterSetEvalParent = wnSorterSetEvalParent
+    member this.wnSorterSetEvalPruned = wnSorterSetEvalPruned
+
+    member this.updater =
+
+        fun (w: workspace) (newWorkspaceId: workspaceId) ->
+
+            result {
+
+                let! sorterSetNewParent = 
+                        w |> Workspace.getComponent this.wnSorterSetPruned
+                          |> Result.bind(WorkspaceComponent.asSorterSet)
+
+                let! sorterSetEvalParentNew = 
+                        w |> Workspace.getComponent this.wnSorterSetEvalPruned
+                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
+
+                return Workspace.load 
+                            newWorkspaceId
+                            [
+                                (this.wnSorterSetParent , sorterSetNewParent |> workspaceComponent.SorterSet)
+                                (this.wnSorterSetEvalParent, sorterSetEvalParentNew |> workspaceComponent.SorterSetEval)
+                            ]
+            }
+
+    member this.id =
+        [
+            "causePruneSorterSetsNextGen" :> obj
+            this.wnSorterSetParent |> WsComponentName.value  :> obj
+            this.wnSorterSetPruned |> WsComponentName.value  :> obj
+            this.wnSorterSetEvalParent |> WsComponentName.value  :> obj
+            this.wnSorterSetEvalPruned |> WsComponentName.value  :> obj
+        ]
+             |> GuidUtils.guidFromObjs
+             |> CauseId.create
+
+    interface ICause with
+        member this.Id = this.id
+        member this.Name = $"causePruneSorterSetsNextGen"
         member this.Updater = this.updater

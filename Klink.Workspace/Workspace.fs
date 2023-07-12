@@ -126,7 +126,7 @@ module WorkspaceComponent =
         | RandomProvider rngGenProvider -> 
              rngGenProvider |> Ok
         | _  -> 
-             $"Workspace component type is {nameof comp}, not rngGenProvider" |> Error
+             $"Workspace component type is {comp}, not rngGenProvider" |> Error
 
 
 
@@ -135,7 +135,7 @@ module WorkspaceComponent =
         | SortableSet sortableSet -> 
              sortableSet |> Ok
         | _  -> 
-             $"Workspace component type is {nameof comp}, not SortableSet" |> Error
+             $"Workspace component type is {comp}, not SortableSet" |> Error
 
 
     let asSorterSet (comp:workspaceComponent) =
@@ -143,15 +143,15 @@ module WorkspaceComponent =
         | SorterSet sorterSet -> 
              sorterSet |> Ok
         | _  -> 
-             $"Workspace component type is {nameof comp}, not SorterSet" |> Error
+             $"Workspace component type is {comp}, not SorterSet" |> Error
 
 
     let asSorterSetMutator (comp:workspaceComponent) =
         match comp with
         | SorterSetMutator sorterSetMutator -> 
              sorterSetMutator |> Ok
-        | _  -> 
-             $"Workspace component type is {nameof comp}, not SorterSetMutator" |> Error
+        | _ -> 
+             $"Workspace component type is {comp}, not SorterSetMutator" |> Error
 
 
     let asSorterSetParentMap (comp:workspaceComponent) =
@@ -159,7 +159,7 @@ module WorkspaceComponent =
         | SorterSetParentMap sorterSetParentMap -> 
              sorterSetParentMap |> Ok
         | _  -> 
-             $"Workspace component type is {nameof comp}, not SorterSetParentMap" |> Error
+             $"Workspace component type is {comp}, not SorterSetParentMap" |> Error
 
 
     let asSorterSetConcatMap (comp:workspaceComponent) =
@@ -167,7 +167,7 @@ module WorkspaceComponent =
         | SorterSetConcatMap sorterSetConcatMap -> 
              sorterSetConcatMap |> Ok
         | _  -> 
-             $"Workspace component type is {nameof comp}, not SorterSetConcatMap" |> Error
+             $"Workspace component type is {comp}, not SorterSetConcatMap" |> Error
 
 
     let asSorterSetEval (comp:workspaceComponent) =
@@ -175,7 +175,7 @@ module WorkspaceComponent =
         | SorterSetEval sorterSetEval -> 
              sorterSetEval |> Ok
         | _  -> 
-             $"Workspace component type is {nameof comp}, not SorterSetEval" |> Error
+             $"Workspace component type is {comp}, not SorterSetEval" |> Error
 
 
     let asSorterSetPruner (comp:workspaceComponent) =
@@ -183,7 +183,7 @@ module WorkspaceComponent =
         | SorterSetPruner sorterSetPruner -> 
              sorterSetPruner |> Ok
         | _  -> 
-             $"Workspace component type is {nameof comp}, not SorterSetPruner" |> Error
+             $"Workspace component type is {comp}, not SorterSetPruner" |> Error
 
 
     let asGaMetaData (comp:workspaceComponent) =
@@ -191,7 +191,7 @@ module WorkspaceComponent =
         | GaMetaData gaMetaData -> 
              gaMetaData |> Ok
         | _  -> 
-             $"Workspace component type is {nameof comp}, not GaMetaData" |> Error
+             $"Workspace component type is {comp}, not GaMetaData" |> Error
 
 
 type workspace = private {
@@ -211,6 +211,15 @@ module Workspace =
                     |> GuidUtils.guidFromObjs 
                     |> WorkspaceId.create
             items = Map.empty
+        }
+
+    let load 
+            (id:workspaceId) 
+            (tupes:seq<wsComponentName*workspaceComponent>)
+        =
+        {
+            workspace.id = id;
+            items = tupes |> Map.ofSeq
         }
 
     let addComponents
@@ -237,16 +246,16 @@ module Workspace =
            workspace.items.[compName] |> Ok
 
 
-    let removeComponent 
-            (newWorkspaceId:workspaceId) 
-            (compName:wsComponentName)
+
+    let removeComponent
             (workspace:workspace)
+            (compName:wsComponentName)
         =
         if (workspace.items.ContainsKey(compName)) then
+            load 
+                workspace.id 
+                (workspace.items.Remove compName |> Map.toSeq)
+            |> Ok
+        else
             $"{compName |> WsComponentName.value} not present (11)" 
             |> Error
-        else
-        {
-            id = newWorkspaceId
-            items = workspace.items.Remove compName
-        } |> Ok
