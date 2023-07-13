@@ -196,6 +196,7 @@ module WorkspaceComponent =
 
 type workspace = private {
         id:workspaceId;
+        parentId:workspaceId option;
         items: Map<wsComponentName, workspaceComponent>
     }
 

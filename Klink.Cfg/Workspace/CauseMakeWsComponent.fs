@@ -123,7 +123,7 @@ type causeMakeSorterSetEval
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
-        member this.Name = $"causeMakeSorterSetEval { wsnSortableSet |> WsComponentName.value }"
+        member this.Name = $"causeMakeSorterSetEval { this.sorterSetEvalName |> WsComponentName.value }"
         member this.Updater = this.updater
 
 

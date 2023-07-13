@@ -16,8 +16,8 @@ module WsOps =
         let switchGenMode = switchGenMode.Stage
         let sorterCountMutated = SorterCount.create 64
         let mutationRate = 0.1 |> MutationRate.create
-        //let noiseFraction = Some 0.5
-        let noiseFraction = None
+        let noiseFraction = Some 0.5
+        //let noiseFraction = None
         let stageWeight = 1.0 |> StageWeight.create
 
 
@@ -43,7 +43,8 @@ module WsOps =
 
 
         let emptyWsCfg = WorkspaceCfg.Empty
-        let fs = new WorkspaceFileStore(rootDir)
+        let runDir = System.IO.Path.Combine(rootDir, "noise_0.5")
+        let fs = new WorkspaceFileStore(runDir)
 
 
 
@@ -150,148 +151,3 @@ module WsOps =
 
             return ()
         }
-
-
-        //let res() =
-
-        //    result {
-        //        let order = 16 |> Order.createNr
-        //        let rngGen = 123 |> RandomSeed.create |> RngGen.createLcg
-        //        let randy = rngGen |> Rando.fromRngGen
-        //        let nextRngGen () =
-        //            randy |> Rando.nextRngGen
-
-        //        let switchCount = SwitchCount.orderTo999SwitchCount order
-        //        let sorterCount = SorterCount.create 32
-        //        let switchGenMode = switchGenMode.Stage
-        //        let sorterCountMutated = SorterCount.create 64
-        //        let mutationRate = 0.1 |> MutationRate.create
-        //        //let noiseFraction = Some 0.5
-        //        let noiseFraction = None
-        //        let stageWeight = 1.0 |> StageWeight.create
-        //        let sorterEvalMode = sorterEvalMode.DontCheckSuccess
-        //        let useParallel = UseParallel.create true
-
-                
-        //        let wnRandoCreate = "randoCreate" |> WsComponentName.create
-        //        let wnRandoMutate = "randoMutate" |> WsComponentName.create
-        //        let wnRandoPrune = "randoPrune" |> WsComponentName.create
-        //        let wnSortableSet = "sortableSet" |> WsComponentName.create
-        //        let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
-        //        let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
-        //        let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
-        //        let wnSorterSetPruned = "sorterSetPruned" |> WsComponentName.create
-
-
-        //        let wnParentMap = "parentMap" |> WsComponentName.create
-
-        //        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        //        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        //        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-
-
-        //        let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
-
-     
-        //        let ssCfg = sortableSetCertainCfg.All_Bits order
-        //                    |> sortableSetCfg.Certain
-        //        let srCfg = new sorterSetRndCfg(
-        //                        wnSorterSetParent,
-        //                        order,
-        //                        switchGenMode,
-        //                        switchCount,
-        //                        sorterCount)
-
-
-        //        let causeAddSortableSet =  
-        //            new causeAddSortableSet(
-        //                    wnSortableSet, 
-        //                    ssCfg)
-
-        //        let causeAddSorterSet =  
-        //            new causeAddSorterSetRnd(
-        //                    wnSorterSetParent, 
-        //                    wnRandoCreate, 
-        //                    srCfg,
-        //                    nextRngGen ())
-
-        //        let causeAddSorterSetMutator = 
-        //            new causeAddSorterSetMutator(
-        //                    wnSorterSetMutator, 
-        //                    order, 
-        //                    switchGenMode,
-        //                    sorterCountMutated, 
-        //                    mutationRate)
-
-        //        let causeMutateSorterSet = 
-        //            new causeMutateSorterSet(
-        //                    wnSorterSetParent,
-        //                    wnSorterSetMutated,
-        //                    wnSorterSetMutator,
-        //                    wnRandoMutate,
-        //                    wnParentMap,
-        //                    nextRngGen ()
-        //                    )
-
-        //        let causeMakeSorterSetEvalParent = 
-        //            new causeMakeSorterSetEval(
-        //                    wnSortableSet,
-        //                    wnSorterSetParent,
-        //                    sorterEvalMode,
-        //                    wnSorterSetEvalParent,
-        //                    useParallel)
-
-        //        let causeMakeSorterSetEvalMutated = 
-        //            new causeMakeSorterSetEval(
-        //                    wnSortableSet,
-        //                    wnSorterSetMutated,
-        //                    sorterEvalMode,
-        //                    wnSorterSetEvalMutated,
-        //                    useParallel)
-
-        //        let causePruneSorterSets = 
-        //            new causePruneSorterSetsWhole(
-        //                    wnRandoPrune,
-        //                    wnSorterSetParent,
-        //                    wnSorterSetMutated,
-        //                    wnSorterSetEvalParent,
-        //                    wnSorterSetEvalMutated,
-        //                    wnSorterSetPruner,
-        //                    wnSorterSetPruned,
-        //                    wnSorterSetEvalPruned,
-        //                    nextRngGen (),
-        //                    sorterCount,
-        //                    noiseFraction,
-        //                    stageWeight
-        //                    )
-
-
-
-        //        let emptyWsCfg = WorkspaceCfg.Empty
-        //        let fullWsCfg = 
-        //                emptyWsCfg 
-        //                |> WorkspaceCfg.addCauseCfgs 
-        //                    [causeAddSortableSet; 
-        //                    causeAddSorterSet; 
-        //                    causeAddSorterSetMutator;
-        //                    causeMutateSorterSet;
-        //                    causeMakeSorterSetEvalParent;
-        //                    causeMakeSorterSetEvalMutated;
-        //                    causePruneSorterSets
-        //                    ]
-
-        //        let fs = new WorkspaceFileStore(rootDir)
-
-        //        //let! workspace = 
-        //        //        Workspace.empty 
-        //        //            |> WorkspaceCfg.makeWorkspace fullWsCfg.history (fun s-> Console.WriteLine(s))
-
-        //        let! workspace = 
-        //                fullWsCfg
-        //                    |> WorkspaceCfg.updateWorkspace fs (fun s-> Console.WriteLine(s))
-
-
-        //        return! fs.saveWorkSpace workspace
-        //    }
-
-        //res()

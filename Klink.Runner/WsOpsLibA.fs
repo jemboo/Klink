@@ -127,14 +127,6 @@ module WsOpsLibA =
                             nextRngGen ()
                             )
 
-                let causeMakeSorterSetEvalParent = 
-                    new causeMakeSorterSetEval(
-                            wnSortableSet,
-                            wnSorterSetParent,
-                            sorterEvalMode,
-                            wnSorterSetEvalParent,
-                            useParallel)
-
                 let causeMakeSorterSetEvalMutated = 
                     new causeMakeSorterSetEval(
                             wnSortableSet,
@@ -165,7 +157,7 @@ module WsOpsLibA =
                             [causeAddSortableSet;
                             causeAddSorterSetMutator;
                             causeMutateSorterSet;
-                            causeMakeSorterSetEvalParent;
+                          //  causeMakeSorterSetEvalParent;
                             causeMakeSorterSetEvalMutated;
                             causePruneSorterSets;
                             ]
