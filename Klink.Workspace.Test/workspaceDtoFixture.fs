@@ -9,9 +9,9 @@ type workspaceDtoFixture() =
     member this.Empty_Workspace_to_workSpaceDto() =
         let fs = new WorkspaceFileStore("c:\\Boinky")
         let wsIn = Workspace.empty
-        let wsCereal = wsIn |> WorkspaceDto.toJson
+        let wsCereal = wsIn |> WorkspaceMetaDataDto.toJson
         let wsBack = wsCereal 
-                        |> WorkspaceDto.fromJson fs.compRetreive
+                        |> WorkspaceMetaDataDto.loadWorkspaceFromJson fs.compRetreive
                         |> Result.ExtractOrThrow
 
         Assert.AreEqual(wsIn |> Workspace.getId, wsBack|> Workspace.getId)

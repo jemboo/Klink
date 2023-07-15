@@ -4,7 +4,6 @@ open System
 
 module WsOpsLibA = 
 
-
     let initParentMapAndEval
             (wnRandoCreate:wsComponentName)
             (wnSortableSet:wsComponentName)
@@ -166,7 +165,6 @@ module WsOpsLibA =
 
 
     let assignToNextGen
-
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetPruned:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)

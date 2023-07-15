@@ -30,9 +30,9 @@ module WorkspaceComponentDto =
         | SorterSetPruner sorterSetPruner ->
             (sorterSetPruner |> SorterSetPrunerWholeDto.toJson, 
              workspaceComponentType.SorterSetPruner)
-        | MetaDataMap gaMetaData ->
-            (gaMetaData |> MetaDataMapDto.toJson, 
-             workspaceComponentType.SorterSetPruner)
+        | JsonDataMap gaMetaData ->
+            (gaMetaData |> JsonDataMapDto.toJson, 
+             workspaceComponentType.ParameterData)
 
 
     let fromJsonT (cerealT:string*workspaceComponentType) =
@@ -53,7 +53,7 @@ module WorkspaceComponentDto =
             c |> SorterSetEvalDto.fromJson |> Result.map(workspaceComponent.SorterSetEval)
         | (c, workspaceComponentType.SorterSetPruner) ->
             c |> SorterSetPrunerWholeDto.fromJson |> Result.map(workspaceComponent.SorterSetPruner)
-        | (c, workspaceComponentType.GaMetaData) ->
-            c |> MetaDataMapDto.fromJson |> Result.map(workspaceComponent.MetaDataMap)
+        | (c, workspaceComponentType.ParameterData) ->
+            c |> JsonDataMapDto.fromJson |> Result.map(workspaceComponent.JsonDataMap)
         | _ -> "unhandled workspaceComponentType" |> Error
 

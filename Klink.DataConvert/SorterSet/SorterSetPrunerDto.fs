@@ -141,29 +141,29 @@ module SorterSetPrunerWholeDto =
 
 
 
-type metaDataMapDto = { 
+type jsonDataMapDto = { 
         id: Guid
         data: Map<string,string>
      }
 
-module MetaDataMapDto =
+module JsonDataMapDto =
 
-    let fromDto (dto:metaDataMapDto) =
-        MetaDataMap.load
-            (dto.id |> MetaDataMapId.create)
+    let fromDto (dto:jsonDataMapDto) =
+        JsonDataMap.load
+            (dto.id |> JsonDataMapId.create)
             (dto.data)
 
     let fromJson (jstr: string) =
         result {
-            let! dto = Json.deserialize<metaDataMapDto> jstr
+            let! dto = Json.deserialize<jsonDataMapDto> jstr
             return fromDto dto
         }
 
-    let toDto (metaDataMap: metaDataMap) =
+    let toDto (jsonDataMap: jsonDataMap) =
         {
-            metaDataMapDto.id = metaDataMap |> MetaDataMap.getId |> MetaDataMapId.value
-            data = metaDataMap |> MetaDataMap.getData
+            jsonDataMapDto.id = jsonDataMap |> JsonDataMap.getId |> JsonDataMapId.value
+            data = jsonDataMap |> JsonDataMap.getData
         }
 
-    let toJson (metaDataMap: metaDataMap) =
-        metaDataMap |> toDto |> Json.serialize
+    let toJson (jsonDataMap: jsonDataMap) =
+        jsonDataMap |> toDto |> Json.serialize

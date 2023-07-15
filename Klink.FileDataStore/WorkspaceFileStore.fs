@@ -95,13 +95,13 @@ type WorkspaceFileStore (wsRootDir:string) =
             let fileName = id |> WorkspaceId.value |> string
             return!                   
                 this.readAllText workspaceComponentType.WorkspaceDto fileName
-                |> Result.bind(WorkspaceDto.fromJson this.compRetreive)
+                |> Result.bind(WorkspaceMetaDataDto.loadWorkspaceFromJson this.compRetreive)
         }
 
     member this.saveWorkSpace (workspace:workspace) =
         result {
             let fileName = workspace |> Workspace.getId |> WorkspaceId.value |> string
-            let wsCereal = workspace |> WorkspaceDto.toJson
+            let wsCereal = workspace |> WorkspaceMetaDataDto.toJson
             let! res = this.writeToFile workspaceComponentType.WorkspaceDto fileName wsCereal
             let _, comps = workspace |> Workspace.getWsComponents |> Map.toArray |> Array.unzip
             let! _ = comps |> Array.toList |> List.map(this.compStore) |> Result.sequence
