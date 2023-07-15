@@ -48,8 +48,6 @@ type SorterSetPrunerFixture() =
 
 
         let pruner = SorterSetPruner.make prunedCount noiseFraction stageWeight
-        let meta = GaMetaData.makeNoData
-
 
         let res =  SorterSetPruner.runWholePrune pruner (rndGn ()) sorterSetEvals
 

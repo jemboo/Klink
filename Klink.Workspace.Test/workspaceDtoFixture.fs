@@ -17,8 +17,8 @@ type workspaceDtoFixture() =
         Assert.AreEqual(wsIn |> Workspace.getId, wsBack|> Workspace.getId)
         Assert.IsTrue(
             CollectionProps.areEqual 
-                (wsIn |> Workspace.getItems)
-                (wsBack |> Workspace.getItems)
+                (wsIn |> Workspace.getWsComponents)
+                (wsBack |> Workspace.getWsComponents)
                 )
 
 
@@ -49,6 +49,6 @@ type workspaceDtoFixture() =
         Assert.AreEqual(wsIn |> Workspace.getId, wsBack|> Workspace.getId)
         Assert.IsTrue(
             CollectionProps.areEqual 
-                (wsIn |> Workspace.getItems |> Map.keys)
-                (wsBack |> Workspace.getItems |> Map.keys)
+                (wsIn |> Workspace.getWsComponents |> Map.keys)
+                (wsBack |> Workspace.getWsComponents |> Map.keys)
                 )

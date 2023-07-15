@@ -46,7 +46,6 @@ module SparseIntArrayDto =
         sia |> toDto |> Json.serialize
 
 
-
 module RngType =
 
     let toDto (rngt: rngType) =

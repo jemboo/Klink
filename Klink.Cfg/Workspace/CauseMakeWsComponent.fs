@@ -78,6 +78,7 @@ type causeMutateSorterSet
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.ResetId = None
         member this.Name = $"causeMutateSorterSet { wsnSorterSetMutated |> WsComponentName.value }"
         member this.Updater = this.updater
 
@@ -123,6 +124,7 @@ type causeMakeSorterSetEval
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.ResetId = None
         member this.Name = $"causeMakeSorterSetEval { this.sorterSetEvalName |> WsComponentName.value }"
         member this.Updater = this.updater
 
@@ -268,6 +270,7 @@ type causePruneSorterSetsWhole
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.ResetId = None
         member this.Name = $"causePruneSorterSetsWhole"
         member this.Updater = this.updater
 
@@ -302,6 +305,7 @@ type causePruneSorterSetsNextGen
 
                 return Workspace.load 
                             newWorkspaceId
+                            (w |> Workspace.getId |> Some)
                             [
                                 (this.wnSorterSetParent , sorterSetNewParent |> workspaceComponent.SorterSet)
                                 (this.wnSorterSetEvalParent, sorterSetEvalParentNew |> workspaceComponent.SorterSetEval)
@@ -321,5 +325,7 @@ type causePruneSorterSetsNextGen
 
     interface ICause with
         member this.Id = this.id
+        member this.ResetId = None
         member this.Name = $"causePruneSorterSetsNextGen"
         member this.Updater = this.updater
+

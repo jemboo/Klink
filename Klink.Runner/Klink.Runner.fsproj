@@ -8,7 +8,6 @@
   <ItemGroup>
     <Compile Include="WsOpsLibA.fs" />
     <Compile Include="WsOpsLibB.fs" />
-    <Compile Include="Old\FileStoreOld.fs" />
     <Compile Include="CliArguments.fs" />
     <None Include="App.config" />
     <Compile Include="WsOps.fs" />

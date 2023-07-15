@@ -21,3 +21,14 @@ module Json =
         match str with
         | Some s -> (deserialize<'a> s)
         | None -> Result.Error "option was none"
+
+
+    let deserializeMapEntry<'a> 
+            key (strMap:Map<string,string>) =
+        result {
+            if strMap.ContainsKey(key) then
+               return! deserialize<'a> (strMap.[key])
+            else
+               return! $"the key: {key} was not found in the map" 
+                        |> Error   
+        }

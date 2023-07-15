@@ -3,7 +3,14 @@ open System
 open Microsoft.FSharp.Core
 
 
-type workspaceDto = { id:Guid; wsNames:string[]; workspaceComponentTypes:int[]; workspaceComponentIds:Guid[] }
+type workspaceDto = 
+        { 
+            id:Guid; 
+            parentId: Guid option; 
+            wsNames:string[]; 
+            workspaceComponentTypes:int[]; 
+            workspaceComponentIds:Guid[] 
+        }
 
 module WorkspaceDto =
 
@@ -21,7 +28,8 @@ module WorkspaceDto =
             let ws = 
                 {
                     workspace.id = dto.id |> WorkspaceId.create; 
-                    items = compMap
+                    parentId = dto.parentId |> Option.map(WorkspaceId.create)
+                    wsComponents = compMap
                 }
             return ws
         }
@@ -35,9 +43,10 @@ module WorkspaceDto =
         }
 
     let toDto (ws: workspace) =
-        let wsNames, comps = ws.items |> Map.toArray |> Array.unzip
+        let wsNames, comps = ws.wsComponents |> Map.toArray |> Array.unzip
         { 
           workspaceDto.id = ws.id |> WorkspaceId.value
+          parentId = ws.parentId |> Option.map(WorkspaceId.value)
           wsNames = wsNames |> Array.map(WsComponentName.value)
           workspaceComponentTypes = comps |> Array.map(WorkspaceComponent.getWorkspaceComponentType >> int)
           workspaceComponentIds = comps |> Array.map(WorkspaceComponent.getId)

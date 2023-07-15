@@ -141,51 +141,29 @@ module SorterSetPrunerWholeDto =
 
 
 
-type gaMetaDataDto = { 
+type metaDataMapDto = { 
         id: Guid
-        duType: string
-        cereal: string; }
+        data: Map<string,string>
+     }
 
-module GaMetaDataDto =
+module MetaDataMapDto =
 
-    let fromDto (dto:gaMetaDataDto) =
-        result {
-            match dto.duType with
-            | "NoData" ->
-                return GaMetaData.makeNoData
-
-            | "ParentMap" ->
-                let! parentMap = dto.cereal |> SorterSetParentMapDto.fromJson
-                let parentMap =
-                    GaMetaData.makeParentMap
-                            parentMap
-                return parentMap
-                                
-            | _ -> 
-                return! "not handled (009)" |> Error
-        }
+    let fromDto (dto:metaDataMapDto) =
+        MetaDataMap.load
+            (dto.id |> MetaDataMapId.create)
+            (dto.data)
 
     let fromJson (jstr: string) =
         result {
-            let! dto = Json.deserialize<gaMetaDataDto> jstr
-            return! fromDto dto
+            let! dto = Json.deserialize<metaDataMapDto> jstr
+            return fromDto dto
         }
 
-    let toDto (gaMetaData: gaMetaData) =
-        let intData = gaMetaData |> GaMetaData.getData
-        match intData with
-        | NoData  ->
-            {
-                id = (gaMetaData |> GaMetaData.getId |> GaMetaDataId.value) 
-                duType = "NoData"
-                cereal = String.Empty
-            }
-        | ParentMap pm ->
-            {
-                id = (gaMetaData |> GaMetaData.getId |> GaMetaDataId.value) 
-                duType = "ParentMap"
-                cereal = pm |> SorterSetParentMapDto.toJson
-            }
+    let toDto (metaDataMap: metaDataMap) =
+        {
+            metaDataMapDto.id = metaDataMap |> MetaDataMap.getId |> MetaDataMapId.value
+            data = metaDataMap |> MetaDataMap.getData
+        }
 
-    let toJson (sorterSetPruner: gaMetaData) =
-        sorterSetPruner |> toDto |> Json.serialize
+    let toJson (metaDataMap: metaDataMap) =
+        metaDataMap |> toDto |> Json.serialize

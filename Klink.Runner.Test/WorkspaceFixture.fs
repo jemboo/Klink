@@ -76,7 +76,7 @@ type WorkspaceFixture () =
 
 
         let res = fileStore.saveWorkSpace firstWs |> Result.ExtractOrThrow
-        let fourthWs = fourthWsCfg |> WorkspaceCfg.updateWorkspace fileStore (fun s->())
+        let fourthWs = fourthWsCfg |> WorkspaceCfg.loadWorkspace fileStore (fun s->())
                         |> Result.ExtractOrThrow
 
         let resR = fileStore.saveWorkSpace fourthWs

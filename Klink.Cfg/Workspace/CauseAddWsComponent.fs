@@ -34,6 +34,7 @@ type causeAddRndGenProvider
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.ResetId = None
         member this.Name = wsnRngGen |> WsComponentName.value
         member this.Updater = this.updater
 
@@ -63,6 +64,7 @@ type causeAddSortableSet
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.ResetId = None
         member this.Name = wsnSortableSet |> WsComponentName.value
         member this.Updater = this.updater
 
@@ -103,6 +105,7 @@ type causeAddSorterSetRnd
              |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.ResetId = None
         member this.Name = wsnSorterSet |> WsComponentName.value
         member this.Updater = this.updater
 
@@ -173,6 +176,7 @@ type causeAddSorterSetMutator
         |> CauseId.create
     interface ICause with
         member this.Id = this.id
+        member this.ResetId = None
         member this.Name = wsnSorterSetMutator |> WsComponentName.value
         member this.Updater = this.updater
 

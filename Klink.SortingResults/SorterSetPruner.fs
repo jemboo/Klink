@@ -1,54 +1,54 @@
 ﻿namespace global
 open System
 
-type gaMetaDataId = private GaMetaDataId of Guid
-module GaMetaDataId =
-    let value (GaMetaDataId v) = v
-    let create vl = GaMetaDataId vl
+//type gaMetaDataId = private GaMetaDataId of Guid
+//module GaMetaDataId =
+//    let value (GaMetaDataId v) = v
+//    let create vl = GaMetaDataId vl
 
-type _gaMetaData =
-    | NoData
-    | ParentMap of sorterSetParentMap
+//type _gaMetaData =
+//    | NoData
+//    | ParentMap of sorterSetParentMap
 
-type gaMetaData =
-    private 
-        { id: gaMetaDataId; 
-          data: _gaMetaData }
+//type gaMetaData =
+//    private 
+//        { id: gaMetaDataId; 
+//          data: _gaMetaData }
 
-module GaMetaData =
+//module GaMetaData =
 
-    let getId (gaMetaData:gaMetaData) =
-        gaMetaData.id
+//    let getId (gaMetaData:gaMetaData) =
+//        gaMetaData.id
 
-    let getData (gaMetaData:gaMetaData) =
-        gaMetaData.data
+//    let getData (gaMetaData:gaMetaData) =
+//        gaMetaData.data
 
-    let makeNoData =
-        let id =
-            [|
-                "NoData" :> obj
-            |] 
-            |> GuidUtils.guidFromObjs
-            |> GaMetaDataId.create
-        {
-            id=id;
-            data = _gaMetaData.NoData
-        }
+//    let makeNoData =
+//        let id =
+//            [|
+//                "NoData" :> obj
+//            |] 
+//            |> GuidUtils.guidFromObjs
+//            |> GaMetaDataId.create
+//        {
+//            id=id;
+//            data = _gaMetaData.NoData
+//        }
 
-    let makeParentMap 
-            (parentMap:sorterSetParentMap)
-        =
-        let id =
-            [|
-                "NoData" :> obj
-                parentMap :> obj
-            |] 
-            |> GuidUtils.guidFromObjs
-            |> GaMetaDataId.create
-        {
-            id=id;
-            data =  parentMap |> _gaMetaData.ParentMap
-        }
+//    let makeParentMap 
+//            (parentMap:sorterSetParentMap)
+//        =
+//        let id =
+//            [|
+//                "NoData" :> obj
+//                parentMap :> obj
+//            |] 
+//            |> GuidUtils.guidFromObjs
+//            |> GaMetaDataId.create
+//        {
+//            id=id;
+//            data =  parentMap |> _gaMetaData.ParentMap
+//        }
 
 
 type sorterSetPrunerId = private SorterSetPrunerId of Guid

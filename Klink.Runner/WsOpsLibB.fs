@@ -136,7 +136,7 @@ module WsOpsLibB =
 
                 return!
                         fullWsCfg
-                            |> WorkspaceCfg.updateWorkspace fs (fun s-> Console.WriteLine(s))
+                            |> WorkspaceCfg.loadWorkspace fs (fun s-> Console.WriteLine(s))
 
             }
 

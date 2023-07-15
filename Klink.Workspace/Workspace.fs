@@ -11,7 +11,7 @@ type workspaceComponent =
     | SorterSetConcatMap of sorterSetConcatMap
     | SorterSetEval of sorterSetEval
     | SorterSetPruner of sorterSetPruner
-    | GaMetaData of gaMetaData
+    | MetaDataMap of metaDataMap
 
 
 module WorkspaceComponent = 
@@ -42,8 +42,8 @@ module WorkspaceComponent =
         | SorterSetPruner sorterSetPruner ->
             (sorterSetPruner |> SorterSetPrunerWholeDto.toJson, 
              workspaceComponentType.SorterSetPruner)
-        | GaMetaData gaMetaData ->
-            (gaMetaData |> GaMetaDataDto.toJson, 
+        | MetaDataMap gaMetaData ->
+            (gaMetaData |> MetaDataMapDto.toJson, 
              workspaceComponentType.SorterSetPruner)
 
 
@@ -66,7 +66,7 @@ module WorkspaceComponent =
         | (c, workspaceComponentType.SorterSetPruner) ->
             c |> SorterSetPrunerWholeDto.fromJson |> Result.map(workspaceComponent.SorterSetPruner)
         | (c, workspaceComponentType.GaMetaData) ->
-            c |> GaMetaDataDto.fromJson |> Result.map(workspaceComponent.GaMetaData)
+            c |> MetaDataMapDto.fromJson |> Result.map(workspaceComponent.MetaDataMap)
         | _ -> "unhandled workspaceComponentType" |> Error
 
 
@@ -96,9 +96,9 @@ module WorkspaceComponent =
         | SorterSetPruner sorterSetPruner ->
             sorterSetPruner 
                 |> SorterSetPruner.getId |> SorterSetPrunerId.value
-        | GaMetaData gaMetaData ->
-            gaMetaData 
-                |> GaMetaData.getId |> GaMetaDataId.value
+        | MetaDataMap metaDataMap ->
+            metaDataMap 
+                |> MetaDataMap.getId |> MetaDataMapId.value
 
 
     let getWorkspaceComponentType (comp:workspaceComponent) =
@@ -188,7 +188,7 @@ module WorkspaceComponent =
 
     let asGaMetaData (comp:workspaceComponent) =
         match comp with
-        | GaMetaData gaMetaData -> 
+        | MetaDataMap gaMetaData -> 
              gaMetaData |> Ok
         | _  -> 
              $"Workspace component type is {comp}, not GaMetaData" |> Error
@@ -197,30 +197,33 @@ module WorkspaceComponent =
 type workspace = private {
         id:workspaceId;
         parentId:workspaceId option;
-        items: Map<wsComponentName, workspaceComponent>
+        wsComponents: Map<wsComponentName, workspaceComponent>
     }
 
 module Workspace = 
 
     let getId (ws:workspace) = ws.id
 
-    let getItems (ws:workspace) = ws.items
+    let getWsComponents (ws:workspace) = ws.wsComponents
 
     let empty = 
         {
             id = [CauseId.empty |> CauseId.value :> obj]            
                     |> GuidUtils.guidFromObjs 
                     |> WorkspaceId.create
-            items = Map.empty
+            parentId = None
+            wsComponents = Map.empty
         }
 
     let load 
             (id:workspaceId) 
+            (parentId:workspaceId option) 
             (tupes:seq<wsComponentName*workspaceComponent>)
         =
         {
             workspace.id = id;
-            items = tupes |> Map.ofSeq
+            parentId = parentId;
+            wsComponents = tupes |> Map.ofSeq
         }
 
     let addComponents
@@ -229,10 +232,11 @@ module Workspace =
             (workspace:workspace)  =
         let newMap =
             tupes |> Seq.fold (fun a t -> a |> Map.add (fst t) (snd t)) 
-                              (workspace |> getItems)
+                              (workspace |> getWsComponents)
         {
             id = newWorkspaceId
-            items = newMap
+            parentId = Some workspace.id
+            wsComponents = newMap
         }
 
 
@@ -240,11 +244,11 @@ module Workspace =
             (compName:wsComponentName)
             (workspace:workspace)
         =
-        if (workspace.items.ContainsKey(compName) |> not) then
+        if (workspace.wsComponents.ContainsKey(compName) |> not) then
             $"{compName |> WsComponentName.value} not present (10)" 
             |> Error
         else
-           workspace.items.[compName] |> Ok
+           workspace.wsComponents.[compName] |> Ok
 
 
 
@@ -252,10 +256,11 @@ module Workspace =
             (workspace:workspace)
             (compName:wsComponentName)
         =
-        if (workspace.items.ContainsKey(compName)) then
+        if (workspace.wsComponents.ContainsKey(compName)) then
             load 
-                workspace.id 
-                (workspace.items.Remove compName |> Map.toSeq)
+                workspace.id
+                workspace.parentId
+                (workspace.wsComponents.Remove compName |> Map.toSeq)
             |> Ok
         else
             $"{compName |> WsComponentName.value} not present (11)" 

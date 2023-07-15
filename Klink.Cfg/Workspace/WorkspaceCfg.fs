@@ -6,6 +6,7 @@ type workspaceCfg =
       history:ICause list }
 and ICause =
     abstract member Id:causeId
+    abstract member ResetId:workspaceId option
     abstract member Name:string
     abstract member Updater:(workspace->workspaceId->Result<workspace, string>)
 
@@ -23,14 +24,17 @@ module WorkspaceCfg =
             match future with
             | [] -> curId
             | h::t ->
-                let nextId = 
-                     [
-                        curId |> WorkspaceId.value :> obj;
-                        h.Id |> CauseId.value :> obj
-                     ]
-                     |> GuidUtils.guidFromObjs 
-                     |> WorkspaceId.create
-                _makeWorkspaceId nextId t
+                match h.ResetId with
+                | Some id -> id
+                | None ->
+                    let nextId = 
+                         [
+                            curId |> WorkspaceId.value :> obj;
+                            h.Id |> CauseId.value :> obj
+                         ]
+                         |> GuidUtils.guidFromObjs 
+                         |> WorkspaceId.create
+                    _makeWorkspaceId nextId t
 
         _makeWorkspaceId curId future
 
@@ -109,7 +113,7 @@ module WorkspaceCfg =
         _lastWorkspaceCfg workspaceCfg []
 
 
-    let updateWorkspace 
+    let loadWorkspace 
             (fileStore:IWorkspaceStore)
             (logger: string->unit)
             (workspaceCfg:workspaceCfg)

@@ -157,7 +157,6 @@ module WsOpsLibA =
                             [causeAddSortableSet;
                             causeAddSorterSetMutator;
                             causeMutateSorterSet;
-                          //  causeMakeSorterSetEvalParent;
                             causeMakeSorterSetEvalMutated;
                             causePruneSorterSets;
                             ]

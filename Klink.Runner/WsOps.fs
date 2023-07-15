@@ -65,7 +65,7 @@ module WsOps =
 
             let! wsGen1 = 
                     gen1Cfg
-                        |> WorkspaceCfg.updateWorkspace fs (fun s-> Console.WriteLine(s))
+                        |> WorkspaceCfg.loadWorkspace fs (fun s-> Console.WriteLine(s))
 
             let! res = fs.saveWorkSpace wsGen1
             
@@ -97,9 +97,9 @@ module WsOps =
 
             let! wsGen1Prune = 
                     gen1PruneCfg
-                        |> WorkspaceCfg.updateWorkspace fs (fun s-> Console.WriteLine(s))
+                        |> WorkspaceCfg.loadWorkspace fs (fun s-> Console.WriteLine(s))
 
-            let! res = fs.saveWorkSpace wsGen1
+            let! res = fs.saveWorkSpace wsGen1Prune
             Console.WriteLine($"Saved Gen1Prune to {wsGen1Prune |> Workspace.getId |> WorkspaceId.value}")
 
             let! gen2Cfg = 
@@ -112,7 +112,7 @@ module WsOps =
 
             let! wsGen2 = 
                     gen2Cfg
-                        |> WorkspaceCfg.updateWorkspace fs (fun s-> Console.WriteLine(s))
+                        |> WorkspaceCfg.loadWorkspace fs (fun s-> Console.WriteLine(s))
 
             let! res = fs.saveWorkSpace wsGen2
             Console.WriteLine($"Saved Gen2 to {wsGen2 |> Workspace.getId |> WorkspaceId.value}")
@@ -143,7 +143,7 @@ module WsOps =
 
             let! wsGen2 = 
                     gen2PruneCfg
-                        |> WorkspaceCfg.updateWorkspace fs (fun s-> Console.WriteLine(s))
+                        |> WorkspaceCfg.loadWorkspace fs (fun s-> Console.WriteLine(s))
 
             let! res = fs.saveWorkSpace wsGen2
             Console.WriteLine($"Saved Gen2Prune to { wsGen2 |> Workspace.getId |> WorkspaceId.value}")

@@ -103,7 +103,7 @@ type WorkspaceFileStore (wsRootDir:string) =
             let fileName = workspace |> Workspace.getId |> WorkspaceId.value |> string
             let wsCereal = workspace |> WorkspaceDto.toJson
             let! res = this.writeToFile workspaceComponentType.WorkspaceDto fileName wsCereal
-            let _, comps = workspace |> Workspace.getItems |> Map.toArray |> Array.unzip
+            let _, comps = workspace |> Workspace.getWsComponents |> Map.toArray |> Array.unzip
             let! _ = comps |> Array.toList |> List.map(this.compStore) |> Result.sequence
             return fileName
         }

@@ -12,10 +12,10 @@
     <Compile Include="SorterSet\SorterSetMutatedFromRndCfg.fs" />
     <Compile Include="SorterSet\SorterSetSelfAppendCfg.fs" />
     <Compile Include="Workspace\WorkspaceCfg.fs" />
+    <Compile Include="Workspace\CauseLoadWs.fs" />
     <Compile Include="Workspace\CauseAddWsComponent.fs" />
     <Compile Include="Workspace\CauseMakeWsComponent.fs" />
     <Compile Include="WsFile.fs" />
-    <Compile Include="WsCfgs.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
