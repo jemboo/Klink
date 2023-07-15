@@ -23,16 +23,12 @@ module WorkspaceDto =
             let! wsComps = tupeLst |> List.map(fun (gu, ct) -> lookup gu ct)
                            |> Result.sequence
             let compNames = dto.wsNames |> Array.map(WsComponentName.create)
-            let compMap = (wsComps |> List.toArray) |> Array.zip compNames
-                          |> Map.ofArray
-            let ws = 
-                {
-                    workspace.id = dto.id |> WorkspaceId.create; 
-                    parentId = dto.parentId |> Option.map(WorkspaceId.create)
-                    wsComponents = compMap
-                }
-            return ws
-        }
+            return
+                Workspace.load
+                        (dto.id |> WorkspaceId.create)
+                        (dto.parentId |> Option.map(WorkspaceId.create))
+                        ((wsComps |> List.toArray) |> Array.zip compNames)
+            }
 
     let fromJson 
             (lookup:Guid -> workspaceComponentType -> Result<workspaceComponent, string>) 
@@ -43,10 +39,10 @@ module WorkspaceDto =
         }
 
     let toDto (ws: workspace) =
-        let wsNames, comps = ws.wsComponents |> Map.toArray |> Array.unzip
+        let wsNames, comps = ws |> Workspace.getWsComponents |> Map.toArray |> Array.unzip
         { 
-          workspaceDto.id = ws.id |> WorkspaceId.value
-          parentId = ws.parentId |> Option.map(WorkspaceId.value)
+          workspaceDto.id = ws |> Workspace.getId |> WorkspaceId.value
+          parentId = ws |> Workspace.getParentId |> Option.map(WorkspaceId.value)
           wsNames = wsNames |> Array.map(WsComponentName.value)
           workspaceComponentTypes = comps |> Array.map(WorkspaceComponent.getWorkspaceComponentType >> int)
           workspaceComponentIds = comps |> Array.map(WorkspaceComponent.getId)

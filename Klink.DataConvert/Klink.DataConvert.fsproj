@@ -8,7 +8,6 @@
   <ItemGroup>
     <Compile Include="JsonUtils.fs" />
     <Compile Include="ComponentDto.fs" />
-    <Compile Include="MetaDataMap.fs" />
     <Compile Include="RolloutDto.fs" />
     <Compile Include="SorterDto.fs" />
     <Compile Include="SorterMutatorDto.fs" />
@@ -19,6 +18,8 @@
     <Compile Include="SorterSet\SorterSetMutatorDto.fs" />
     <Compile Include="SortableSetDto.fs" />
     <Compile Include="SorterEvalDto.fs" />
+    <Compile Include="WorkspaceComponentDto.fs" />
+    <Compile Include="WorkspaceDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -40,6 +41,7 @@
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
+    <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />
   </ItemGroup>
 
 </Project>

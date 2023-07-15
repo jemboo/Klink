@@ -32,7 +32,7 @@ type WorkspaceFileStore (wsRootDir:string) =
     member this.compStore (wsComp:workspaceComponent) 
         = 
         result {
-            let cereal, wsCompType = wsComp |> WorkspaceComponent.toJsonT
+            let cereal, wsCompType = wsComp |> WorkspaceComponentDto.toJsonT
             let fileName = wsComp |> WorkspaceComponent.getId |> string
             let! res = this.writeToFile wsCompType fileName cereal
             return fileName
