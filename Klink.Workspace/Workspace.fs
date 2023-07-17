@@ -11,7 +11,7 @@ type workspaceComponent =
     | SorterSetConcatMap of sorterSetConcatMap
     | SorterSetEval of sorterSetEval
     | SorterSetPruner of sorterSetPruner
-    | JsonDataMap of jsonDataMap
+    | WorkspaceParams of workspaceParams
 
 
 module WorkspaceComponent =
@@ -42,9 +42,9 @@ module WorkspaceComponent =
         | SorterSetPruner sorterSetPruner ->
             sorterSetPruner 
                 |> SorterSetPruner.getId |> SorterSetPrunerId.value
-        | JsonDataMap jsonDataMap ->
-            jsonDataMap 
-                |> JsonDataMap.getId |> JsonDataMapId.value
+        | WorkspaceParams workspaceParams ->
+            workspaceParams 
+                |> WorkspaceParams.getId |> WorkspaceParamsId.value
 
 
     let getWorkspaceComponentType (comp:workspaceComponent) =
@@ -65,6 +65,8 @@ module WorkspaceComponent =
              workspaceComponentType.SorterSetEval
         | SorterSetPruner sorterSetPruner ->
             workspaceComponentType.SorterSetPruner
+        | WorkspaceParams workspaceParams ->
+            workspaceComponentType.WorkspaceParams
 
 
     let asRandomProvider (comp:workspaceComponent) =
@@ -134,7 +136,7 @@ module WorkspaceComponent =
 
     let asGaMetaData (comp:workspaceComponent) =
         match comp with
-        | JsonDataMap gaMetaData -> 
+        | WorkspaceParams gaMetaData -> 
              gaMetaData |> Ok
         | _  -> 
              $"Workspace component type is {comp}, not GaMetaData" |> Error

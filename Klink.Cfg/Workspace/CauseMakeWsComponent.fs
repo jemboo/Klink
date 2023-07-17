@@ -7,14 +7,12 @@ type causeMutateSorterSet
             (wsnSorterSetParent:wsComponentName,
              wsnSorterSetMutated:wsComponentName,
              wsnSorterSetMutator:wsComponentName,
-             wsnRandomProvider:wsComponentName,
              wsnSorterSetParentMap:wsComponentName,
              rngGen:rngGen) 
     = 
     member this.sorterSetParentName = wsnSorterSetParent
     member this.sorterSetMutatedName = wsnSorterSetMutated
     member this.sorterSetMutatorName = wsnSorterSetMutator
-    member this.randomProviderName = wsnRandomProvider
     member this.sorterSetParentMapName = wsnSorterSetParentMap
     member this.rngGen = rngGen
 
@@ -62,7 +60,6 @@ type causeMutateSorterSet
                             [
                                 (this.sorterSetParentMapName, parentMap |> workspaceComponent.SorterSetParentMap);
                                 (this.sorterSetMutatedName, mutantSorterSet);
-                                (this.randomProviderName, rngGenProvider |> workspaceComponent.RandomProvider);
                             ]
             }
     member this.id =   
@@ -71,7 +68,7 @@ type causeMutateSorterSet
             this.sorterSetParentName |> WsComponentName.value  :> obj
             this.sorterSetMutatedName |> WsComponentName.value  :> obj
             this.sorterSetMutatorName |> WsComponentName.value  :> obj
-            this.randomProviderName |> WsComponentName.value  :> obj
+            this.rngGen :> obj
             this.sorterSetParentMapName |> WsComponentName.value  :> obj
         ]
              |> GuidUtils.guidFromObjs
@@ -132,7 +129,6 @@ type causeMakeSorterSetEval
 
 type causePruneSorterSetsWhole
             (
-             wsnRandomProvider:wsComponentName,
              wsnSorterSetParentName:wsComponentName,
              wsnSorterSetChildName:wsComponentName,
              wsnSorterSetEvalParentName:wsComponentName,
@@ -142,10 +138,9 @@ type causePruneSorterSetsWhole
              wsnSorterSetEvalPrunedName:wsComponentName,
              rngGen:rngGen,
              prunedCount:sorterCount,
-             noiseFraction: float option,
+             noiseFraction: noiseFraction option,
              stageWeight:stageWeight) 
     = 
-    member this.randomProviderName = wsnRandomProvider
     member this.sorterSetParentName = wsnSorterSetParentName
     member this.sorterSetChildName = wsnSorterSetChildName
     member this.sorterSetEvalParentName = wsnSorterSetEvalParentName
@@ -248,7 +243,6 @@ type causePruneSorterSetsWhole
                                 (this.sorterSetPrunerName , sorterSetPruner |> workspaceComponent.SorterSetPruner)
                                 (this.sorterSetPrunedName, prunedSorterSet |> workspaceComponent.SorterSet)
                                 (this.sorterSetEvalPrunedName, sorterSetEvalsPruned |> workspaceComponent.SorterSetEval )
-                                (this.randomProviderName, rngGenProvider |> workspaceComponent.RandomProvider);
                             ]
             }
 

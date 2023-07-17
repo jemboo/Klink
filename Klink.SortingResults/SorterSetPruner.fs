@@ -1,55 +1,14 @@
 ﻿namespace global
 open System
 
-//type gaMetaDataId = private GaMetaDataId of Guid
-//module GaMetaDataId =
-//    let value (GaMetaDataId v) = v
-//    let create vl = GaMetaDataId vl
-
-//type _gaMetaData =
-//    | NoData
-//    | ParentMap of sorterSetParentMap
-
-//type gaMetaData =
-//    private 
-//        { id: gaMetaDataId; 
-//          data: _gaMetaData }
-
-//module GaMetaData =
-
-//    let getId (gaMetaData:gaMetaData) =
-//        gaMetaData.id
-
-//    let getData (gaMetaData:gaMetaData) =
-//        gaMetaData.data
-
-//    let makeNoData =
-//        let id =
-//            [|
-//                "NoData" :> obj
-//            |] 
-//            |> GuidUtils.guidFromObjs
-//            |> GaMetaDataId.create
-//        {
-//            id=id;
-//            data = _gaMetaData.NoData
-//        }
-
-//    let makeParentMap 
-//            (parentMap:sorterSetParentMap)
-//        =
-//        let id =
-//            [|
-//                "NoData" :> obj
-//                parentMap :> obj
-//            |] 
-//            |> GuidUtils.guidFromObjs
-//            |> GaMetaDataId.create
-//        {
-//            id=id;
-//            data =  parentMap |> _gaMetaData.ParentMap
-//        }
-
+type noiseFraction = private NoiseFraction of float
+module NoiseFraction =
+    let value (NoiseFraction v) = v
+    let create vl = NoiseFraction vl
+    let toFloat (nf: noiseFraction option) =
+        match nf with
+        | Some v ->  v |> value
+        | None -> 0.0
 
 type sorterSetPrunerId = private SorterSetPrunerId of Guid
 module SorterSetPrunerId =
@@ -61,7 +20,7 @@ type sorterSetPruner =
     private {
             id: sorterSetPrunerId;
             prunedCount:sorterCount;
-            noiseFraction:float option;
+            noiseFraction:noiseFraction option;
             stageWeight:stageWeight;
         }
 
@@ -91,7 +50,7 @@ module SorterSetPruner =
     let load
             (id:sorterSetPrunerId)
             (prunedCount:sorterCount)
-            (noiseFraction:float option)
+            (noiseFraction:noiseFraction option)
             (stageWeight:stageWeight)
         =
         {   
@@ -105,12 +64,12 @@ module SorterSetPruner =
     let makeId
             (prunedCount:sorterCount)
             (stageWeight:stageWeight) 
-            (noiseFraction:float option)
+            (noiseFraction:noiseFraction option)
         =
         [|
             "sorterSetPrunerWhole" :> obj
             stageWeight |> StageWeight.value :> obj; 
-            noiseFraction :> obj; 
+            noiseFraction |> Option.map(NoiseFraction.value) :> obj; 
             prunedCount |> SorterCount.value :> obj
         |] 
         |> GuidUtils.guidFromObjs
@@ -118,7 +77,7 @@ module SorterSetPruner =
 
 
     let make (prunedCount:sorterCount)
-             (noiseFraction:float option)
+             (noiseFraction:noiseFraction option)
              (stageWeight:stageWeight)
         =
         {
@@ -200,7 +159,7 @@ module SorterSetPruner =
             if (sorterEvalsWithFitness.Length = 0) then
                 [||]
             elif sorterSetPruner.noiseFraction |> Option.isSome then
-                getSigmaSelection sorterEvalsWithFitness (sorterSetPruner.noiseFraction |> Option.get) rngGen
+                getSigmaSelection sorterEvalsWithFitness (sorterSetPruner.noiseFraction |> NoiseFraction.toFloat) rngGen
                 |> CollectionOps.takeUpto (sorterSetPruner.prunedCount |> SorterCount.value)
                 |> Seq.toArray
             else

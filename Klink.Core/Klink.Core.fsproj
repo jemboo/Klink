@@ -14,6 +14,7 @@
     <Compile Include="SysExt.fs" />
     <Compile Include="SparseArray.fs" />
     <Compile Include="Result.fs" />
+    <Compile Include="JsonUtils.fs" />
     <Compile Include="CommonTypes.fs" />
     <Compile Include="CollectionProps.fs" />
     <Compile Include="CollectionOps.fs" />
@@ -36,6 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="MathNet.Numerics.FSharp" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>

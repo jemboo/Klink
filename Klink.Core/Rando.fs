@@ -38,9 +38,6 @@ type IRando =
 
 
 
-
-
-
 type randomNet(seed: randomSeed) =
     let mutable _count = 0
     let rnd = new System.Random(RandomSeed.value seed)
@@ -157,6 +154,48 @@ module RndGuid =
         GuidUtils.fromUint32s 
             rndGud.r1.NextUInt rndGud.r2.NextUInt
             rndGud.r3.NextUInt rndGud.r4.NextUInt
+
+
+
+module RngType =
+
+    let toDto (rngt: rngType) =
+        match rngt with
+        | rngType.Lcg -> nameof rngType.Lcg
+        | rngType.Net -> nameof rngType.Net
+        | _ -> failwith (sprintf "no match for RngType: %A" rngt)
+
+    let create str =
+        match str with
+        | nameof rngType.Lcg -> rngType.Lcg |> Ok
+        | nameof rngType.Net -> rngType.Net |> Ok
+        | _ -> Error(sprintf "no match for RngType: %s" str)
+
+
+type rngGenDto = { rngType: string; seed: int }
+
+module RngGenDto =
+
+    let fromDto (dto: rngGenDto) =
+        result {
+            let! typ = RngType.create dto.rngType
+            let rs = RandomSeed.create dto.seed
+            return RngGen.create typ rs
+        }
+
+    let fromJson (jstr: string) =
+        result {
+            let! dto = Json.deserialize<rngGenDto> jstr
+            return! fromDto dto
+        }
+
+    let toDto (rngGen: rngGen) =
+        { rngType = rngGen |> RngGen.getType |> RngType.toDto
+          seed =  rngGen |> RngGen.getSeed |> RandomSeed.value }
+
+    let toJson (rngGen: rngGen) = rngGen |> toDto |> Json.serialize
+
+
 
 
 

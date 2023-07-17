@@ -36,8 +36,6 @@ module JsonDataMap =
         jsonDataMap.data
 
 
-
-
     let addItem (key:string) (cereal:string) (jsonDataMap:jsonDataMap) =
         let newMap = jsonDataMap.data |> Map.add key cereal
         make newMap

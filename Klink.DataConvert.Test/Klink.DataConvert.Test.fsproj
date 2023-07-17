@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="jsonUtilsFixture.fs" />
     <Compile Include="componentDtoFixture.fs" />
     <Compile Include="rolloutDtoFixture.fs" />
     <Compile Include="sorterDtoFixture.fs" />

@@ -5,40 +5,39 @@ open System
 module WsOps = 
 
 
-    let makeEm (rootDir:string) =
-        let order = 16 |> Order.createNr
+    let makeEm (rootDir:string) 
+        =
         let rngGen = 123 |> RandomSeed.create |> RngGen.createLcg
         let randy = rngGen |> Rando.fromRngGen
         let nextRngGen () =
             randy |> Rando.nextRngGen
 
+        let rngGenCreate = (nextRngGen ())
+        let rngGenMutate = (nextRngGen ())
+        let rngGenPrune = (nextRngGen ())
+        
+        let generation = 1 |> Generation.create
+        let order = 16 |> Order.createNr
         let sorterCount = SorterCount.create 32
+        let switchCount = SwitchCount.orderTo999SwitchCount order 
         let switchGenMode = switchGenMode.Stage
         let sorterCountMutated = SorterCount.create 64
         let mutationRate = 0.1 |> MutationRate.create
-        let noiseFraction = Some 0.5
+        let noiseFraction = 0.5 |> NoiseFraction.create |> Some
         //let noiseFraction = None
+        let sorterEvalMode = sorterEvalMode.DontCheckSuccess
         let stageWeight = 1.0 |> StageWeight.create
+        let useParallel = true |> UseParallel.create
 
-
-                
-        let wnRandoCreate = "randoCreate" |> WsComponentName.create
-        let wnRandoMutate = "randoMutate" |> WsComponentName.create
-        let wnRandoPrune = "randoPrune" |> WsComponentName.create
         let wnSortableSet = "sortableSet" |> WsComponentName.create
         let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
         let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
         let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
         let wnSorterSetPruned = "sorterSetPruned" |> WsComponentName.create
-
-
         let wnParentMap = "parentMap" |> WsComponentName.create
-
         let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
         let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
         let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-
-
         let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
 
 
@@ -47,20 +46,31 @@ module WsOps =
         let fs = new WorkspaceFileStore(runDir)
 
 
+        let wsp = WorkspaceParams.make Map.empty
+        let wsp = wsp |> WorkspaceParams.setRngGen "rngGenCreate" rngGenCreate
+        let wsp = wsp |> WorkspaceParams.setRngGen "rngGenMutate" rngGenMutate
+        let wsp = wsp |> WorkspaceParams.setRngGen "rngGenPrune" rngGenPrune
+        let wsp = wsp |> WorkspaceParams.setGeneration "generation" generation
+        let wsp = wsp |> WorkspaceParams.setMutationRate "mutationRate" mutationRate
+        let wsp = wsp |> WorkspaceParams.setNoiseFraction "noiseFraction" noiseFraction
+        let wsp = wsp |> WorkspaceParams.setOrder "order" order
+        let wsp = wsp |> WorkspaceParams.setSorterCount "sorterCount" sorterCount
+        let wsp = wsp |> WorkspaceParams.setSorterCount "sorterCountMutated" sorterCountMutated
+        let wsp = wsp |> WorkspaceParams.setSorterEvalMode "sorterEvalMode" sorterEvalMode
+        let wsp = wsp |> WorkspaceParams.setStageWeight "stageWeight" stageWeight
+        let wsp = wsp |> WorkspaceParams.setSwitchCount "switchCount" switchCount
+        let wsp = wsp |> WorkspaceParams.setSwitchGenMode "switchGenMode" switchGenMode
+        let wsp = wsp |> WorkspaceParams.setUseParallel "useParallel" useParallel
 
 
         result {
 
             let! gen1Cfg = 
                 WsOpsLibA.initParentMapAndEval
-                    wnRandoCreate
                     wnSortableSet
                     wnSorterSetParent
                     wnSorterSetEvalParent
-                    order
-                    (nextRngGen ())
-                    sorterCount
-                    switchGenMode
+                    wsp
                     emptyWsCfg
 
             let! wsGen1 = 
@@ -73,8 +83,6 @@ module WsOps =
 
             let! gen1PruneCfg = 
                  WsOpsLibA.makeMutantsAndPrune
-                    wnRandoMutate
-                    wnRandoPrune
                     wnSortableSet
                     wnSorterSetParent
                     wnSorterSetMutator
@@ -85,14 +93,7 @@ module WsOps =
                     wnSorterSetEvalMutated
                     wnSorterSetEvalPruned
                     wnSorterSetPruner
-                    order
-                    (nextRngGen ())
-                    sorterCount
-                    sorterCountMutated
-                    mutationRate
-                    noiseFraction
-                    switchGenMode
-                    stageWeight
+                    wsp
                     gen1Cfg
 
             let! wsGen1Prune = 
@@ -119,8 +120,6 @@ module WsOps =
 
             let! gen2PruneCfg = 
                  WsOpsLibA.makeMutantsAndPrune
-                    wnRandoMutate
-                    wnRandoPrune
                     wnSortableSet
                     wnSorterSetParent
                     wnSorterSetMutator
@@ -131,14 +130,7 @@ module WsOps =
                     wnSorterSetEvalMutated
                     wnSorterSetEvalPruned
                     wnSorterSetPruner
-                    order
-                    (nextRngGen ())
-                    sorterCount
-                    sorterCountMutated
-                    mutationRate
-                    noiseFraction
-                    switchGenMode
-                    stageWeight
+                    wsp
                     gen1Cfg
 
             let! wsGen2 = 

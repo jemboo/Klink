@@ -33,7 +33,7 @@ type workspaceComponentType =
     | SorterSetConcatMap = 23
     | SorterSetEval = 30
     | SorterSetPruner = 40
-    | ParameterData = 50
+    | WorkspaceParams = 50
 
 type workspaceComponentDescr = 
         private 

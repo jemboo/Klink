@@ -18,7 +18,7 @@ module SorterSetPrunerWholeDto =
             return SorterSetPruner.load
                         (dto.id |> SorterSetPrunerId.create )
                         (dto.prunedCount |> SorterCount.create)
-                        (dto.noiseFraction)
+                        (dto.noiseFraction |> Option.map NoiseFraction.create)
                         (dto.stageWeight |> StageWeight.create)
         }
 
@@ -39,7 +39,7 @@ module SorterSetPrunerWholeDto =
                 |> SorterSetPruner.getPrunedCount
                 |> SorterCount.value
             noiseFraction = sorterSetPrunerWhole
-                |> SorterSetPruner.getNoiseFraction
+                |> SorterSetPruner.getNoiseFraction |> Option.map(NoiseFraction.value)
             stageWeight = sorterSetPrunerWhole
                  |> SorterSetPruner.getStageWeight
                  |> StageWeight.value

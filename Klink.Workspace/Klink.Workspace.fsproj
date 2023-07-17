@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="WorkspaceParameters.fs" />
+    <Compile Include="WorkspaceParams.fs" />
     <Compile Include="WorkspaceTypes.fs" />
     <Compile Include="Workspace.fs" />
     <Compile Include="Program.fs" />

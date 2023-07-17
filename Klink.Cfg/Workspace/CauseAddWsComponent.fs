@@ -2,6 +2,39 @@
 
 open System
 
+
+
+type causeAddWorkspaceParams 
+            (wsnParams:wsComponentName,
+             workspaceParams:workspaceParams) 
+    = 
+    member this.wsnRngGen = wsnParams
+    member this.workspaceParams = workspaceParams
+    member this.updater = 
+            fun (w:workspace) (newWorkspaceId:workspaceId) ->
+            result {
+                let ssComp = 
+                     this.workspaceParams
+                            |> workspaceComponent.WorkspaceParams
+                return w |> Workspace.addComponents 
+                                newWorkspaceId 
+                                [(this.wsnRngGen, ssComp)]
+            }
+    member this.id =
+        [
+            this.wsnRngGen :> obj
+            "causeAddWorkspaceParams" :> obj
+        ]
+             |> GuidUtils.guidFromObjs
+             |> CauseId.create
+    interface ICause with
+        member this.Id = this.id
+        member this.ResetId = None
+        member this.Name = wsnParams |> WsComponentName.value
+        member this.Updater = this.updater
+
+
+
 type causeAddRndGenProvider 
             (wsnRngGen:wsComponentName,
              rngGen:rngGen) 
@@ -72,12 +105,10 @@ type causeAddSortableSet
 
 type causeAddSorterSetRnd
             (wsnSorterSet:wsComponentName,
-             wnRandoCreate:wsComponentName,
              ssCfg:sorterSetRndCfg,
              rngGen:rngGen) 
     = 
     member this.wsnSorterSet = wsnSorterSet
-    member this.wnRandoCreate = wnRandoCreate
     member this.rngGen = rngGen
     member this.updater = 
             fun (w :workspace) (newWorkspaceId :workspaceId) ->
@@ -85,7 +116,6 @@ type causeAddSorterSetRnd
 
                 let rngGenProvider = 
                         RngGenProvider.make this.rngGen
-                let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
                 let! wsCompSorterSet = 
                       ssCfg |> SorterSetRndCfg.makeSorterSet rngGenProvider
                             |> Result.map(workspaceComponent.SorterSet)
@@ -93,7 +123,6 @@ type causeAddSorterSetRnd
                                 newWorkspaceId
                                 [
                                     (this.wsnSorterSet, wsCompSorterSet);
-                                    (this.wnRandoCreate, rngGenProvider |> workspaceComponent.RandomProvider);
                                 ]
             }
     member this.id =

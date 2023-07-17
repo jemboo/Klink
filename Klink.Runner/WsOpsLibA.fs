@@ -5,24 +5,20 @@ open System
 module WsOpsLibA = 
 
     let initParentMapAndEval
-            (wnRandoCreate:wsComponentName)
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
-            (order:order)
-            (rngGen:rngGen)
-            (sorterCount:sorterCount)
-            (switchGenMode:switchGenMode)
+            (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
             =
             result {
-                let randy = rngGen |> Rando.fromRngGen
-                let nextRngGen () =
-                    randy |> Rando.nextRngGen
-
-                let switchCount = SwitchCount.orderTo999SwitchCount order
-                let sorterEvalMode = sorterEvalMode.DontCheckSuccess
-                let useParallel = UseParallel.create true
+                let! rngGenCreate = wsParams |> WorkspaceParams.getRngGen "rngGenCreate" 
+                let! order = wsParams |> WorkspaceParams.getOrder "order"
+                let! sorterCount = wsParams |> WorkspaceParams.getSorterCount "sorterCount"
+                let! switchGenMode = wsParams |> WorkspaceParams.getSwitchGenMode "switchGenMode"
+                let! switchCount = wsParams |> WorkspaceParams.getSwitchCount "switchCount"
+                let! sorterEvalMode =wsParams |> WorkspaceParams.getSorterEvalMode "sorterEvalMode"
+                let! useParallel = wsParams |> WorkspaceParams.getUseParallel "useParallel"
 
                 let ssCfg = sortableSetCertainCfg.All_Bits order
                             |> sortableSetCfg.Certain
@@ -41,10 +37,9 @@ module WsOpsLibA =
 
                 let causeAddSorterSetRnd =  
                     new causeAddSorterSetRnd(
-                            wnSorterSetParent, 
-                            wnRandoCreate, 
+                            wnSorterSetParent,
                             srCfg,
-                            nextRngGen ())
+                            rngGenCreate)
 
                 let causeMakeSorterSetEvalParent = 
                     new causeMakeSorterSetEval(
@@ -65,11 +60,7 @@ module WsOpsLibA =
             }
 
 
-
-
     let makeMutantsAndPrune
-            (wnRandoMutate:wsComponentName)
-            (wnRandoPrune:wsComponentName)
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetMutator:wsComponentName)
@@ -79,25 +70,22 @@ module WsOpsLibA =
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalMutated:wsComponentName)
             (wnSorterSetEvalPruned:wsComponentName)
-            (wnSorterSetPruner:wsComponentName)
-            (order:order)
-            (rngGen:rngGen)
-            (sorterCount:sorterCount)
-            (sorterCountMutated:sorterCount)
-            (mutationRate:mutationRate)
-            (noiseFraction:float option)
-            (switchGenMode:switchGenMode)
-            (stageWeight:stageWeight)
+            (wnSorterSetPruner:wsComponentName)            
+            (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
             =
-
             result {
-                let randy = rngGen |> Rando.fromRngGen
-                let nextRngGen () =
-                    randy |> Rando.nextRngGen
-
-                let sorterEvalMode = sorterEvalMode.DontCheckSuccess
-                let useParallel = UseParallel.create true
+                let! mutationRate = wsParams |> WorkspaceParams.getMutationRate "mutationRate" 
+                let! noiseFraction = wsParams |> WorkspaceParams.getNoiseFraction "noiseFraction" 
+                let! rngGenMutate = wsParams |> WorkspaceParams.getRngGen "rngGenMutate" 
+                let! rngGenPrune = wsParams |> WorkspaceParams.getRngGen "rngGenPrune"  
+                let! order = wsParams |> WorkspaceParams.getOrder "order" 
+                let! sorterCount = wsParams |> WorkspaceParams.getSorterCount "sorterCount" 
+                let! sorterCountMutated = wsParams |> WorkspaceParams.getSorterCount "sorterCountMutated" 
+                let! stageWeight = wsParams |> WorkspaceParams.getStageWeight "stageWeight" 
+                let! sorterEvalMode = wsParams |> WorkspaceParams.getSorterEvalMode "sorterEvalMode" 
+                let! switchGenMode = wsParams |> WorkspaceParams.getSwitchGenMode "switchGenMode" 
+                let! useParallel = wsParams |> WorkspaceParams.getUseParallel "useParallel" 
 
                 let ssCfg = sortableSetCertainCfg.All_Bits order
                             |> sortableSetCfg.Certain
@@ -121,9 +109,8 @@ module WsOpsLibA =
                             wnSorterSetParent,
                             wnSorterSetMutated,
                             wnSorterSetMutator,
-                            wnRandoMutate,
                             wnParentMap,
-                            nextRngGen ()
+                            rngGenMutate
                             )
 
                 let causeMakeSorterSetEvalMutated = 
@@ -136,7 +123,6 @@ module WsOpsLibA =
 
                 let causePruneSorterSets = 
                     new causePruneSorterSetsWhole(
-                            wnRandoPrune,
                             wnSorterSetParent,
                             wnSorterSetMutated,
                             wnSorterSetEvalParent,
@@ -144,7 +130,7 @@ module WsOpsLibA =
                             wnSorterSetPruner,
                             wnSorterSetPruned,
                             wnSorterSetEvalPruned,
-                            nextRngGen (),
+                            rngGenPrune,
                             sorterCount,
                             noiseFraction,
                             stageWeight
