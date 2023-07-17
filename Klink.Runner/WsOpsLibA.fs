@@ -30,6 +30,12 @@ module WsOpsLibA =
                                 switchCount,
                                 sorterCount)
 
+
+                let causeAddWorkspaceParams =  
+                    new causeAddWorkspaceParams(
+                            wsParams)
+
+
                 let causeAddSortableSet =  
                     new causeAddSortableSet(
                             wnSortableSet, 
@@ -53,9 +59,11 @@ module WsOpsLibA =
                 return
                         workspaceCfg 
                         |> WorkspaceCfg.addCauseCfgs 
-                            [causeAddSortableSet; 
-                            causeAddSorterSetRnd;
-                            causeMakeSorterSetEvalParent;
+                            [
+                                causeAddWorkspaceParams;
+                                causeAddSortableSet; 
+                                causeAddSorterSetRnd;
+                                causeMakeSorterSetEvalParent;
                             ]
             }
 

@@ -79,6 +79,10 @@ type WorkspaceFileStore (wsRootDir:string) =
                     this.readAllText wsCompType fileName
                     |> Result.bind(SorterSetPrunerWholeDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSetPruner)
+                | workspaceComponentType.WorkspaceParams ->
+                    this.readAllText wsCompType fileName
+                    |> Result.bind(WorkspaceParamsDto.fromJson)
+                    |> Result.map(workspaceComponent.WorkspaceParams)
                 | _ 
                     -> $"{wsCompType} not handled (001)" |> Error
         }

@@ -5,24 +5,23 @@ open System
 
 
 type causeAddWorkspaceParams 
-            (wsnParams:wsComponentName,
-             workspaceParams:workspaceParams) 
+            (workspaceParams:workspaceParams) 
     = 
-    member this.wsnRngGen = wsnParams
+    member this.wsnParams = "workspaceParams" |> WsComponentName.create
     member this.workspaceParams = workspaceParams
     member this.updater = 
             fun (w:workspace) (newWorkspaceId:workspaceId) ->
             result {
-                let ssComp = 
+                let wsParams = 
                      this.workspaceParams
                             |> workspaceComponent.WorkspaceParams
                 return w |> Workspace.addComponents 
                                 newWorkspaceId 
-                                [(this.wsnRngGen, ssComp)]
+                                [(this.wsnParams, wsParams)]
             }
     member this.id =
         [
-            this.wsnRngGen :> obj
+            this.wsnParams :> obj
             "causeAddWorkspaceParams" :> obj
         ]
              |> GuidUtils.guidFromObjs
@@ -30,7 +29,7 @@ type causeAddWorkspaceParams
     interface ICause with
         member this.Id = this.id
         member this.ResetId = None
-        member this.Name = wsnParams |> WsComponentName.value
+        member this.Name = this.wsnParams |> WsComponentName.value
         member this.Updater = this.updater
 
 
