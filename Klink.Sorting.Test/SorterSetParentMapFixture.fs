@@ -23,7 +23,7 @@ type SorterSetParentMapFixture() =
                 childSorterSetId
                 parentSorterSetId
                 childSorterSetCt
-                parentSorterSetCt
+                parentSorterIds
 
       let extendedMap = sorterSetParentMap |> SorterSetParentMap.extendToParents
 

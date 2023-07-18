@@ -63,11 +63,13 @@ type SorterSetFixture() =
       let mutantSorterSetId = parentSorterSetId
                               |> SorterSetMutator.getMutantSorterSetId  sorterSetMutator rngGen
 
-      let parentMap = SorterSetParentMap.create 
+      let parentMap = SorterSetParentMap.create
                             mutantSorterSetId
                             parentSorterSetId
                             mutantSorterCt
-                            parentSorterCt
+                            ( sorterSetParent 
+                                |> SorterSet.getSorters 
+                                |> Array.map(Sorter.getSorterId) )
 
       let mutantSet =  
         sorterSetParent |> SorterSetMutator.createMutantSorterSetFromParentMap

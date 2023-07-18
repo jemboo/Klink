@@ -9,5 +9,5 @@ type jsonUtilsFixture() =
         let stageWeight = 1.0 |> StageWeight.create
         let cereal = Json.serialize stageWeight
         let stageWeightBack = Json.deserialize<stageWeight>(cereal)
-
+                               |> Result.ExtractOrThrow
         Assert.AreEqual(stageWeight, stageWeightBack)

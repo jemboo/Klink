@@ -43,11 +43,22 @@ type causeMutateSorterSet
                                     sorterSetMutator 
                                     _rngGen
 
-                let parentMap = SorterSetParentMap.create 
+                //let parentMap = SorterSetParentMap.create 
+                //                    mutantSorterSetId
+                //                    parentSorterSetId
+                //                    mutantSorterSetCount
+                //                    parentSorterSetCount
+
+                let parentMap = SorterSetParentMap.create
                                     mutantSorterSetId
                                     parentSorterSetId
                                     mutantSorterSetCount
-                                    parentSorterSetCount
+                                    ( sorterSetParent 
+                                      |> SorterSet.getSorters 
+                                      |> Array.map(Sorter.getSorterId) )
+
+
+
                               
                 let! mutantSorterSet = SorterSetMutator.createMutantSorterSetFromParentMap
                                         parentMap

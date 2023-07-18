@@ -18,10 +18,10 @@ module WsOps =
         
         let generation = 1 |> Generation.create
         let order = 16 |> Order.createNr
-        let sorterCount = SorterCount.create 32
+        let sorterCount = SorterCount.create 2
         let switchCount = SwitchCount.orderTo999SwitchCount order 
         let switchGenMode = switchGenMode.Stage
-        let sorterCountMutated = SorterCount.create 64
+        let sorterCountMutated = SorterCount.create 4
         let mutationRate = 0.1 |> MutationRate.create
         let noiseFraction = 0.5 |> NoiseFraction.create |> Some
         //let noiseFraction = None
@@ -46,21 +46,21 @@ module WsOps =
         let fs = new WorkspaceFileStore(runDir)
 
 
-        let wsp = WorkspaceParams.make Map.empty
-        let wsp = wsp |> WorkspaceParams.setRngGen "rngGenCreate" rngGenCreate
-        let wsp = wsp |> WorkspaceParams.setRngGen "rngGenMutate" rngGenMutate
-        let wsp = wsp |> WorkspaceParams.setRngGen "rngGenPrune" rngGenPrune
-        let wsp = wsp |> WorkspaceParams.setGeneration "generation" generation
-        let wsp = wsp |> WorkspaceParams.setMutationRate "mutationRate" mutationRate
-        let wsp = wsp |> WorkspaceParams.setNoiseFraction "noiseFraction" noiseFraction
-        let wsp = wsp |> WorkspaceParams.setOrder "order" order
-        let wsp = wsp |> WorkspaceParams.setSorterCount "sorterCount" sorterCount
-        let wsp = wsp |> WorkspaceParams.setSorterCount "sorterCountMutated" sorterCountMutated
-        let wsp = wsp |> WorkspaceParams.setSorterEvalMode "sorterEvalMode" sorterEvalMode
-        let wsp = wsp |> WorkspaceParams.setStageWeight "stageWeight" stageWeight
-        let wsp = wsp |> WorkspaceParams.setSwitchCount "switchCount" switchCount
-        let wsp = wsp |> WorkspaceParams.setSwitchGenMode "switchGenMode" switchGenMode
-        let wsp = wsp |> WorkspaceParams.setUseParallel "useParallel" useParallel
+        let wsParams = WorkspaceParams.make Map.empty
+        let wsParams = wsParams |> WorkspaceParams.setRngGen "rngGenCreate" rngGenCreate
+        let wsParams = wsParams |> WorkspaceParams.setRngGen "rngGenMutate" rngGenMutate
+        let wsParams = wsParams |> WorkspaceParams.setRngGen "rngGenPrune" rngGenPrune
+        let wsParams = wsParams |> WorkspaceParams.setGeneration "generation" generation
+        let wsParams = wsParams |> WorkspaceParams.setMutationRate "mutationRate" mutationRate
+        let wsParams = wsParams |> WorkspaceParams.setNoiseFraction "noiseFraction" noiseFraction
+        let wsParams = wsParams |> WorkspaceParams.setOrder "order" order
+        let wsParams = wsParams |> WorkspaceParams.setSorterCount "sorterCount" sorterCount
+        let wsParams = wsParams |> WorkspaceParams.setSorterCount "sorterCountMutated" sorterCountMutated
+        let wsParams = wsParams |> WorkspaceParams.setSorterEvalMode "sorterEvalMode" sorterEvalMode
+        let wsParams = wsParams |> WorkspaceParams.setStageWeight "stageWeight" stageWeight
+        let wsParams = wsParams |> WorkspaceParams.setSwitchCount "switchCount" switchCount
+        let wsParams = wsParams |> WorkspaceParams.setSwitchGenMode "switchGenMode" switchGenMode
+        let wsParams = wsParams |> WorkspaceParams.setUseParallel "useParallel" useParallel
 
 
         result {
@@ -70,7 +70,7 @@ module WsOps =
                     wnSortableSet
                     wnSorterSetParent
                     wnSorterSetEvalParent
-                    wsp
+                    wsParams
                     emptyWsCfg
 
             let! wsGen1 = 
@@ -93,7 +93,7 @@ module WsOps =
                     wnSorterSetEvalMutated
                     wnSorterSetEvalPruned
                     wnSorterSetPruner
-                    wsp
+                    wsParams
                     gen1Cfg
 
             let! wsGen1Prune = 
@@ -103,12 +103,15 @@ module WsOps =
             let! res = fs.saveWorkSpace wsGen1Prune
             Console.WriteLine($"Saved Gen1Prune to {wsGen1Prune |> Workspace.getId |> WorkspaceId.value}")
 
+            let! wsParams2 = wsParams |> WorkspaceParams.incrGeneration "generation"
+
             let! gen2Cfg = 
                  WsOpsLibA.assignToNextGen
                     wnSorterSetParent
                     wnSorterSetPruned
                     wnSorterSetEvalParent
                     wnSorterSetEvalPruned
+                    wsParams2
                     gen1PruneCfg
 
             let! wsGen2 = 
@@ -130,15 +133,15 @@ module WsOps =
                     wnSorterSetEvalMutated
                     wnSorterSetEvalPruned
                     wnSorterSetPruner
-                    wsp
-                    gen1Cfg
+                    wsParams2
+                    gen2Cfg
 
-            let! wsGen2 = 
+            let! wsGen2Prune = 
                     gen2PruneCfg
                         |> WorkspaceCfg.loadWorkspace fs (fun s-> Console.WriteLine(s))
 
-            let! res = fs.saveWorkSpace wsGen2
-            Console.WriteLine($"Saved Gen2Prune to { wsGen2 |> Workspace.getId |> WorkspaceId.value}")
+            let! res = fs.saveWorkSpace wsGen2Prune
+            Console.WriteLine($"Saved Gen2Prune to { wsGen2Prune |> Workspace.getId |> WorkspaceId.value}")
 
 
             return ()

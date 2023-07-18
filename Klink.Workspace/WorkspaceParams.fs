@@ -74,6 +74,18 @@ module WorkspaceParams =
         workspaceParams |> addItem key (value |> Generation.value |> string)
 
 
+    let incrGeneration
+            (key:string) 
+            (workspaceParams:workspaceParams) 
+        =
+        result {
+          let! cereal = getItem key workspaceParams
+          let nextGen = Convert.ToInt32(cereal) + 1
+          return         
+            workspaceParams |> addItem key (nextGen |> string)
+        }
+
+
     let getMutationRate
             (key:string) 
             (workspaceParams:workspaceParams) 

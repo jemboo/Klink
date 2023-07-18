@@ -73,16 +73,11 @@ module SorterSetParentMap =
             (childSetId:sorterSetId)
             (parentSetId:sorterSetId)
             (childSetCount:sorterCount)
-            (parentSetCount:sorterCount)
+            (parentSorterIds:sorterId[])
         =
-        let parentSorterIds = 
-            parentSetId |> SorterSet.generateSorterIds
-            |> Seq.map(SorterParentId.toSorterParentId)
-            |> Seq.take (parentSetCount |> SorterCount.value)
-            |> Seq.toArray
-
         let parentMap =
             parentSorterIds
+            |> Seq.map(SorterParentId.toSorterParentId)
             |> CollectionOps.infinteLoop
             |> Seq.zip (childSetId |> SorterSet.generateSorterIds)
             |> Seq.take (childSetCount |> SorterCount.value)
@@ -98,23 +93,22 @@ module SorterSetParentMap =
             parentSetId
             parentMap
 
-
     let makeMergeMap
             (ssParent:sorterSet) 
             (sspm:sorterSetParentMap)
-        =
-        ssParent 
-        |> SorterSet.getSorters
-        |> Seq.map(
-            fun sorter -> 
-                (
-                    sorter |> Sorter.getSorterId,
-                    sorter |> Sorter.getSorterId |> SorterParentId.toSorterParentId
-                )
-            )
-        |> Seq.append
-            (sspm |> getParentMap |> Map.toSeq)
-        |> Map.ofSeq
+        = ()
+        //ssParent 
+        //|> SorterSet.getSorters
+        //|> Seq.map(
+        //create sorter -> 
+        //        (
+        //            sorter |> Sorter.getSorterId,
+        //            sorter |> Sorter.getSorterId |> SorterParentId.toSorterParentId
+        //        )
+        //    )
+        //|> Seq.append
+        //    (sspm |> getParentMap |> Map.toSeq)
+        //|> Map.ofSeq
         
 
     // adds self-mapping of the parent sorterId's

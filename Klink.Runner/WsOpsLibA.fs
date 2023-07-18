@@ -58,7 +58,7 @@ module WsOpsLibA =
 
                 return
                         workspaceCfg 
-                        |> WorkspaceCfg.addCauseCfgs 
+                        |> WorkspaceCfg.addCauses 
                             [
                                 causeAddWorkspaceParams;
                                 causeAddSortableSet; 
@@ -81,7 +81,7 @@ module WsOpsLibA =
             (wnSorterSetPruner:wsComponentName)            
             (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
-            =
+         =
             result {
                 let! mutationRate = wsParams |> WorkspaceParams.getMutationRate "mutationRate" 
                 let! noiseFraction = wsParams |> WorkspaceParams.getNoiseFraction "noiseFraction" 
@@ -94,6 +94,10 @@ module WsOpsLibA =
                 let! sorterEvalMode = wsParams |> WorkspaceParams.getSorterEvalMode "sorterEvalMode" 
                 let! switchGenMode = wsParams |> WorkspaceParams.getSwitchGenMode "switchGenMode" 
                 let! useParallel = wsParams |> WorkspaceParams.getUseParallel "useParallel" 
+
+                let causeAddWorkspaceParams =  
+                    new causeAddWorkspaceParams(
+                            wsParams)
 
                 let ssCfg = sortableSetCertainCfg.All_Bits order
                             |> sortableSetCfg.Certain
@@ -146,12 +150,14 @@ module WsOpsLibA =
 
                 return
                         workspaceCfg 
-                        |> WorkspaceCfg.addCauseCfgs 
-                            [causeAddSortableSet;
-                            causeAddSorterSetMutator;
-                            causeMutateSorterSet;
-                            causeMakeSorterSetEvalMutated;
-                            causePruneSorterSets;
+                        |> WorkspaceCfg.addCauses 
+                            [
+                                causeAddWorkspaceParams;
+                                causeAddSortableSet;
+                                causeAddSorterSetMutator;
+                                causeMutateSorterSet;
+                                causeMakeSorterSetEvalMutated;
+                                causePruneSorterSets;
                             ]
 
             }
@@ -163,10 +169,16 @@ module WsOpsLibA =
             (wnSorterSetPruned:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalPruned:wsComponentName)
+            (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
             =
 
             result {
+
+                let causeAddWorkspaceParams =  
+                    new causeAddWorkspaceParams(
+                            wsParams)
+
                 let causePruneSorterSetsNextGen = 
                     new causePruneSorterSetsNextGen(
                             wnSorterSetParent,
@@ -177,9 +189,9 @@ module WsOpsLibA =
 
                 return
                         workspaceCfg 
-                        |> WorkspaceCfg.addCauseCfgs 
+                        |> WorkspaceCfg.addCauses 
                             [
                                 causePruneSorterSetsNextGen;
+                                causeAddWorkspaceParams;
                             ]
-
             }
