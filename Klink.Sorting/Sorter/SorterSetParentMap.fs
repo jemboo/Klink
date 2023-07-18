@@ -93,23 +93,6 @@ module SorterSetParentMap =
             parentSetId
             parentMap
 
-    let makeMergeMap
-            (ssParent:sorterSet) 
-            (sspm:sorterSetParentMap)
-        = ()
-        //ssParent 
-        //|> SorterSet.getSorters
-        //|> Seq.map(
-        //create sorter -> 
-        //        (
-        //            sorter |> Sorter.getSorterId,
-        //            sorter |> Sorter.getSorterId |> SorterParentId.toSorterParentId
-        //        )
-        //    )
-        //|> Seq.append
-        //    (sspm |> getParentMap |> Map.toSeq)
-        //|> Map.ofSeq
-        
 
     // adds self-mapping of the parent sorterId's
     let extendToParents
