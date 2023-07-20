@@ -64,14 +64,13 @@ module WsOps =
 
     let reportEm (rootDir:string) 
         =
-        
         let runDir = System.IO.Path.Combine(rootDir, "noise_0.5")
         let fs = new WorkspaceFileStore(runDir)
         let wsParams = gaWs.wsPs()
 
         result {
             let! yab = fs.getAllComponents workspaceComponentType.WorkspaceDescription
-                      |> Array.map(Result.bind(WorkspaceComponent.asWorkspaceMetaDataDto))
+                      |> Array.map(Result.bind(WorkspaceComponent.asWorkspaceDescription))
                       |> Array.toList
                       |> Result.sequence
 

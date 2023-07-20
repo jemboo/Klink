@@ -264,10 +264,10 @@ module WorkspaceComponent =
              $"Workspace component type is {comp}, not SorterSetPruner" |> Error
 
 
-    let asWorkspaceMetaDataDto (comp:workspaceComponent) =
+    let asWorkspaceDescription (comp:workspaceComponent) =
         match comp with
-        | WorkspaceDescription workspaceMetaDataDto -> 
-             workspaceMetaDataDto |> Ok
+        | WorkspaceDescription workspaceDescription -> 
+             workspaceDescription |> Ok
         | _  -> 
              $"Workspace component type is {comp}, not WorkspaceParams" |> Error
 

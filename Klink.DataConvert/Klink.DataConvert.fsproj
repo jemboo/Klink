@@ -17,6 +17,8 @@
     <Compile Include="SorterSet\SorterSetMutatorDto.fs" />
     <Compile Include="SortableSetDto.fs" />
     <Compile Include="SorterEvalDto.fs" />
+    <Compile Include="WorkspaceParamsDto.fs" />
+    <Compile Include="WorkspaceDescriptionDto.fs" />
     <Compile Include="WorkspaceComponentDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

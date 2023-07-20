@@ -27,9 +27,13 @@ module WorkspaceComponentDto =
         | SorterSetPruner sorterSetPruner ->
             (sorterSetPruner |> SorterSetPrunerWholeDto.toJson, 
              workspaceComponentType.SorterSetPruner)
+        | WorkspaceDescription workspaceDescription ->
+            (workspaceDescription |> WorkspaceDescriptionDto.toJson, 
+             workspaceComponentType.WorkspaceParams)
         | WorkspaceParams workspaceParams ->
             (workspaceParams |> WorkspaceParamsDto.toJson, 
              workspaceComponentType.WorkspaceParams)
+
 
 
     let fromJsonT (cerealT:string*workspaceComponentType) =
