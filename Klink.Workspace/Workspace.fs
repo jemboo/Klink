@@ -2,146 +2,6 @@
 
 open System
 
-type workspaceComponent =
-    | RandomProvider of rngGenProvider
-    | SortableSet of sortableSet
-    | SorterSet of sorterSet
-    | SorterSetMutator of sorterSetMutator
-    | SorterSetParentMap of sorterSetParentMap
-    | SorterSetConcatMap of sorterSetConcatMap
-    | SorterSetEval of sorterSetEval
-    | SorterSetPruner of sorterSetPruner
-    | WorkspaceParams of workspaceParams
-
-
-module WorkspaceComponent =
-
-    let getId (comp:workspaceComponent) =
-        match comp with
-        | RandomProvider rngGenProvider -> 
-            rngGenProvider 
-                |> RngGenProvider.getId |> RngGenProviderId.value
-        | SortableSet sortableSet -> 
-            sortableSet 
-                |> SortableSet.getSortableSetId |> SortableSetId.value
-        | SorterSet sorterSet -> 
-            sorterSet 
-                |> SorterSet.getId |> SorterSetId.value
-        | SorterSetMutator sorterSetMutator -> 
-            sorterSetMutator 
-                |> SorterSetMutator.getId |> SorterSetMutatorId.value
-        | SorterSetParentMap sorterSetParentMap -> 
-            sorterSetParentMap 
-                |> SorterSetParentMap.getId |> SorterSetParentMapId.value
-        | SorterSetConcatMap sorterSetConcatMap -> 
-            sorterSetConcatMap 
-                |> SorterSetConcatMap.getId |> SorterSetConcatMapId.value
-        | SorterSetEval sorterSetEval -> 
-            sorterSetEval 
-                |> SorterSetEval.getSorterSetEvalId |> SorterSetEvalId.value
-        | SorterSetPruner sorterSetPruner ->
-            sorterSetPruner 
-                |> SorterSetPruner.getId |> SorterSetPrunerId.value
-        | WorkspaceParams workspaceParams ->
-            workspaceParams 
-                |> WorkspaceParams.getId |> WorkspaceParamsId.value
-
-
-    let getWorkspaceComponentType (comp:workspaceComponent) =
-        match comp with
-        | RandomProvider randomProvider -> 
-             workspaceComponentType.RandomProvider
-        | SortableSet sortableSet -> 
-             workspaceComponentType.SortableSet
-        | SorterSet sorterSet -> 
-             workspaceComponentType.SorterSet
-        | SorterSetMutator sorterSetMutator -> 
-             workspaceComponentType.SorterSetMutator
-        | SorterSetParentMap sorterSetParentMap -> 
-             workspaceComponentType.SorterSetParentMap
-        | SorterSetConcatMap sorterSetConcatMap -> 
-             workspaceComponentType.SorterSetConcatMap
-        | SorterSetEval sorterSetEval -> 
-             workspaceComponentType.SorterSetEval
-        | SorterSetPruner sorterSetPruner ->
-            workspaceComponentType.SorterSetPruner
-        | WorkspaceParams workspaceParams ->
-            workspaceComponentType.WorkspaceParams
-
-
-    let asRandomProvider (comp:workspaceComponent) =
-        match comp with
-        | RandomProvider rngGenProvider -> 
-             rngGenProvider |> Ok
-        | _  -> 
-             $"Workspace component type is {comp}, not rngGenProvider" |> Error
-
-
-
-    let asSortableSet (comp:workspaceComponent) =
-        match comp with
-        | SortableSet sortableSet -> 
-             sortableSet |> Ok
-        | _  -> 
-             $"Workspace component type is {comp}, not SortableSet" |> Error
-
-
-    let asSorterSet (comp:workspaceComponent) =
-        match comp with
-        | SorterSet sorterSet -> 
-             sorterSet |> Ok
-        | _  -> 
-             $"Workspace component type is {comp}, not SorterSet" |> Error
-
-
-    let asSorterSetMutator (comp:workspaceComponent) =
-        match comp with
-        | SorterSetMutator sorterSetMutator -> 
-             sorterSetMutator |> Ok
-        | _ -> 
-             $"Workspace component type is {comp}, not SorterSetMutator" |> Error
-
-
-    let asSorterSetParentMap (comp:workspaceComponent) =
-        match comp with
-        | SorterSetParentMap sorterSetParentMap -> 
-             sorterSetParentMap |> Ok
-        | _  -> 
-             $"Workspace component type is {comp}, not SorterSetParentMap" |> Error
-
-
-    let asSorterSetConcatMap (comp:workspaceComponent) =
-        match comp with
-        | SorterSetConcatMap sorterSetConcatMap -> 
-             sorterSetConcatMap |> Ok
-        | _  -> 
-             $"Workspace component type is {comp}, not SorterSetConcatMap" |> Error
-
-
-    let asSorterSetEval (comp:workspaceComponent) =
-        match comp with
-        | SorterSetEval sorterSetEval -> 
-             sorterSetEval |> Ok
-        | _  -> 
-             $"Workspace component type is {comp}, not SorterSetEval" |> Error
-
-
-    let asSorterSetPruner (comp:workspaceComponent) =
-        match comp with
-        | SorterSetPruner sorterSetPruner -> 
-             sorterSetPruner |> Ok
-        | _  -> 
-             $"Workspace component type is {comp}, not SorterSetPruner" |> Error
-
-
-    let asGaMetaData (comp:workspaceComponent) =
-        match comp with
-        | WorkspaceParams gaMetaData -> 
-             gaMetaData |> Ok
-        | _  -> 
-             $"Workspace component type is {comp}, not GaMetaData" |> Error
-
-
 type workspace = private {
         id:workspaceId;
         parentId:workspaceId option;
@@ -215,3 +75,43 @@ module Workspace =
         else
             $"{compName |> WsComponentName.value} not present (11)" 
             |> Error
+
+
+    let ofWorkspaceDescription 
+            (lookup:Guid -> workspaceComponentType -> Result<workspaceComponent, string>) 
+            (wsd: workspaceDescription) 
+        =
+        result {
+             let names, wsCompDescrs = 
+                       wsd |> WorkspaceDescription.getComponents
+                           |> Map.toArray
+                           |> Array.unzip
+             let! components =
+                    wsCompDescrs
+                       |> Array.map(
+                            fun wcd -> lookup 
+                                        (wcd |> WorkspaceComponentDescr.getId) 
+                                        (wcd |> WorkspaceComponentDescr.getCompType))
+                       |> Array.toList
+                       |> Result.sequence
+
+            return
+                load
+                    (wsd |> WorkspaceDescription.getId)
+                    (wsd |> WorkspaceDescription.getParentId)
+                    (components |> List.toArray |> Array.zip names)
+            }
+
+
+
+    let toWorkspaceDescription (workspace:workspace)
+        =
+        let yab = workspace 
+                    |> getWsComponents
+                    |> Map.toSeq
+                    |> Seq.map(fun (compN, comp) -> (compN, comp |> WorkspaceComponent.getWorkspaceComponentDescr))
+                    |> Map.ofSeq
+        WorkspaceDescription.create
+            (workspace.id)
+            (workspace.parentId)
+            yab

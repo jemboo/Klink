@@ -27,8 +27,13 @@ module WorkspaceParams =
             data |> Map.toArray |> Array.map(fun tup -> tup :> obj)
             |> GuidUtils.guidFromObjs 
             |> WorkspaceParamsId.create
-
         load nextId data
+
+    let getHeaders (workspaceParams:workspaceParams) =
+        workspaceParams.data.Keys |> Seq.fold (fun cur nv -> $"{cur}\t{nv}") ""
+
+    let getValues (workspaceParams:workspaceParams) =
+        workspaceParams.data.Values |> Seq.fold (fun cur nv -> $"{cur}\t{nv}") ""
 
     let getId (workspaceParams:workspaceParams) =
         workspaceParams.id

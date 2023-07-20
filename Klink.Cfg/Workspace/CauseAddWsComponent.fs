@@ -32,45 +32,6 @@ type causeAddWorkspaceParams
         member this.Updater = this.updater
 
 
-
-type causeAddRndGenProvider 
-            (wsnRngGen:wsComponentName,
-             rngGen:rngGen) 
-    = 
-    member this.wsnRngGen = wsnRngGen
-    member this.rngGen = rngGen
-    member this.updater = 
-            fun (w:workspace) (newWorkspaceId:workspaceId) ->
-            result {
-                let _id =         
-                    [|
-                       rngGen :> obj;
-                    |] 
-                    |> GuidUtils.guidFromObjs
-
-                let rngProviderId = _id |> RngGenProviderId.create
-                let ssComp = 
-                    (RngGenProvider.load rngProviderId this.rngGen)
-                            |> workspaceComponent.RandomProvider
-                return w |> Workspace.addComponents 
-                                newWorkspaceId 
-                                [(this.wsnRngGen, ssComp)]
-            }
-    member this.id =
-        [
-            this.wsnRngGen :> obj
-            this.rngGen :> obj
-        ]
-             |> GuidUtils.guidFromObjs
-             |> CauseId.create
-    interface ICause with
-        member this.Id = this.id
-        member this.ResetId = None
-        member this.Name = wsnRngGen |> WsComponentName.value
-        member this.Updater = this.updater
-
-
-
 type causeAddSortableSet 
             (wsnSortableSet:wsComponentName,
              ssCfg:sortableSetCfg) 

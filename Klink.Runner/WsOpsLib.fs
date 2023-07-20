@@ -2,7 +2,8 @@
 open System
 
 
-module WsOpsLibB = 
+module WsOpsLib = 
+
 
     let genZero
             (wnSortableSet:wsComponentName)
@@ -15,7 +16,7 @@ module WsOpsLibB =
             result {
                 let emptyWsCfg = WorkspaceCfg.Empty
                 let! wsCfg = 
-                    WsOpsLibA.initParentMapAndEval
+                    WsCfgLib.initParentMapAndEval
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetEvalParent
@@ -53,7 +54,7 @@ module WsOpsLibB =
          =
             result {
                 let! pruneCfg = 
-                     WsOpsLibA.makeMutantsAndPrune
+                     WsCfgLib.makeMutantsAndPrune
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetMutator
@@ -83,7 +84,7 @@ module WsOpsLibB =
                 let! wsParamsNextGen = wsParams |> WorkspaceParams.incrGeneration "generation"
 
                 let! nextGenCfg = 
-                     WsOpsLibA.assignToNextGen
+                     WsCfgLib.assignToNextGen
                         wnSorterSetParent
                         wnSorterSetPruned
                         wnSorterSetEvalParent

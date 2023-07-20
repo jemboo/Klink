@@ -69,8 +69,8 @@ module TextIO =
             let fne = sprintf "%s.%s" fileName ext
             let fp = 
                 match root with
-                | Some p ->
-                     Path.Combine(p, folder, fne)
+                | Some rt ->
+                     Path.Combine(rt, folder, fne)
                 | None ->
                     Path.Combine(folder, fne)
             if File.Exists(fp) then

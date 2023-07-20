@@ -6,13 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="WsCfgLib.fs" />
     <Compile Include="WsOpsParams.fs" />
-    <Compile Include="WsCfgLibA.fs" />
-    <Compile Include="WsCfgLibB.fs" />
+    <Compile Include="WsOpsLib.fs" />
     <Compile Include="CliArguments.fs" />
     <None Include="App.config" />
-    <Compile Include="WsOps2.fs" />
-    <Compile Include="WsOps1.fs" />
+    <Compile Include="WsOps.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

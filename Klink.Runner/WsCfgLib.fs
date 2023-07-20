@@ -2,7 +2,7 @@
 open System
 
 
-module WsOpsLibA = 
+module WsCfgLib = 
 
     let initParentMapAndEval
             (wnSortableSet:wsComponentName)

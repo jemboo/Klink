@@ -28,10 +28,10 @@ module gaWs =
 
         let generation = 1 |> Generation.create
         let order = 16 |> Order.createNr
-        let sorterCount = SorterCount.create 2
+        let sorterCount = SorterCount.create 16
         let switchCount = SwitchCount.orderTo999SwitchCount order 
         let switchGenMode = switchGenMode.Stage
-        let sorterCountMutated = SorterCount.create 4
+        let sorterCountMutated = SorterCount.create 64
         let mutationRate = 0.1 |> MutationRate.create
         let noiseFraction = 0.5 |> NoiseFraction.create |> Some
         //let noiseFraction = None

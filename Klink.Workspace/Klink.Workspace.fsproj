@@ -9,6 +9,7 @@
     <Compile Include="WorkspaceParams.fs" />
     <Compile Include="WorkspaceTypes.fs" />
     <Compile Include="Workspace.fs" />
+    <Compile Include="WorkspaceMetaDataDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

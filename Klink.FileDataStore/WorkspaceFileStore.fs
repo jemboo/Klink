@@ -1,5 +1,6 @@
 ﻿namespace global
 open System
+open System.IO
 
 type WorkspaceFileStore (wsRootDir:string) =
 
@@ -28,6 +29,10 @@ type WorkspaceFileStore (wsRootDir:string) =
     member this.readAllLines (wsCompType:workspaceComponentType) (fileName:string) =
         TextIO.readAllLines this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName
 
+    member this.getAllFiles (wsCompType:workspaceComponentType) =
+           let filePath = Path.Combine(this.wsRootDir, this.getFolderName wsCompType)
+           Directory.GetFiles(filePath)
+
 
     member this.compStore (wsComp:workspaceComponent) 
         = 
@@ -47,10 +52,6 @@ type WorkspaceFileStore (wsRootDir:string) =
             let fileName = compId |> string
             return!
                 match wsCompType with
-                | workspaceComponentType.RandomProvider ->
-                    this.readAllText wsCompType fileName
-                    |> Result.bind(RngGenProviderDto.fromJson)
-                    |> Result.map(workspaceComponent.RandomProvider)
                 | workspaceComponentType.SortableSet ->
                     this.readAllText wsCompType fileName
                     |> Result.bind(SortableSetDto.fromJson)
@@ -79,6 +80,10 @@ type WorkspaceFileStore (wsRootDir:string) =
                     this.readAllText wsCompType fileName
                     |> Result.bind(SorterSetPrunerWholeDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSetPruner)
+                | workspaceComponentType.WorkspaceDescription ->
+                    this.readAllText wsCompType fileName
+                    |> Result.bind(WorkspaceDescriptionDto.fromJson)
+                    |> Result.map(workspaceComponent.WorkspaceDescription)
                 | workspaceComponentType.WorkspaceParams ->
                     this.readAllText wsCompType fileName
                     |> Result.bind(WorkspaceParamsDto.fromJson)
@@ -87,26 +92,35 @@ type WorkspaceFileStore (wsRootDir:string) =
                     -> $"{wsCompType} not handled (001)" |> Error
         }
 
+    member this.getAllComponents
+                    (wsCompType:workspaceComponentType) 
+        = 
+        this.getAllFiles wsCompType 
+            |> Array.map(Path.GetFileNameWithoutExtension >> Guid.Parse)
+            |> Array.map(fun gu -> this.compRetreive gu wsCompType)
+           
+
     member this.workSpaceExists (id:workspaceId) =
         result {
             let fileName = id |> WorkspaceId.value |> string
             return!                   
-                this.fileExists workspaceComponentType.WorkspaceDto fileName
+                this.fileExists workspaceComponentType.WorkspaceDescription fileName
         }
 
     member this.loadWorkSpace (id:workspaceId) =
         result {
             let fileName = id |> WorkspaceId.value |> string
-            return!                   
-                this.readAllText workspaceComponentType.WorkspaceDto fileName
-                |> Result.bind(WorkspaceMetaDataDto.loadWorkspaceFromJson this.compRetreive)
+            let! cereal = this.readAllText workspaceComponentType.WorkspaceDescription fileName
+            let! wsd = cereal |> WorkspaceDescriptionDto.fromJson
+            return! wsd |> Workspace.ofWorkspaceDescription this.compRetreive
         }
 
     member this.saveWorkSpace (workspace:workspace) =
         result {
             let fileName = workspace |> Workspace.getId |> WorkspaceId.value |> string
-            let wsCereal = workspace |> WorkspaceMetaDataDto.toJson
-            let! res = this.writeToFile workspaceComponentType.WorkspaceDto fileName wsCereal
+            let cereal = workspace |> Workspace.toWorkspaceDescription
+                                   |> WorkspaceDescriptionDto.toJson
+            let! res = this.writeToFile workspaceComponentType.WorkspaceDescription fileName cereal
             let _, comps = workspace |> Workspace.getWsComponents |> Map.toArray |> Array.unzip
             let! _ = comps |> Array.toList |> List.map(this.compStore) |> Result.sequence
             return fileName

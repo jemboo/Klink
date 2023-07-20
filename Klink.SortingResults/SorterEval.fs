@@ -112,6 +112,11 @@ module SorterSpeed =
                          (ss |> getSwitchCount |> SwitchCount.value)
         | None -> "-\t-"
 
+    let getProps (sorterSpd : sorterSpeed option) =
+        match sorterSpd with
+        | Some ss -> ((ss |> getStageCount |> StageCount.value |> string),
+                      (ss |> getSwitchCount |> SwitchCount.value |> string))
+        | None -> ("", "")
 
     let getStageCount0 (sorterSpd : sorterSpeed option) =
         match sorterSpd with
@@ -146,10 +151,34 @@ module SorterPerf =
                 sprintf "-\t%d" (SortableCount.value sz)
         | None -> "-\t-"
 
+    let getProps (sp : sorterPerf option) =
+        match sp with
+        | Some perf ->
+            match perf with
+            | IsSuccessful bv ->
+                (bv |> string, "")
+            | SortedSetSize sz ->
+                ("", sz |> SortableCount.value |> string)
+        | None -> ("", "")
 
-type sorterEvalMode = | DontCheckSuccess
-                      | CheckSuccess 
-                      | GetSortedSetCount
+
+
+type sorterEvalProps =
+     | SorterId 
+     | SortableSetId
+     | ErrorMsg
+     | StageCount
+     | SwitchCount
+     | Success
+     | SortedSetSize
+     | Phenotype
+
+
+type sorterEvalMode = 
+    | DontCheckSuccess
+    | CheckSuccess 
+    | GetSortedSetCount
+
 
 type sorterEval =
     private
@@ -209,7 +238,7 @@ module SorterEval =
                 | Some perf -> 
                     match perf with
                     | IsSuccessful _ -> true
-                    | SortedSetSize _ -> false
+                    | sorterPerf.SortedSetSize _ -> false
 
 
     let evalSorterWithSortableSet 
@@ -258,19 +287,6 @@ module SorterEval =
         | Error msg -> make  (Some msg) None None None None sortableStId sortrId
 
 
-
-    let reportHeader
-            (pfx:string)
-        =
-        sprintf "%s\tErr\tStages\tSwitches\tSuccess\tSortedSetSize\tPhenotype\tSortable\tSorter"
-            pfx
-
-    let reportHeaderP
-            (pfx:string)
-        =
-        sprintf "%s\tErrP\tStagesP\tSwitchesP\tSuccessP\tSortedSetSizeP\tPhenotypeP\tSortableP\tSorterP"
-            pfx
-
     let modifyForPrefix
             (ordr:order)
             (tc:stageCount)
@@ -282,15 +298,17 @@ module SorterEval =
            |> Option.map(SorterSpeed.modifyForPrefix ordr tc)}
 
 
-    let report 
-            (pfx:string) 
-            (sev:sorterEval) 
-        =
-        sprintf "%s\t%s\t%s\t%s\t%s\t%s\t%s"
-            pfx
-            (sev.errorMessage |> StringUtil.stringOption "-" )
-            (sev.sorterSpeed |> SorterSpeed.report)
-            (sev.sorterPrf |> SorterPerf.report)
-            (sev.sortrPhenotypeId |> Option.map(SorterPhenotypeId.value >> string) |> StringUtil.stringOption "-")
-            (sev.sortableSetId |> SortableSetId.value |> string)
-            (sev.sortrId |> SorterId.value |> string)
+    let getSorterEvalProps 
+            (sev:sorterEval) =
+        let stageCt, switchCt = (sev.sorterSpeed |> SorterSpeed.getProps)
+        let successful, sortableCt = (sev.sorterPrf |> SorterPerf.getProps)
+        [|
+            (sorterEvalProps.ErrorMsg, sev.errorMessage |> Option.defaultValue "");
+            (sorterEvalProps.Phenotype, sev.sortrPhenotypeId |> Option.map(SorterPhenotypeId.value >> string) |> Option.defaultValue "");
+            (sorterEvalProps.SortableSetId, sev.sortableSetId |> SortableSetId.value |> string);
+            (sorterEvalProps.SorterId, sev.sortrId |> SorterId.value |> string);
+            (sorterEvalProps.StageCount, stageCt);
+            (sorterEvalProps.Success, successful);
+            (sorterEvalProps.SwitchCount, switchCt);
+            (sorterEvalProps.SortedSetSize, sortableCt);
+        |] |> Map.ofArray

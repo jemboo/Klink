@@ -2,7 +2,7 @@
 open System
 
 
-module WsOps2 = 
+module WsOps = 
 
 
     let makeEm (rootDir:string) 
@@ -19,13 +19,12 @@ module WsOps2 =
         let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
         let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
 
-        let emptyWsCfg = WorkspaceCfg.Empty
         let runDir = System.IO.Path.Combine(rootDir, "noise_0.5")
         let fs = new WorkspaceFileStore(runDir)
         let wsParams = gaWs.wsPs()
 
         result {
-            let! wsCfg = WsOpsLibB.genZero
+            let! wsCfg = WsOpsLib.genZero
                                 wnSortableSet
                                 wnSorterSetParent
                                 wnSorterSetEvalParent
@@ -37,9 +36,9 @@ module WsOps2 =
             let mutable curCfg = wsCfg
             let mutable curParams = wsParams
 
-            while curGen < 10 do
+            while curGen < 20 do
                 let! wsCfgN, wsPramsN = 
-                    WsOpsLibB.doGen
+                    WsOpsLib.doGen
                                     wnSortableSet
                                     wnSorterSetParent
                                     wnSorterSetMutator
@@ -58,6 +57,23 @@ module WsOps2 =
                 curCfg <- wsCfgN
                 curParams <- wsPramsN
                 curGen <- curGen + 1
+
+            return ()
+        }
+
+
+    let reportEm (rootDir:string) 
+        =
+        
+        let runDir = System.IO.Path.Combine(rootDir, "noise_0.5")
+        let fs = new WorkspaceFileStore(runDir)
+        let wsParams = gaWs.wsPs()
+
+        result {
+            let! yab = fs.getAllComponents workspaceComponentType.WorkspaceDescription
+                      |> Array.map(Result.bind(WorkspaceComponent.asWorkspaceMetaDataDto))
+                      |> Array.toList
+                      |> Result.sequence
 
             return ()
         }

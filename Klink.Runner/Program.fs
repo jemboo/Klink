@@ -17,7 +17,7 @@ module Program =
 
 
 
-        let yow = WsOps2.makeEm(rootDir |> List.head)
+        let yow = WsOps.makeEm (rootDir |> List.head)
         match yow with
         | Ok msg -> Console.WriteLine($"done ... {msg}")
         | Error yow -> Console.WriteLine($"done ... {yow}")

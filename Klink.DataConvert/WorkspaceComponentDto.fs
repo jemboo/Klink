@@ -6,9 +6,6 @@ module WorkspaceComponentDto =
 
     let toJsonT (comp:workspaceComponent) =
         match comp with
-        | RandomProvider rngGenProvider -> 
-            (rngGenProvider |> RngGenProviderDto.toJson, 
-             workspaceComponentType.RandomProvider)
         | SortableSet sortableSet -> 
             (sortableSet |> SortableSetDto.toJson, 
              workspaceComponentType.SortableSet)
@@ -37,8 +34,6 @@ module WorkspaceComponentDto =
 
     let fromJsonT (cerealT:string*workspaceComponentType) =
         match cerealT with
-        | (c, workspaceComponentType.RandomProvider) ->
-            c |> RngGenProviderDto.fromJson |> Result.map(workspaceComponent.RandomProvider)
         | (c, workspaceComponentType.SortableSet) ->
             c |> SortableSetDto.fromJson |> Result.map(workspaceComponent.SortableSet)
         | (c, workspaceComponentType.SorterSet) ->

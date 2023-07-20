@@ -83,7 +83,7 @@ module SorterPerfDto =
                 isSuccessful = bv |> Nullable;
                 sortedSetSize = Nullable();
             }
-        | SortedSetSize sc ->
+        | sorterPerf.SortedSetSize sc ->
             {
                 sorterPerfDto.useSuccess = false;
                 isSuccessful = Nullable();
