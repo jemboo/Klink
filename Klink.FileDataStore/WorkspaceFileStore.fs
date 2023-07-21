@@ -92,13 +92,78 @@ type WorkspaceFileStore (wsRootDir:string) =
                     -> $"{wsCompType} not handled (001)" |> Error
         }
 
+
     member this.getAllComponents
-                    (wsCompType:workspaceComponentType) 
+               (wsCompType:workspaceComponentType) 
         = 
         this.getAllFiles wsCompType 
             |> Array.map(Path.GetFileNameWithoutExtension >> Guid.Parse)
             |> Array.map(fun gu -> this.compRetreive gu wsCompType)
-           
+
+
+    member this.getComponent
+                (wscn:wsComponentName)
+                (wsd:workspaceDescription)
+        =
+        result {
+            let yab = wsd |> WorkspaceDescription.getComponents
+            let compDescr = yab.[wscn]
+            let compId = compDescr |> WorkspaceComponentDescr.getId
+            let compType = compDescr |> WorkspaceComponentDescr.getCompType
+            return! this.compRetreive compId compType
+        }
+
+    member this.getComponentWithParams
+                (wscn:wsComponentName)
+                (wsd:workspaceDescription)
+        =
+        result {
+            let yab = wsd |> WorkspaceDescription.getComponents
+            let compDescr = yab.[wscn]
+            let compDescrParams = yab.[WsConstants.workSpaceComponentNameForParams]
+            let compId = compDescr |> WorkspaceComponentDescr.getId
+            let compType = compDescr |> WorkspaceComponentDescr.getCompType
+            let compIdParams = compDescrParams |> WorkspaceComponentDescr.getId
+            let compTypeParams = compDescrParams |> WorkspaceComponentDescr.getCompType
+
+            let! wsComp = this.compRetreive compId compType
+            let! wsParams = this.compRetreive compIdParams compTypeParams
+                                |> Result.bind(WorkspaceComponent.asWorkspaceParams)
+            return wsComp, wsParams
+        }
+
+
+    member this.getAllComponentsByName
+                     (wscn:wsComponentName)
+        = 
+        result {
+            let! wsDescrs = 
+                    this.getAllComponents workspaceComponentType.WorkspaceDescription
+                      |> Array.map(Result.bind(WorkspaceComponent.asWorkspaceDescription))
+                      |> Array.toList
+                      |> Result.sequence
+
+            return! wsDescrs 
+                            |> List.map(this.getComponent wscn)
+                            |> Result.sequence
+        }
+
+    member this.getAllComponentsWithParamsByName
+                     (wscn:wsComponentName)
+        = 
+        result {
+            let! wsDescrs = 
+                    this.getAllComponents workspaceComponentType.WorkspaceDescription
+                      |> Array.map(Result.bind(WorkspaceComponent.asWorkspaceDescription))
+                      |> Array.toList
+                      |> Result.sequence
+
+            return! wsDescrs 
+                            |> List.map(this.getComponentWithParams wscn)
+                            |> Result.sequence
+        }
+
+
 
     member this.workSpaceExists (id:workspaceId) =
         result {

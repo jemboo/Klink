@@ -39,20 +39,20 @@ module WsOps =
             while curGen < 20 do
                 let! wsCfgN, wsPramsN = 
                     WsOpsLib.doGen
-                                    wnSortableSet
-                                    wnSorterSetParent
-                                    wnSorterSetMutator
-                                    wnSorterSetMutated
-                                    wnSorterSetPruned
-                                    wnParentMap
-                                    wnSorterSetEvalParent
-                                    wnSorterSetEvalMutated
-                                    wnSorterSetEvalPruned
-                                    wnSorterSetPruner
-                                    fs
-                                    (fun s-> Console.WriteLine(s))
-                                    curParams
-                                    curCfg
+                        wnSortableSet
+                        wnSorterSetParent
+                        wnSorterSetMutator
+                        wnSorterSetMutated
+                        wnSorterSetPruned
+                        wnParentMap
+                        wnSorterSetEvalParent
+                        wnSorterSetEvalMutated
+                        wnSorterSetEvalPruned
+                        wnSorterSetPruner
+                        fs
+                        (fun s-> Console.WriteLine(s))
+                        curParams
+                        curCfg
 
                 curCfg <- wsCfgN
                 curParams <- wsPramsN
@@ -62,17 +62,25 @@ module WsOps =
         }
 
 
+    let makeReport 
+                (compSSeval:workspaceComponent) 
+                (compParams:workspaceParams) =
+        result {
+            let ssEval = compSSeval |> WorkspaceComponent.asSorterSetEval
+            return  [|"a";"b"|]
+        
+        }
+
+
     let reportEm (rootDir:string) 
         =
         let runDir = System.IO.Path.Combine(rootDir, "noise_0.5")
         let fs = new WorkspaceFileStore(runDir)
-        let wsParams = gaWs.wsPs()
-
+        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
+        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
+        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
         result {
-            let! yab = fs.getAllComponents workspaceComponentType.WorkspaceDescription
-                      |> Array.map(Result.bind(WorkspaceComponent.asWorkspaceDescription))
-                      |> Array.toList
-                      |> Result.sequence
+            let! compTupes = fs.getAllComponentsWithParamsByName wnSorterSetEvalMutated
 
             return ()
         }

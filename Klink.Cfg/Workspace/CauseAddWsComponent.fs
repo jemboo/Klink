@@ -1,12 +1,9 @@
 ﻿namespace global
 
-open System
-
-
 type causeAddWorkspaceParams 
             (workspaceParams:workspaceParams) 
     = 
-    member this.wsnParams = "workspaceParams" |> WsComponentName.create
+    member this.wsnParams = WsConstants.workSpaceComponentNameForParams
     member this.workspaceParams = workspaceParams
     member this.updater = 
             fun (w:workspace) (newWorkspaceId:workspaceId) ->
