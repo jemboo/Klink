@@ -46,7 +46,7 @@ module SorterSetMutatedFromRndCfg =
             ("order", cfg.order :> obj);
             ("rngGenCreate", cfg.rngGenCreate :> obj);
             ("switchGenMode", cfg.switchGenMode :> obj);
-            ("switchCount", cfg.switchCount :> obj);
+            ("sorterLength", cfg.switchCount :> obj);
             ("sorterCountOriginal", cfg.sorterCountOriginal :> obj);
             ("rngGenMutate", cfg.rngGenMutate :> obj);
             ("sorterCount", cfg.sorterCount :> obj);

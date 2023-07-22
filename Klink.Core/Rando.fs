@@ -110,8 +110,11 @@ module Rando =
     let nextRando (randy: IRando) =
         create randy.rngType (RandomSeed.create randy.NextPositiveInt)
 
-    let nextRngGen (randy: IRando) =
+    let toRngGen (randy: IRando) =
         RngGen.create randy.rngType (RandomSeed.create randy.NextPositiveInt)
+
+    let nextRngGen (rg: rngGen) =
+        rg |> fromRngGen |> toRngGen
 
     let indexedRngGen 
             (index:int) 
@@ -121,7 +124,7 @@ module Rando =
         for dex = 0 to index do
             let discard = randy.NextPositiveInt
             ()
-        nextRngGen randy
+        toRngGen randy
 
 
 
@@ -239,7 +242,7 @@ module RngGenProvider =
         =  rngGenProvider.rngGen
 
     let nextRngGen (rngGenProvider:rngGenProvider) 
-        =  rngGenProvider.randy |> Rando.nextRngGen
+        =  rngGenProvider.randy |> Rando.toRngGen
 
 
 

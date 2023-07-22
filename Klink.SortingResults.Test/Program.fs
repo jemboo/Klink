@@ -28,7 +28,7 @@ module Program =
        // let sorterSt = SorterSet.createRandomStagesSeparated sorterSetId sorterCt ordr 86 90 [||] switchCt rndGn
         let randy = Rando.create rngType.Lcg (123 |> RandomSeed.create)
         let rndGn () = 
-            randy |> Rando.nextRngGen
+            randy |> Rando.toRngGen
 
         let sorterSt = SorterSet.createRandomOrbitDraws sorterSetId sorterCt coreTwoCyc permSeed None [||] switchCt rndGn
 
@@ -79,7 +79,7 @@ module Program =
 
         let randy = Rando.fromRngGen rngen
         let rndGn2 () = 
-            randy |> Rando.nextRngGen
+            randy |> Rando.toRngGen
 
 
         let sorterSt = SorterSet.createRandomOrbitDraws 
@@ -180,7 +180,7 @@ module Program =
                             switchCt 
                             sorterBatchCt 
                             coreTwoCyc
-                            (Rando.nextRngGen randySampler)
+                            (Rando.toRngGen randySampler)
                             useParalll
                         sw.Flush()
                    )

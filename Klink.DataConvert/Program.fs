@@ -67,7 +67,7 @@ let switchCt = SwitchCount.orderTo999SwitchCount order
 let randomSorterSetSize = SorterCount.create 100
 let randy = Rando.create rngType.Lcg (123 |> RandomSeed.create)
 let rndGn () = 
-        randy |> Rando.nextRngGen
+        randy |> Rando.toRngGen
 let randomSorterSetFile = "randomSorterSet.txt"
 
 

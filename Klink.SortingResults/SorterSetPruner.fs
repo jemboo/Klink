@@ -91,13 +91,17 @@ module SorterSetPruner =
     let makePrunedSorterSetId
                 (sorterSetPrunerId:sorterSetPrunerId) 
                 (sorterSetIdParent:sorterSetId) 
-                (sorterSetIdChild:sorterSetId) 
+                (sorterSetIdChild:sorterSetId)
+                (stageWeight:stageWeight)
+                (noiseFraction:noiseFraction option)
                 (rngGen:rngGen) 
          =
         [|
             sorterSetPrunerId |> SorterSetPrunerId.value :> obj
             sorterSetIdParent |> SorterSetId.value :> obj;
             sorterSetIdChild |> SorterSetId.value :> obj;
+            stageWeight |> StageWeight.value :> obj
+            noiseFraction :> obj
             rngGen :> obj;
         |] 
         |> GuidUtils.guidFromObjs

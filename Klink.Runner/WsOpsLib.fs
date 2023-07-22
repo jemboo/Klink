@@ -81,7 +81,10 @@ module WsOpsLib =
                 logger ($"Saved Gen {curGen} Prune to { wsGenPrune |> Workspace.getId |> WorkspaceId.value}")
 
 
-                let! wsParamsNextGen = wsParams |> WorkspaceParams.incrGeneration "generation"
+                let! wsParamsNextGen = 
+                        wsParams |> WorkspaceParams.incrGeneration "generation"
+                                 |> Result.bind( WorkspaceParams.updateRngGen "rngGenMutate")
+                                 |> Result.bind(WorkspaceParams.updateRngGen "rngGenPrune")
 
                 let! nextGenCfg = 
                      WsCfgLib.assignToNextGen

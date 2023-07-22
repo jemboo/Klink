@@ -13,7 +13,7 @@ type SorterSetEvalFixture() =
 
         let randy = Rando.create rngType.Lcg (123 |> RandomSeed.create)
         let rndGn () = 
-                randy |> Rando.nextRngGen
+                randy |> Rando.toRngGen
 
         let sorterSetId = Guid.NewGuid() |> SorterSetId.create
         let sorterSt = SorterSet.createRandomSwitches sorterSetId sorterCt ordr [||] switchCt rndGn

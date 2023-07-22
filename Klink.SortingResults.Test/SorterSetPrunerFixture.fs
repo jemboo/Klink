@@ -20,7 +20,7 @@ type SorterSetPrunerFixture() =
 
         let randy = Rando.create rngType.Lcg (123 |> RandomSeed.create)
         let rndGn () = 
-            randy |> Rando.nextRngGen
+            randy |> Rando.toRngGen
    
         let switchCt = SwitchCount.orderTo900SwitchCount ordr
 

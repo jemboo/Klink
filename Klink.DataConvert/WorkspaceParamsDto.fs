@@ -23,7 +23,7 @@ module WorkspaceParamsDto =
     let toDto (workspaceParams: workspaceParams) =
         {
             workspaceParamsDto.id = workspaceParams |> WorkspaceParams.getId |> WorkspaceParamsId.value
-            data = workspaceParams |> WorkspaceParams.getData
+            data = workspaceParams |> WorkspaceParams.getMap
         }
 
     let toJson (workspaceParams: workspaceParams) =

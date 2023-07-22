@@ -16,7 +16,7 @@ module WsCfgLib =
                 let! order = wsParams |> WorkspaceParams.getOrder "order"
                 let! sorterCount = wsParams |> WorkspaceParams.getSorterCount "sorterCount"
                 let! switchGenMode = wsParams |> WorkspaceParams.getSwitchGenMode "switchGenMode"
-                let! switchCount = wsParams |> WorkspaceParams.getSwitchCount "switchCount"
+                let! switchCount = wsParams |> WorkspaceParams.getSwitchCount "sorterLength"
                 let! sorterEvalMode =wsParams |> WorkspaceParams.getSorterEvalMode "sorterEvalMode"
                 let! useParallel = wsParams |> WorkspaceParams.getUseParallel "useParallel"
 

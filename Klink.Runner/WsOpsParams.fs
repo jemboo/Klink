@@ -18,7 +18,7 @@ module gaWs =
     let rngGen = 123 |> RandomSeed.create |> RngGen.createLcg
     let randy = rngGen |> Rando.fromRngGen
     let nextRngGen () =
-        randy |> Rando.nextRngGen
+        randy |> Rando.toRngGen
 
     let rngGenCreate = (nextRngGen ())
     let rngGenMutate = (nextRngGen ())
@@ -28,15 +28,15 @@ module gaWs =
 
         let generation = 1 |> Generation.create
         let order = 16 |> Order.createNr
-        let sorterCount = SorterCount.create 16
+        let sorterCount = SorterCount.create 4
         let switchCount = SwitchCount.orderTo999SwitchCount order 
         let switchGenMode = switchGenMode.Stage
-        let sorterCountMutated = SorterCount.create 64
-        let mutationRate = 0.1 |> MutationRate.create
-        let noiseFraction = 0.5 |> NoiseFraction.create |> Some
+        let sorterCountMutated = SorterCount.create 8
+        let mutationRate = 0.05 |> MutationRate.create
+        let noiseFraction = 0.05 |> NoiseFraction.create |> Some
         //let noiseFraction = None
         let sorterEvalMode = sorterEvalMode.DontCheckSuccess
-        let stageWeight = 1.0 |> StageWeight.create
+        let stageWeight = 0.5 |> StageWeight.create
         let useParallel = true |> UseParallel.create
 
         WorkspaceParams.make Map.empty
@@ -51,6 +51,6 @@ module gaWs =
         |> WorkspaceParams.setSorterCount "sorterCountMutated" sorterCountMutated
         |> WorkspaceParams.setSorterEvalMode "sorterEvalMode" sorterEvalMode
         |> WorkspaceParams.setStageWeight "stageWeight" stageWeight
-        |> WorkspaceParams.setSwitchCount "switchCount" switchCount
+        |> WorkspaceParams.setSwitchCount "sorterLength" switchCount
         |> WorkspaceParams.setSwitchGenMode "switchGenMode" switchGenMode
         |> WorkspaceParams.setUseParallel "useParallel" useParallel

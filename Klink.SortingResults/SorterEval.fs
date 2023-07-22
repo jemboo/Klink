@@ -164,14 +164,14 @@ module SorterPerf =
 
 
 type sorterEvalProps =
-     | SorterId 
-     | SortableSetId
-     | ErrorMsg
-     | StageCount
-     | SwitchCount
-     | Success
-     | SortedSetSize
+     | ErrorMsg 
      | Phenotype
+     | SortableSetId
+     | SortedSetSize
+     | SorterId
+     | StageCount
+     | Success
+     | SwitchCount
 
 
 type sorterEvalMode = 

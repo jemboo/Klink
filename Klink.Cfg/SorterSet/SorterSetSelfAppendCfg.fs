@@ -40,7 +40,7 @@ module SorterSetSelfAppendCfg =
             ("order", rdsg.order :> obj);
             ("rngGen", rdsg.rngGen :> obj);
             ("switchGenMode", rdsg.switchGenMode :> obj);
-            ("switchCount", rdsg.switchCount :> obj);
+            ("sorterLength", rdsg.switchCount :> obj);
             ("sorterCountFactor", rdsg.sorterCountFactor :> obj);
             ("sorterCount", rdsg.sorterCount :> obj);
         |]

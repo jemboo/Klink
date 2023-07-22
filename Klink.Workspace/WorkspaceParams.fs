@@ -38,7 +38,7 @@ module WorkspaceParams =
     let getId (workspaceParams:workspaceParams) =
         workspaceParams.id
 
-    let getData (workspaceParams:workspaceParams) =
+    let getMap (workspaceParams:workspaceParams) =
         workspaceParams.data
 
     let addItem (key:string) (cereal:string) (workspaceParams:workspaceParams) =
@@ -165,6 +165,17 @@ module WorkspaceParams =
             (workspaceParams:workspaceParams) 
         =
         workspaceParams |> addItem key (value |> RngGenDto.toJson)
+
+
+    let updateRngGen
+            (key:string) 
+            (workspaceParams:workspaceParams) 
+        =
+        result {
+          let! curRngGen = workspaceParams |> getRngGen key
+          let nextRngGen = curRngGen |> Rando.nextRngGen
+          return setRngGen key nextRngGen workspaceParams
+        }
 
 
     let getSorterCount

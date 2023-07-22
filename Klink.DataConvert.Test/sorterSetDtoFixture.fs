@@ -15,7 +15,7 @@ type sorterSetDtoFixture() =
       let sorterCt = 10 |> SorterCount.create
       let randy = Rando.create rngType.Lcg (123 |> RandomSeed.create)
       let rndGn () = 
-            randy |> Rando.nextRngGen
+            randy |> Rando.toRngGen
 
 
       let sorterSt = SorterSet.createRandomSwitches 

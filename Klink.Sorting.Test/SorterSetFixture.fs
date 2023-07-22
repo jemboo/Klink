@@ -15,7 +15,7 @@ type SorterSetFixture() =
       let sorterCt = 10 |> SorterCount.create
       let randy = Rando.create rngType.Lcg (123 |> RandomSeed.create)
       let rndGn () = 
-        randy |> Rando.nextRngGen
+        randy |> Rando.toRngGen
 
       let sorterSt = SorterSet.createRandomSwitches 
                         sorterSetId sorterCt ordr wPfx switchCt rndGn
@@ -41,7 +41,7 @@ type SorterSetFixture() =
       let rngGen = RngGen.createLcg (123 |> RandomSeed.create)
       let randy = Rando.create rngType.Lcg (123 |> RandomSeed.create)
       let rndGn () = 
-        randy |> Rando.nextRngGen
+        randy |> Rando.toRngGen
       let mutationRate = MutationRate.create 0.15
 
       let sorterSetParent = 
@@ -90,7 +90,7 @@ type SorterSetFixture() =
       let baseSorterCt = 2 |> SorterCount.create
       let randy = Rando.create rngType.Lcg (123 |> RandomSeed.create)
       let rndGn () = 
-        randy |> Rando.nextRngGen
+        randy |> Rando.toRngGen
 
       let sorterStBase = 
         SorterSet.createRandomStages 

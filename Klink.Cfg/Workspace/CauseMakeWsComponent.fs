@@ -216,6 +216,8 @@ type causePruneSorterSetsWhole
                         (sorterSetPruner |> SorterSetPruner.getId)
                         (sorterSetParent |> SorterSet.getId)
                         (sorterSetChild |> SorterSet.getId)
+                        (this.stageWeight)
+                        (this.noiseFraction)
                         _rngGen
 
                 let prunedSorterSet = 

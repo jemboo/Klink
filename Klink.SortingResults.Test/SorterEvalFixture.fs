@@ -142,6 +142,16 @@ type SorterEvalFixture() =
 
 
 
+    [<TestMethod>]
+    member this.sorterEvalProps() =
+        let yab = sorterEvalProps.SortableSetId
+        let woof = sprintf "%A" yab
+
+        
+        Assert.AreEqual(1, 1)
+
+
+
     //[<TestMethod>]
     //member this.SorterPerfBinReport_fromSorterPerfBins() =
     //    let order = 8 |> Order.createNr

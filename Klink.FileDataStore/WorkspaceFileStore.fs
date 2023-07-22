@@ -8,28 +8,30 @@ type WorkspaceFileStore (wsRootDir:string) =
     member this.fileExt = "txt"
 
 
-    member this.getFolderName (wsCompType:workspaceComponentType) =
-        wsCompType |> string
+    member this.getFolderName (wsCompType:workspaceComponentType option) =
+        match wsCompType with
+        | Some v -> v |> string
+        | None -> ""
 
-    member this.writeToFile (wsCompType:workspaceComponentType) (fileName:string) (data: string) =
+    member this.writeToFile (wsCompType:workspaceComponentType option) (fileName:string) (data: string) =
         TextIO.writeToFile this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
 
-    member this.writeLinesIfNew (wsCompType:workspaceComponentType) (fileName:string) (data: string seq) =
+    member this.writeLinesIfNew (wsCompType:workspaceComponentType option) (fileName:string) (data: string seq) =
         TextIO.writeLinesIfNew this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
 
-    member this.appendLines (wsCompType:workspaceComponentType) (fileName:string) (data: string seq) =
+    member this.appendLines (wsCompType:workspaceComponentType option) (fileName:string) (data: string seq) =
         TextIO.appendLines this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
 
-    member this.fileExists (wsCompType:workspaceComponentType) (fileName:string) =
+    member this.fileExists (wsCompType:workspaceComponentType option) (fileName:string) =
         TextIO.fileExists this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName
 
-    member this.readAllText (wsCompType:workspaceComponentType) (fileName:string) =
+    member this.readAllText (wsCompType:workspaceComponentType option) (fileName:string) =
         TextIO.readAllText this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName
 
-    member this.readAllLines (wsCompType:workspaceComponentType) (fileName:string) =
+    member this.readAllLines (wsCompType:workspaceComponentType option) (fileName:string) =
         TextIO.readAllLines this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName
 
-    member this.getAllFiles (wsCompType:workspaceComponentType) =
+    member this.getAllFiles (wsCompType:workspaceComponentType option) =
            let filePath = Path.Combine(this.wsRootDir, this.getFolderName wsCompType)
            Directory.GetFiles(filePath)
 
@@ -39,7 +41,7 @@ type WorkspaceFileStore (wsRootDir:string) =
         result {
             let cereal, wsCompType = wsComp |> WorkspaceComponentDto.toJsonT
             let fileName = wsComp |> WorkspaceComponent.getId |> string
-            let! res = this.writeToFile wsCompType fileName cereal
+            let! res = this.writeToFile (Some wsCompType) fileName cereal
             return fileName
         }
 
@@ -53,39 +55,39 @@ type WorkspaceFileStore (wsRootDir:string) =
             return!
                 match wsCompType with
                 | workspaceComponentType.SortableSet ->
-                    this.readAllText wsCompType fileName
+                    this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SortableSetDto.fromJson)
                     |> Result.map(workspaceComponent.SortableSet)
                 | workspaceComponentType.SorterSet ->
-                    this.readAllText wsCompType fileName
+                    this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSet)
                 | workspaceComponentType.SorterSetMutator ->
-                    this.readAllText wsCompType fileName
+                    this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetMutatorDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSetMutator)
                 | workspaceComponentType.SorterSetParentMap ->
-                    this.readAllText wsCompType fileName
+                    this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetParentMapDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSetParentMap)
                 | workspaceComponentType.SorterSetConcatMap ->
-                    this.readAllText wsCompType fileName
+                    this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetConcatMapDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSetConcatMap)
                 | workspaceComponentType.SorterSetEval ->
-                    this.readAllText wsCompType fileName
+                    this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetEvalDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSetEval)
                 | workspaceComponentType.SorterSetPruner ->
-                    this.readAllText wsCompType fileName
+                    this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetPrunerWholeDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSetPruner)
                 | workspaceComponentType.WorkspaceDescription ->
-                    this.readAllText wsCompType fileName
+                    this.readAllText (Some wsCompType) fileName
                     |> Result.bind(WorkspaceDescriptionDto.fromJson)
                     |> Result.map(workspaceComponent.WorkspaceDescription)
                 | workspaceComponentType.WorkspaceParams ->
-                    this.readAllText wsCompType fileName
+                    this.readAllText (Some wsCompType) fileName
                     |> Result.bind(WorkspaceParamsDto.fromJson)
                     |> Result.map(workspaceComponent.WorkspaceParams)
                 | _ 
@@ -96,7 +98,7 @@ type WorkspaceFileStore (wsRootDir:string) =
     member this.getAllComponents
                (wsCompType:workspaceComponentType) 
         = 
-        this.getAllFiles wsCompType 
+        this.getAllFiles (Some wsCompType)
             |> Array.map(Path.GetFileNameWithoutExtension >> Guid.Parse)
             |> Array.map(fun gu -> this.compRetreive gu wsCompType)
 
@@ -107,10 +109,13 @@ type WorkspaceFileStore (wsRootDir:string) =
         =
         result {
             let yab = wsd |> WorkspaceDescription.getComponents
-            let compDescr = yab.[wscn]
-            let compId = compDescr |> WorkspaceComponentDescr.getId
-            let compType = compDescr |> WorkspaceComponentDescr.getCompType
-            return! this.compRetreive compId compType
+            if yab.ContainsKey wscn then
+                let compDescr = yab.[wscn]
+                let compId = compDescr |> WorkspaceComponentDescr.getId
+                let compType = compDescr |> WorkspaceComponentDescr.getCompType
+                return! Some (this.compRetreive compId compType)
+            else 
+                return! None
         }
 
     member this.getComponentWithParams
@@ -119,17 +124,20 @@ type WorkspaceFileStore (wsRootDir:string) =
         =
         result {
             let yab = wsd |> WorkspaceDescription.getComponents
-            let compDescr = yab.[wscn]
-            let compDescrParams = yab.[WsConstants.workSpaceComponentNameForParams]
-            let compId = compDescr |> WorkspaceComponentDescr.getId
-            let compType = compDescr |> WorkspaceComponentDescr.getCompType
-            let compIdParams = compDescrParams |> WorkspaceComponentDescr.getId
-            let compTypeParams = compDescrParams |> WorkspaceComponentDescr.getCompType
+            if yab.ContainsKey wscn then
+                let compDescr = yab.[wscn]
+                let compDescrParams = yab.[WsConstants.workSpaceComponentNameForParams]
+                let compId = compDescr |> WorkspaceComponentDescr.getId
+                let compType = compDescr |> WorkspaceComponentDescr.getCompType
+                let compIdParams = compDescrParams |> WorkspaceComponentDescr.getId
+                let compTypeParams = compDescrParams |> WorkspaceComponentDescr.getCompType
 
-            let! wsComp = this.compRetreive compId compType
-            let! wsParams = this.compRetreive compIdParams compTypeParams
-                                |> Result.bind(WorkspaceComponent.asWorkspaceParams)
-            return wsComp, wsParams
+                let! wsComp = this.compRetreive compId compType
+                let! wsParams = this.compRetreive compIdParams compTypeParams
+                                    |> Result.bind(WorkspaceComponent.asWorkspaceParams)
+                let rv = (wsComp, wsParams) |> Some
+                return rv
+            else return None
         }
 
 
@@ -143,8 +151,10 @@ type WorkspaceFileStore (wsRootDir:string) =
                       |> Array.toList
                       |> Result.sequence
 
-            return! wsDescrs 
+            return!  wsDescrs 
                             |> List.map(this.getComponent wscn)
+                            |> List.filter(Option.isSome)
+                            |> List.map(Option.get)
                             |> Result.sequence
         }
 
@@ -158,9 +168,14 @@ type WorkspaceFileStore (wsRootDir:string) =
                       |> Array.toList
                       |> Result.sequence
 
-            return! wsDescrs 
+
+            let! yab = wsDescrs 
                             |> List.map(this.getComponentWithParams wscn)
                             |> Result.sequence
+
+            return yab |> List.filter(Option.isSome)
+                       |> List.map(Option.get)
+
         }
 
 
@@ -169,13 +184,13 @@ type WorkspaceFileStore (wsRootDir:string) =
         result {
             let fileName = id |> WorkspaceId.value |> string
             return!                   
-                this.fileExists workspaceComponentType.WorkspaceDescription fileName
+                this.fileExists (Some workspaceComponentType.WorkspaceDescription) fileName
         }
 
     member this.loadWorkSpace (id:workspaceId) =
         result {
             let fileName = id |> WorkspaceId.value |> string
-            let! cereal = this.readAllText workspaceComponentType.WorkspaceDescription fileName
+            let! cereal = this.readAllText (Some workspaceComponentType.WorkspaceDescription) fileName
             let! wsd = cereal |> WorkspaceDescriptionDto.fromJson
             return! wsd |> Workspace.ofWorkspaceDescription this.compRetreive
         }
@@ -185,7 +200,7 @@ type WorkspaceFileStore (wsRootDir:string) =
             let fileName = workspace |> Workspace.getId |> WorkspaceId.value |> string
             let cereal = workspace |> Workspace.toWorkspaceDescription
                                    |> WorkspaceDescriptionDto.toJson
-            let! res = this.writeToFile workspaceComponentType.WorkspaceDescription fileName cereal
+            let! res = this.writeToFile (Some workspaceComponentType.WorkspaceDescription) fileName cereal
             let _, comps = workspace |> Workspace.getWsComponents |> Map.toArray |> Array.unzip
             let! _ = comps |> Array.toList |> List.map(this.compStore) |> Result.sequence
             return fileName
