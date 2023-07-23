@@ -22,6 +22,10 @@ type causeLoadWorkspace
              |> GuidUtils.guidFromObjs
              |> CauseId.create
 
+    member this.makeTruncatedWorkspaceCfg() 
+            =
+            WorkspaceCfg.makeWorkspaceCfg [this]
+
     interface ICause with
         member this.Id = this.id
         member this.ResetId = Some this.workspaceId

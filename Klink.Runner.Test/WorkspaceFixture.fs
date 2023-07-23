@@ -17,8 +17,8 @@ type WorkspaceFixture () =
         let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg)
 
         let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg cause1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
+        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCause cause1
+        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCause cause2
 
         let ws = Workspace.empty 
                     |> WorkspaceCfg.makeWorkspace secondWsCfg.history (fun s->())
@@ -59,10 +59,10 @@ type WorkspaceFixture () =
 
 
         let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg cause1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
-        let thirdWsCfg = secondWsCfg |> WorkspaceCfg.addCauseCfg cause3
-        let fourthWsCfg = thirdWsCfg |> WorkspaceCfg.addCauseCfg cause4
+        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCause cause1
+        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCause cause2
+        let thirdWsCfg = secondWsCfg |> WorkspaceCfg.addCause cause3
+        let fourthWsCfg = thirdWsCfg |> WorkspaceCfg.addCause cause4
 
 
         let firstWs = Workspace.empty 

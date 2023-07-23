@@ -6,8 +6,12 @@ module WsOps =
 
 
     let runFolder = "testRnd"
-
-    let makeEm (rootDir:string) 
+    // 0.05 |> NoiseFraction.create |> Some
+    let makeEm 
+            (rootDir:string) 
+            (runId:runId)
+            (stageWeight:stageWeight) 
+            (noiseFraction:noiseFraction option) 
         =
         
         let wnSortableSet = "sortableSet" |> WsComponentName.create
@@ -21,9 +25,9 @@ module WsOps =
         let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
         let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
 
-        let runDir = IO.Path.Combine(rootDir, runFolder)
+        let runDir = IO.Path.Combine(rootDir, runFolder, runId |> RunId.value |> string)
         let fs = new WorkspaceFileStore(runDir)
-        let wsParams = gaWs.wsPs()
+        let wsParams = WsParamsGen.forGa runId stageWeight noiseFraction
 
         result {
             let! wsCfg = WsOpsLib.genZero
@@ -38,7 +42,7 @@ module WsOps =
             let mutable curCfg = wsCfg
             let mutable curParams = wsParams
 
-            while curGen < 4 do
+            while curGen < 80 do
                 let! wsCfgN, wsPramsN = 
                     WsOpsLib.doGen
                         wnSortableSet
@@ -62,6 +66,146 @@ module WsOps =
 
             return ()
         }
+
+
+    let makeEmLoop
+            (rootDir:string) 
+            (runIds:runId seq)
+            (stageWeight:stageWeight) 
+            (noiseFraction:noiseFraction option) 
+        =
+        
+        let wnSortableSet = "sortableSet" |> WsComponentName.create
+        let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
+        let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
+        let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
+        let wnSorterSetPruned = "sorterSetPruned" |> WsComponentName.create
+        let wnParentMap = "parentMap" |> WsComponentName.create
+        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
+        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
+        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
+        let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
+
+
+        result {
+
+            for runId in runIds do
+                let runDir = IO.Path.Combine(rootDir, runFolder, runId |> RunId.value |> string)
+                let fs = new WorkspaceFileStore(runDir)
+                let wsParams = WsParamsGen.forGa runId stageWeight noiseFraction
+
+
+                let! wsCfg = WsOpsLib.genZero
+                                    wnSortableSet
+                                    wnSorterSetParent
+                                    wnSorterSetEvalParent
+                                    wsParams
+                                    fs
+                                    (fun s-> Console.WriteLine(s))
+
+                let mutable curGen = 0
+                let mutable curCfg = wsCfg
+                let mutable curParams = wsParams
+
+                while curGen < 80 do
+                    let! wsCfgN, wsPramsN = 
+                        WsOpsLib.doGen
+                            wnSortableSet
+                            wnSorterSetParent
+                            wnSorterSetMutator
+                            wnSorterSetMutated
+                            wnSorterSetPruned
+                            wnParentMap
+                            wnSorterSetEvalParent
+                            wnSorterSetEvalMutated
+                            wnSorterSetEvalPruned
+                            wnSorterSetPruner
+                            fs
+                            (fun s-> Console.WriteLine(s))
+                            curParams
+                            curCfg
+
+                    curCfg <- wsCfgN
+                    curParams <- wsPramsN
+                    curGen <- curGen + 1
+
+            return ()
+        }
+
+
+    let makeEmAll
+            (rootDir:string) 
+            (runIds:runId seq)
+            (stageWeights:stageWeight seq) 
+            (noiseFractions:noiseFraction option seq) 
+        =
+        
+        let wnSortableSet = "sortableSet" |> WsComponentName.create
+        let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
+        let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
+        let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
+        let wnSorterSetPruned = "sorterSetPruned" |> WsComponentName.create
+        let wnParentMap = "parentMap" |> WsComponentName.create
+        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
+        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
+        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
+        let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
+
+
+        result {
+
+            for runId in runIds do
+                for stageWeight in stageWeights do
+                    for noiseFraction in noiseFractions do
+                        let runDir = IO.Path.Combine(rootDir, runFolder, runId |> RunId.value |> string)
+                        let fs = new WorkspaceFileStore(runDir)
+                        let wsParams = WsParamsGen.forGa runId stageWeight noiseFraction
+
+
+                        let! wsCfg = WsOpsLib.genZero
+                                            wnSortableSet
+                                            wnSorterSetParent
+                                            wnSorterSetEvalParent
+                                            wsParams
+                                            fs
+                                            (fun s-> Console.WriteLine(s))
+
+                        let mutable curGen = 0
+                        let mutable curCfg = wsCfg
+                        let mutable curParams = wsParams
+
+                        while curGen < 240 do
+                            let! wsCfgN, wsPramsN = 
+                                WsOpsLib.doGen
+                                    wnSortableSet
+                                    wnSorterSetParent
+                                    wnSorterSetMutator
+                                    wnSorterSetMutated
+                                    wnSorterSetPruned
+                                    wnParentMap
+                                    wnSorterSetEvalParent
+                                    wnSorterSetEvalMutated
+                                    wnSorterSetEvalPruned
+                                    wnSorterSetPruner
+                                    fs
+                                    (fun s-> Console.WriteLine(s))
+                                    curParams
+                                    curCfg
+
+                            curCfg <- wsCfgN
+                            curParams <- wsPramsN
+                            curGen <- curGen + 1
+
+            return ()
+        }
+
+
+
+
+
+
+
+
 
 
     let selectedSorterEvalProps =
@@ -88,6 +232,7 @@ module WsOps =
     let selectedParams =
         [
             "generation";
+            "runId";
             "mutationRate";
             "noiseFraction";
             "order";
@@ -116,10 +261,10 @@ module WsOps =
 
 
     let reportLines
-                   (wsComp:workspaceComponent) 
-                   (wsps:workspaceParams)
-                   (fileName:string)
-                   (fs:WorkspaceFileStore)
+            (wsComp:workspaceComponent) 
+            (wsps:workspaceParams)
+            (fileName:string)
+            (fs:WorkspaceFileStore)
         =
         let sorterSetEval = wsComp |> WorkspaceComponent.asSorterSetEval |> Result.ExtractOrThrow
         let lines = 
@@ -132,9 +277,9 @@ module WsOps =
         fs.appendLines None fileName lines
 
 
-    let reportEm (rootDir:string) 
+    let reportEm (rootDir:string) (runId:runId) 
         =
-        let runDir = System.IO.Path.Combine(rootDir, runFolder)
+        let runDir = System.IO.Path.Combine(rootDir, runFolder, runId |> RunId.value |> string)
         let reportFileName = "SorterEvalReport"
         let fs = new WorkspaceFileStore(runDir)
 
@@ -150,5 +295,37 @@ module WsOps =
             let yab = compTupes 
                         |> List.map (fun (wsComp, wsPram) -> 
                             reportLines wsComp wsPram reportFileName fs)
+            return ()
+        }
+
+
+
+    let reportEmAll 
+            (rootDir:string)
+            (runIds:runId seq)
+        =
+        let runDir = System.IO.Path.Combine(rootDir, runFolder)
+        let reportFileName = "SorterEvalReport"
+        let fsReporter = new WorkspaceFileStore(runDir)
+
+        fsReporter.appendLines None reportFileName [reportHeader ()] 
+                |> Result.ExtractOrThrow
+                |> ignore
+
+        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
+        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
+        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
+        result {
+
+            for runId in runIds do
+                let runDir = IO.Path.Combine(rootDir, runFolder, runId |> RunId.value |> string)
+                let fs = new WorkspaceFileStore(runDir)
+                let! compTupes = fs.getAllComponentsWithParamsByName wnSorterSetEvalMutated
+                let! yab = compTupes 
+                                |> List.map (fun (wsComp, wsPram) -> 
+                                    reportLines wsComp wsPram reportFileName fsReporter)
+                           |> Result.sequence
+                ()
+
             return ()
         }

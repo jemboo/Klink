@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <Compile Include="WsCfgLib.fs" />
-    <Compile Include="WsOpsParams.fs" />
+    <Compile Include="WsParamsGen.fs" />
     <Compile Include="WsOpsLib.fs" />
     <Compile Include="CliArguments.fs" />
     <None Include="App.config" />

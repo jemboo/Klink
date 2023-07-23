@@ -25,7 +25,8 @@ module WorkspaceCfg =
             | [] -> curId
             | h::t ->
                 match h.ResetId with
-                | Some id -> id
+                | Some id -> 
+                    _makeWorkspaceId id t
                 | None ->
                     let nextId = 
                          [
@@ -49,13 +50,15 @@ module WorkspaceCfg =
     let Empty = makeWorkspaceCfg []
 
 
-    let addCauseCfg (ccfg:ICause) (wscfg:workspaceCfg) =
+    let addCause 
+            (ccfg:ICause) 
+            (wscfg:workspaceCfg) =
         makeWorkspaceCfg ([ccfg] |> List.append wscfg.history)
 
     let addCauses (ccfgs:ICause list) (wscfg:workspaceCfg) =
         makeWorkspaceCfg (ccfgs |> List.append wscfg.history)
 
-    let removeLastCauseCfg (wscfg:workspaceCfg) =
+    let removeLastCause (wscfg:workspaceCfg) =
         match wscfg.history with
         | [] ->   (makeWorkspaceCfg [], [])
         | h::t -> (
@@ -107,7 +110,7 @@ module WorkspaceCfg =
                     logger $"no prior workspace found"
                     (Empty.id, future) |> Ok
                 else
-                    let lastWksCfg, lastCause = removeLastCauseCfg wksCfgCurrent
+                    let lastWksCfg, lastCause = removeLastCause wksCfgCurrent
                     _lastWorkspaceCfg lastWksCfg (lastCause@future)
 
         _lastWorkspaceCfg workspaceCfg []
@@ -123,10 +126,10 @@ module WorkspaceCfg =
                     workspaceCfg |>
                         getLastSavedWorspaceIdAndFuture fileStore logger
 
-            let! restoredWs = 
+            let! restoredAncestorWs = 
                 if (latestSavedId = Empty.id) then
                     Workspace.empty |> Ok
                 else
                     fileStore.LoadWorkSpace(latestSavedId)
-            return! restoredWs |> makeWorkspace future logger
+            return! restoredAncestorWs |> makeWorkspace future logger
         }

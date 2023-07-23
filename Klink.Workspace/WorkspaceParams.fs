@@ -178,6 +178,24 @@ module WorkspaceParams =
         }
 
 
+    let getRunId
+            (key:string) 
+            (workspaceParams:workspaceParams) 
+        =
+        result {
+          let! cereal = getItem key workspaceParams
+          return Convert.ToInt32(cereal) |> RunId.create
+        }
+
+
+    let setRunId
+            (key:string) 
+            (value:runId)
+            (workspaceParams:workspaceParams) 
+        =
+        workspaceParams |> addItem key (value |> RunId.value |> string)
+
+
     let getSorterCount
             (key:string) 
             (workspaceParams:workspaceParams) 

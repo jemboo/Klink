@@ -17,10 +17,10 @@ type WorkspaceCfgFixture () =
         let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg)
 
         let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg cause1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
-        let reFirstWsCfg, future = secondWsCfg |> WorkspaceCfg.removeLastCauseCfg
-        let emptied, futureNo = firstWsCfg |> WorkspaceCfg.removeLastCauseCfg
+        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCause cause1
+        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCause cause2
+        let reFirstWsCfg, future = secondWsCfg |> WorkspaceCfg.removeLastCause
+        let emptied, futureNo = firstWsCfg |> WorkspaceCfg.removeLastCause
 
         Assert.AreEqual(firstWsCfg.id, reFirstWsCfg.id);
         Assert.AreEqual(emptyWsCfg.id, emptied.id);
@@ -38,8 +38,8 @@ type WorkspaceCfgFixture () =
         let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg)
 
         let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCauseCfg cause1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCauseCfg cause2
+        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCause cause1
+        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCause cause2
 
         let ws = Workspace.empty 
                     |> WorkspaceCfg.makeWorkspace secondWsCfg.history (fun s-> ())

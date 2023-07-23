@@ -101,11 +101,20 @@ module WsOpsLib =
 
                 let! res = fs.saveWorkSpace wsNextGen
 
-                let! nextGen =  wsParams 
+                let! nextGenNumber = 
+                            wsParams 
                                 |> WorkspaceParams.getGeneration "generation" 
                                 |> Result.map(Generation.value)
 
-                logger ($"Saved Gen {nextGen} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
-                return nextGenCfg, wsParamsNextGen
+                logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
+
+
+                let aggregatedCause = new causeLoadWorkspace (wsNextGen |> Workspace.getId)
+
+                let yab = nextGenCfg.id
+
+                let truncWsCfg = aggregatedCause.makeTruncatedWorkspaceCfg()
+
+                return truncWsCfg, wsParamsNextGen
              }
 

@@ -2,7 +2,7 @@
 open System
 
 
-module gaWs = 
+module WsParamsGen = 
 
     let wnSortableSet = "sortableSet" |> WsComponentName.create
     let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
@@ -14,32 +14,40 @@ module gaWs =
     let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
     let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
     let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
-
-    let rngGen = 123 |> RandomSeed.create |> RngGen.createLcg
-    let randy = rngGen |> Rando.fromRngGen
-    let nextRngGen () =
-        randy |> Rando.toRngGen
-
-    let rngGenCreate = (nextRngGen ())
-    let rngGenMutate = (nextRngGen ())
-    let rngGenPrune = (nextRngGen ())
         
-    let wsPs () =
+    let forGa 
+            (runId:runId) 
+            (stageWeight:stageWeight) 
+            (noiseFraction:noiseFraction option) 
+        =
+
+        let randy = (runId |> RunId.value) 
+                        |> RandomSeed.create |> RngGen.createLcg
+                        |> Rando.fromRngGen
+
+        let nextRngGen () =
+            randy |> Rando.toRngGen
+
+        let rngGenCreate = (nextRngGen ())
+        let rngGenMutate = (nextRngGen ())
+        let rngGenPrune = (nextRngGen ())
+
 
         let generation = 1 |> Generation.create
         let order = 16 |> Order.createNr
-        let sorterCount = SorterCount.create 4
+        let sorterCount = SorterCount.create 16
         let switchCount = SwitchCount.orderTo999SwitchCount order 
         let switchGenMode = switchGenMode.Stage
-        let sorterCountMutated = SorterCount.create 8
+        let sorterCountMutated = SorterCount.create 32
         let mutationRate = 0.05 |> MutationRate.create
-        let noiseFraction = 0.05 |> NoiseFraction.create |> Some
+        let noiseFraction = noiseFraction
         //let noiseFraction = None
         let sorterEvalMode = sorterEvalMode.DontCheckSuccess
-        let stageWeight = 0.5 |> StageWeight.create
+        let stageWeight = stageWeight
         let useParallel = true |> UseParallel.create
 
         WorkspaceParams.make Map.empty
+        |> WorkspaceParams.setRunId "runId" runId
         |> WorkspaceParams.setRngGen "rngGenCreate" rngGenCreate
         |> WorkspaceParams.setRngGen "rngGenMutate" rngGenMutate
         |> WorkspaceParams.setRngGen "rngGenPrune" rngGenPrune
