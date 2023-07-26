@@ -114,6 +114,33 @@ module SorterSetEval
         |> Array.map(SorterEval.getSorterId)
 
 
+    let getSorterSpeedBins (sorterSetEval:sorterSetEval) =
+        result {
+            let! sorterSpeeds =
+                 sorterSetEval |> getSorterEvals |> Array.map(SorterEval.getSorterSpeed)
+                 |> Array.map(Result.ofOption("SorterSpeed missing"))
+                 |> Array.toList
+                 |> Result.sequence
+            
+            return sorterSpeeds 
+                    |> List.groupBy(id) 
+                    |> List.map(fun tup -> (tup |> fst, tup |> snd |> List.length))
+        }
+
+
+
+    let getAllSorterSpeedBins (sorterSetEvals:sorterSetEval seq) =
+        result {
+            let! allSorterSpeeds =
+                     sorterSetEvals |> Seq.map(getSorterSpeedBins)
+                     |> Seq.toList
+                     |> Result.sequence
+            return allSorterSpeeds 
+                    |> Seq.concat 
+                    |> Seq.groupBy(fst) 
+                    |> Seq.map(fun (ss, sq) -> (ss, sq |> Seq.sumBy(snd)))
+        }
+
 
     //let twoPassEvaluation
     //    (sorterEvalMode1: sorterEvalMode)

@@ -19,6 +19,7 @@ module WsParamsGen =
             (runId:runId) 
             (stageWeight:stageWeight) 
             (noiseFraction:noiseFraction option) 
+            (mutationRate:mutationRate) 
         =
 
         let randy = (runId |> RunId.value) 
@@ -39,7 +40,7 @@ module WsParamsGen =
         let switchCount = SwitchCount.orderTo999SwitchCount order 
         let switchGenMode = switchGenMode.Stage
         let sorterCountMutated = SorterCount.create 32
-        let mutationRate = 0.05 |> MutationRate.create
+        let mutationRate = mutationRate
         let noiseFraction = noiseFraction
         //let noiseFraction = None
         let sorterEvalMode = sorterEvalMode.DontCheckSuccess

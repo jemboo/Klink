@@ -3,6 +3,7 @@
 type causeAddWorkspaceParams 
             (workspaceParams:workspaceParams) 
     = 
+    member this.causeName = "causeAddWorkspaceParams"
     member this.wsnParams = WsConstants.workSpaceComponentNameForParams
     member this.workspaceParams = workspaceParams
     member this.updater = 
@@ -12,13 +13,14 @@ type causeAddWorkspaceParams
                      this.workspaceParams
                             |> workspaceComponent.WorkspaceParams
                 return w |> Workspace.addComponents 
-                                newWorkspaceId 
+                                newWorkspaceId
+                                this.causeName
                                 [(this.wsnParams, wsParams)]
             }
     member this.id =
         [
-            this.wsnParams :> obj
-            "causeAddWorkspaceParams" :> obj
+            this.workspaceParams :> obj
+            this.causeName:> obj
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create
@@ -33,6 +35,7 @@ type causeAddSortableSet
             (wsnSortableSet:wsComponentName,
              ssCfg:sortableSetCfg) 
     = 
+    member this.causeName = "causeAddSortableSet"
     member this.wsnSortableSet = wsnSortableSet
     member this.updater = 
             fun (w:workspace) (newWorkspaceId:workspaceId) ->
@@ -40,8 +43,13 @@ type causeAddSortableSet
                 let! ssComp = ssCfg
                             |> SortableSetCfg.makeSortableSet 
                             |> Result.map(workspaceComponent.SortableSet)
+
+
+
+
                 return w |> Workspace.addComponents 
-                                newWorkspaceId 
+                                newWorkspaceId
+                                this.causeName
                                 [(this.wsnSortableSet, ssComp)]
             }
     member this.id =
@@ -64,6 +72,7 @@ type causeAddSorterSetRnd
              ssCfg:sorterSetRndCfg,
              rngGen:rngGen) 
     = 
+    member this.causeName = "causeAddSorterSetRnd"
     member this.wsnSorterSet = wsnSorterSet
     member this.rngGen = rngGen
     member this.updater = 
@@ -77,6 +86,7 @@ type causeAddSorterSetRnd
                             |> Result.map(workspaceComponent.SorterSet)
                 return w |> Workspace.addComponents 
                                 newWorkspaceId
+                                this.causeName
                                 [
                                     (this.wsnSorterSet, wsCompSorterSet);
                                 ]
@@ -91,7 +101,7 @@ type causeAddSorterSetRnd
     interface ICause with
         member this.Id = this.id
         member this.ResetId = None
-        member this.Name = wsnSorterSet |> WsComponentName.value
+        member this.Name = this.causeName
         member this.Updater = this.updater
 
 
@@ -103,6 +113,7 @@ type causeAddSorterSetMutator
              sorterCountMutated:sorterCount,
              mutationRate:mutationRate) 
     = 
+    member this.causeName = "causeAddSorterSetMutator"
     member this.wsnSorterSetMutator = wsnSorterSetMutator
     member this.order = order
     member this.switchGenMode = switchGenMode
@@ -111,7 +122,7 @@ type causeAddSorterSetMutator
 
     member this._id =
                 [|
-                  "sorterSetMutatorCfg" :> obj;
+                  this.causeName :> obj;
                    order :> obj;
                    switchGenMode :> obj;
                    sorterCountMutated :> obj;
@@ -149,7 +160,8 @@ type causeAddSorterSetMutator
                             (Some sorterCountMutated)
                             |> workspaceComponent.SorterSetMutator
               return w |> Workspace.addComponents 
-                                newWorkspaceId 
+                                newWorkspaceId
+                                this.causeName
                                 [(this.wsnSorterSetMutator, ssComp)]
             }
     member this.id =   

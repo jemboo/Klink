@@ -92,6 +92,7 @@ module WsOpsLib =
                         wnSorterSetPruned
                         wnSorterSetEvalParent
                         wnSorterSetEvalPruned
+                        wnParentMap
                         wsParamsNextGen
                         pruneCfg
 

@@ -19,3 +19,15 @@ module StringUtil =
         match strVal with
         | Some sv -> sv
         | None -> emptyVal
+
+    let toCsvLine<'a> 
+            (strFetch:'a->string) 
+            (lineData:'a seq)
+        =
+        lineData 
+        |> Seq.fold 
+                (fun st t ->
+                    let cv = strFetch t 
+                    if (st = "") then cv else $"{st}\t{cv}" 
+                )
+                ""

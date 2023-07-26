@@ -40,7 +40,10 @@ type workspaceDtoFixture() =
         let ssWsId = Guid.NewGuid() |> WorkspaceId.create
 
         let wsIn = wsEmpty 
-                   |> Workspace.addComponents ssWsId [(wsCompName, wcSS)]
+                   |> Workspace.addComponents 
+                            ssWsId
+                            "lastCauseName"
+                            [(wsCompName, wcSS)]
 
         let fs = new WorkspaceFileStore("c:\\Boinky")
 

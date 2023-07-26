@@ -169,29 +169,26 @@ module WsCfgLib =
             (wnSorterSetPruned:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalPruned:wsComponentName)
+            (wnParentMap:wsComponentName)
             (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
             =
 
             result {
-
-                let causeAddWorkspaceParams =  
-                    new causeAddWorkspaceParams(
-                            wsParams)
-
-                let causePruneSorterSetsNextGen = 
-                    new causePruneSorterSetsNextGen(
+                let causeSetupForNextGen = 
+                    new setupForNextGen(
                             wnSorterSetParent,
                             wnSorterSetPruned,
                             wnSorterSetEvalParent,
-                            wnSorterSetEvalPruned
+                            wnSorterSetEvalPruned,
+                            wnParentMap,
+                            wsParams
                             )
 
                 return
                         workspaceCfg 
                         |> WorkspaceCfg.addCauses 
                             [
-                                causePruneSorterSetsNextGen;
-                                causeAddWorkspaceParams;
+                                causeSetupForNextGen;
                             ]
             }

@@ -5,6 +5,8 @@ open System
 type workspace = private {
         id:workspaceId;
         parentId:workspaceId option;
+        grandParentId:workspaceId option;
+        lastCauseName:string;
         wsComponents: Map<wsComponentName, workspaceComponent>
     }
 
@@ -22,22 +24,29 @@ module Workspace =
                     |> GuidUtils.guidFromObjs 
                     |> WorkspaceId.create
             parentId = None
+            grandParentId = None
+            lastCauseName = "None"
             wsComponents = Map.empty
         }
 
     let load 
             (id:workspaceId) 
             (parentId:workspaceId option) 
+            (grandParentId:workspaceId option)
+            (lastCauseName:string)
             (tupes:seq<wsComponentName*workspaceComponent>)
         =
         {
             workspace.id = id;
             parentId = parentId;
+            grandParentId = grandParentId;
+            lastCauseName = lastCauseName
             wsComponents = tupes |> Map.ofSeq
         }
 
     let addComponents
-            (newWorkspaceId:workspaceId) 
+            (newWorkspaceId:workspaceId)
+            (lastCauseName:string)
             (tupes:seq<wsComponentName*workspaceComponent>)
             (workspace:workspace)  =
         let newMap =
@@ -46,6 +55,8 @@ module Workspace =
         {
             id = newWorkspaceId
             parentId = Some workspace.id
+            grandParentId = workspace.parentId
+            lastCauseName = lastCauseName
             wsComponents = newMap
         }
 
@@ -59,22 +70,6 @@ module Workspace =
             |> Error
         else
            workspace.wsComponents.[compName] |> Ok
-
-
-
-    let removeComponent
-            (workspace:workspace)
-            (compName:wsComponentName)
-        =
-        if (workspace.wsComponents.ContainsKey(compName)) then
-            load 
-                workspace.id
-                workspace.parentId
-                (workspace.wsComponents.Remove compName |> Map.toSeq)
-            |> Ok
-        else
-            $"{compName |> WsComponentName.value} not present (11)" 
-            |> Error
 
 
     let ofWorkspaceDescription 
@@ -99,6 +94,8 @@ module Workspace =
                 load
                     (wsd |> WorkspaceDescription.getId)
                     (wsd |> WorkspaceDescription.getParentId)
+                    (wsd |> WorkspaceDescription.getGrandParentId)
+                    (wsd |> WorkspaceDescription.getLastCauseName)
                     (components |> List.toArray |> Array.zip names)
             }
 
@@ -114,4 +111,6 @@ module Workspace =
         WorkspaceDescription.create
             (workspace.id)
             (workspace.parentId)
+            (workspace.grandParentId)
+            (workspace.lastCauseName)
             yab

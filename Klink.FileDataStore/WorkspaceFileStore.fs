@@ -103,9 +103,25 @@ type WorkspaceFileStore (wsRootDir:string) =
             |> Array.map(fun gu -> this.compRetreive gu wsCompType)
 
 
+    //member this.getComponent
+    //            (wscn:wsComponentName)
+    //            (wsd:workspaceDescription)
+    //    =
+    //    result {
+    //        let yab = wsd |> WorkspaceDescription.getComponents
+    //        if yab.ContainsKey wscn then
+    //            let compDescr = yab.[wscn]
+    //            let compId = compDescr |> WorkspaceComponentDescr.getId
+    //            let compType = compDescr |> WorkspaceComponentDescr.getCompType
+    //            return! Some (this.compRetreive compId compType)
+    //        else 
+    //            return! None
+    //    }
+
+
     member this.getComponent
-                (wscn:wsComponentName)
-                (wsd:workspaceDescription)
+            (wscn:wsComponentName)
+            (wsd:workspaceDescription)
         =
         result {
             let yab = wsd |> WorkspaceDescription.getComponents
@@ -113,9 +129,9 @@ type WorkspaceFileStore (wsRootDir:string) =
                 let compDescr = yab.[wscn]
                 let compId = compDescr |> WorkspaceComponentDescr.getId
                 let compType = compDescr |> WorkspaceComponentDescr.getCompType
-                return! Some (this.compRetreive compId compType)
+                return! (this.compRetreive compId compType)
             else 
-                return! None
+                return! $"missing {wscn.ToString()}" |> Error
         }
 
     member this.getComponentWithParams
@@ -135,9 +151,9 @@ type WorkspaceFileStore (wsRootDir:string) =
                 let! wsComp = this.compRetreive compId compType
                 let! wsParams = this.compRetreive compIdParams compTypeParams
                                     |> Result.bind(WorkspaceComponent.asWorkspaceParams)
-                let rv = (wsComp, wsParams) |> Some
+                let rv = (wsComp, wsParams)
                 return rv
-            else return None
+            else return! $"{wscn |> WsComponentName.value} not found" |> Error
         }
 
 
@@ -153,10 +169,52 @@ type WorkspaceFileStore (wsRootDir:string) =
 
             return!  wsDescrs 
                             |> List.map(this.getComponent wscn)
-                            |> List.filter(Option.isSome)
-                            |> List.map(Option.get)
                             |> Result.sequence
         }
+
+
+    member this.getAllWorkspaceDescriptionsWithParams()
+        = 
+        result {
+            let! wsDescrs = 
+                    this.getAllComponents workspaceComponentType.WorkspaceDescription
+                      |> Array.map(Result.bind(WorkspaceComponent.asWorkspaceDescription))
+                      |> Array.toList
+                      |> Result.sequence
+
+
+            let! yab = wsDescrs 
+                            |> List.map(this.getComponent WsConstants.workSpaceComponentNameForParams)
+                            |> Result.sequence
+
+
+            let yab2 = 
+                wsDescrs 
+                |> List.map(
+                    fun descr -> 
+                    (descr, 
+                     descr |> this.getComponent WsConstants.workSpaceComponentNameForParams)
+                           )
+                |> List.map(
+                    fun (descr, prams) -> 
+                        (
+                            descr,
+                            prams |> Result.bind(WorkspaceComponent.asWorkspaceParams)
+                        )
+                           )
+
+            return 
+                yab2 
+                |> List.filter(fun (descr, pramsR) -> pramsR |> Result.isOk)
+                |> List.map(
+                    fun (descr, prams) -> 
+                    (
+                        descr,
+                        prams |> Result.ExtractOrThrow
+                    )
+                           )
+        }
+
 
     member this.getAllComponentsWithParamsByName
                      (wscn:wsComponentName)
@@ -168,16 +226,31 @@ type WorkspaceFileStore (wsRootDir:string) =
                       |> Array.toList
                       |> Result.sequence
 
-
-            let! yab = wsDescrs 
-                            |> List.map(this.getComponentWithParams wscn)
-                            |> Result.sequence
-
-            return yab |> List.filter(Option.isSome)
-                       |> List.map(Option.get)
+            return! wsDescrs 
+                        |> List.map(this.getComponentWithParams wscn)
+                        |> Result.sequence
 
         }
 
+    member this.getAllSorterSetEvalsWithParamsByName
+                     (wscn:wsComponentName)
+        = 
+        result {
+            let! wsDescrs = 
+                    this.getAllComponents workspaceComponentType.WorkspaceDescription
+                      |> Array.map(Result.bind(WorkspaceComponent.asWorkspaceDescription))
+                      |> Array.toList
+                      |> Result.sequence
+
+            let! yab = wsDescrs
+                            |> List.map(this.getComponentWithParams wscn)
+                            |> Result.sequence
+
+            return! yab |> List.map(fun (wsC, wsP) -> (wsC |> WorkspaceComponent.asSorterSetEval, wsP))
+                       |> List.map(Result.tupLeft)
+                       |> Result.sequence
+
+        }
 
 
     member this.workSpaceExists (id:workspaceId) =

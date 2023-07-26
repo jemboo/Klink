@@ -6,6 +6,8 @@ type workspaceDescriptionDto =
         { 
             id:Guid; 
             parentId: Guid option;
+            grandParentId: Guid option;
+            lastCauseName:string;
             wsTypes: Map<string, int>
             wsIds: Map<string, Guid>
         }
@@ -17,6 +19,7 @@ module WorkspaceDescriptionDto =
         =
         let id = dto.id |> WorkspaceId.create
         let pId = dto.parentId |> Option.map(WorkspaceId.create)
+        let gpId = dto.grandParentId |> Option.map(WorkspaceId.create)
         let comps = dto.wsIds 
                     |> Map.toSeq
                     |> Seq.map(fun (str, id) ->
@@ -25,7 +28,8 @@ module WorkspaceDescriptionDto =
                             (id, dto.wsTypes.[str]) |> WorkspaceComponentDescr.fromTuple
                         ) )  |> Map.ofSeq
 
-        WorkspaceDescription.create id pId comps
+        WorkspaceDescription.create 
+                        id pId gpId dto.lastCauseName comps
 
 
     let fromJson (jstr: string) 
@@ -40,6 +44,8 @@ module WorkspaceDescriptionDto =
         { 
             workspaceDescriptionDto.id = ws |> WorkspaceDescription.getId |> WorkspaceId.value
             parentId = ws |> WorkspaceDescription.getParentId |> Option.map(WorkspaceId.value)
+            grandParentId = ws |> WorkspaceDescription.getGrandParentId |> Option.map(WorkspaceId.value)
+            lastCauseName = ws |> WorkspaceDescription.getLastCauseName
             wsTypes =
                 ws |> WorkspaceDescription.getComponents
                    |> Map.toSeq

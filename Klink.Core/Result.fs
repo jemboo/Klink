@@ -46,6 +46,15 @@ module Result =
         | Ok v -> Ok v
         | Error e -> Error(sprintf "%A" e)
 
+    let tupRight (tup:'c*Result<'a,'b>) =
+        match (snd tup) with
+        | Ok rv -> (fst tup, rv) |> Ok
+        | Error m -> m |> Error
+
+    let tupLeft (tup:Result<'a,'b>*'c) =
+        match (fst tup) with
+        | Ok rv -> (rv, snd tup) |> Ok
+        | Error m -> m |> Error
 
     /// Pass in a function to handle each case of `Result`
     let bimap onSuccess onError xR =

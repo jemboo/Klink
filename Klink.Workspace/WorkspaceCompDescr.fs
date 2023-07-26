@@ -56,6 +56,8 @@ and workspaceDescription =
         { 
             id:workspaceId; 
             parentId: workspaceId option;
+            grandParentId: workspaceId option;
+            lastCauseName: string;
             components: Map<wsComponentName, workspaceComponentDescr>
         }
 
@@ -64,11 +66,15 @@ module WorkspaceDescription =
     let create 
             (id:workspaceId)
             (parentId:workspaceId option)
+            (grandParentId:workspaceId option)
+            (lastCauseName:string)
             (components: Map<wsComponentName, workspaceComponentDescr>)
         =
         {
             workspaceDescription.id = id
             parentId = parentId
+            grandParentId = grandParentId
+            lastCauseName = lastCauseName
             components = components
         }
 
@@ -77,6 +83,12 @@ module WorkspaceDescription =
 
     let getParentId (descr:workspaceDescription) =
         descr.parentId
+
+    let getGrandParentId (descr:workspaceDescription) =
+        descr.grandParentId
+        
+    let getLastCauseName (descr:workspaceDescription) =
+        descr.lastCauseName
 
     let getComponents (descr:workspaceDescription) =
         descr.components

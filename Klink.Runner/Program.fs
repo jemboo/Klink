@@ -13,7 +13,8 @@ module Program =
         let rootDir = argResults.GetResults Working_Directory
         let logLevel = argResults.GetResults Log_Level
         let ears = argResults.GetResults Listener
-
+        
+        let nf0 = 0.001 |> NoiseFraction.create |> Some
         let nf1 = 0.025 |> NoiseFraction.create |> Some
         let nf2 = 0.05 |> NoiseFraction.create |> Some
         let nf3 = 0.25 |> NoiseFraction.create |> Some
@@ -21,7 +22,8 @@ module Program =
         let nf5 = 1.0 |> NoiseFraction.create |> Some
         let nf6 = 2.0 |> NoiseFraction.create |> Some
 
-
+        
+        let sw0 = 0.05 |> StageWeight.create
         let sw1 = 0.1 |> StageWeight.create
         let sw2 = 0.25 |> StageWeight.create
         let sw3 = 0.5 |> StageWeight.create
@@ -41,28 +43,51 @@ module Program =
         let runId8 = 8 |> RunId.create
         let runId9 = 9 |> RunId.create
 
+        let runId10 = 10 |> RunId.create
+        let runId11 = 11 |> RunId.create        
+        let runId12 = 12 |> RunId.create
+        let runId13 = 13 |> RunId.create
+        let runId14 = 14 |> RunId.create
+        let runId15 = 15 |> RunId.create
+        let runId16 = 16 |> RunId.create
+        let runId17 = 17 |> RunId.create
+        let runId18 = 18 |> RunId.create
+
+        let mr0 = 0.0005 |> MutationRate.create
+        let mr1 = 0.0010 |> MutationRate.create
+        let mr2 = 0.0020 |> MutationRate.create
+        let mr3 = 0.0030 |> MutationRate.create
+        let mr4 = 0.0050 |> MutationRate.create
+        let mr5 = 0.0075 |> MutationRate.create
+        let mr6 = 0.0100 |> MutationRate.create
+        let mr7 = 0.0250 |> MutationRate.create
+        let mr8 = 0.0500 |> MutationRate.create
+        let mr9 = 0.0750 |> MutationRate.create
 
 
-        let runIds = [runId1;] // runId2; runId3; runId4; runId5; runId6; runId7; runId8; runId9;]
+        let runIds = [runId1; runId2; runId3; runId4; runId5; runId6; runId7; runId8;]
 
-        let stageWeights = [sw1; sw2; sw3; sw4; sw5; sw6; sw7]
+        let stageWeights = [sw0; sw1; sw2;]
 
-        let noiseFractions = [nf1; nf2; nf3; nf4; nf5; nf6; ]
+        let noiseFractions = [nf0; nf1; nf2; ]
 
-
-        //let yow = WsOps.reportEmAll 
-        //            (rootDir |> List.head)
-        //            runIds
-
-
+        let mutationRates = [mr2; mr5; mr8; ]
+        
+        Console.WriteLine($"//////747/////////")
         let tsStart = DateTime.Now
 
-        let yow = WsOps.makeEmAll 
-                            (rootDir |> List.head)
-                            runIds
-                            stageWeights
-                            noiseFractions
+        
+        let yow = WsOps.reportEmAllG
+                    (rootDir |> List.head)
+                    [runId1; runId2; runId3; runId4; runId5;]
 
+
+        //let yow = WsOps.makeEmAll 
+        //                    (rootDir |> List.head)
+        //                    [runId1; runId2; runId3; runId4; runId5; runId6]
+        //                    stageWeights
+        //                    noiseFractions
+        //                    mutationRates
 
         let tsEnd = DateTime.Now
 
@@ -71,16 +96,6 @@ module Program =
         Console.WriteLine($"{tSpan.ToString()}")
 
 
-
-        //let yow = WsOps.makeEm 
-        //                (rootDir |> List.head)
-        //                runId3
-        //                sw3
-        //                nf1
-
-        //let yow = WsOps.reportEm 
-        //            (rootDir |> List.head)
-        //            runId1
 
         //match yow with
         //| Ok msg -> Console.WriteLine($"done ... {msg}")
