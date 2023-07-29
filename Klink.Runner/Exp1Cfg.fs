@@ -1,18 +1,116 @@
 ﻿namespace global
 open System
 
+type exp1Cfg =
+    {
+        generation:generation
+        mutationRate:mutationRate
+        noiseFraction:noiseFraction
+        order:order
+        rngGen:rngGen
+        sorterCount:sorterCount
+        sorterCountMutated:sorterCount
+        sorterSetPruneMethod:sorterSetPruneMethod
+        stageWeight:stageWeight
+        switchGenMode:switchGenMode
+        useParallel:useParallel
+    }
 
-module WsOps = 
+module Exp1Cfg =
+
+
+    let defltCfg = 
+        {
+            exp1Cfg.generation = 0 |> Generation.create
+            exp1Cfg.mutationRate = 0.01 |> MutationRate.create
+            exp1Cfg.noiseFraction = 0.01 |> NoiseFraction.create
+            exp1Cfg.order = 16 |> Order.createNr
+            exp1Cfg.rngGen = 1234 |> RandomSeed.create |> RngGen.createLcg
+            exp1Cfg.sorterCount = 32 |> SorterCount.create
+            exp1Cfg.sorterCountMutated = 64 |> SorterCount.create
+            exp1Cfg.sorterSetPruneMethod = sorterSetPruneMethod.Whole
+            exp1Cfg.stageWeight = 0.1 |> StageWeight.create
+            exp1Cfg.switchGenMode = switchGenMode.Stage
+            exp1Cfg.useParallel = true |> UseParallel.create
+        }
+
+
+    let getRunId (cfg:exp1Cfg) =
+        [
+            cfg.generation |> Generation.value :> obj;
+            cfg.mutationRate |> MutationRate.value :> obj;
+            cfg.noiseFraction |> NoiseFraction.value :> obj;
+            cfg.order |> Order.value :> obj;
+            cfg.rngGen :> obj;
+            cfg.sorterCount |> SorterCount.value :> obj;
+            cfg.sorterCountMutated |> SorterCount.value :> obj;
+            cfg.sorterSetPruneMethod :> obj;
+            cfg.stageWeight |> StageWeight.value :> obj;
+            cfg.switchGenMode :> obj;
+            cfg.useParallel :> obj;
+
+        ] |> GuidUtils.guidFromObjs |> RunId.create
+
+
+    let wnSortableSet = "sortableSet" |> WsComponentName.create
+    let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
+    let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
+    let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
+    let wnSorterSetPruned = "sorterSetPruned" |> WsComponentName.create
+    let wnParentMap = "parentMap" |> WsComponentName.create
+    let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
+    let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
+    let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
+    let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
+        
+    let forGa 
+            (exp1Cfg:exp1Cfg)
+        =
+        let runId = exp1Cfg |> getRunId
+
+        let randy = exp1Cfg.rngGen
+                            |> Rando.fromRngGen
+
+        let nextRngGen () =
+            randy |> Rando.toRngGen
+
+        let rngGenCreate = (nextRngGen ())
+        let rngGenMutate = (nextRngGen ())
+        let rngGenPrune = (nextRngGen ())
+        let switchCount = SwitchCount.orderTo999SwitchCount exp1Cfg.order 
+        let sorterEvalMode = sorterEvalMode.DontCheckSuccess
+
+        let workspaceParams = 
+            WorkspaceParams.make Map.empty
+            |> WorkspaceParams.setRunId "runId" runId
+            |> WorkspaceParams.setRngGen "rngGenCreate" rngGenCreate
+            |> WorkspaceParams.setRngGen "rngGenMutate" rngGenMutate
+            |> WorkspaceParams.setRngGen "rngGenPrune" rngGenPrune
+            |> WorkspaceParams.setGeneration "generation" exp1Cfg.generation
+            |> WorkspaceParams.setMutationRate "mutationRate" exp1Cfg.mutationRate
+            |> WorkspaceParams.setNoiseFraction "noiseFraction" (Some exp1Cfg.noiseFraction)
+            |> WorkspaceParams.setOrder "order" exp1Cfg.order
+            |> WorkspaceParams.setSorterCount "sorterCount" exp1Cfg.sorterCount
+            |> WorkspaceParams.setSorterCount "sorterCountMutated" exp1Cfg.sorterCountMutated
+            |> WorkspaceParams.setSorterEvalMode "sorterEvalMode" sorterEvalMode
+            |> WorkspaceParams.setStageWeight "stageWeight" exp1Cfg.stageWeight
+            |> WorkspaceParams.setSwitchCount "sorterLength" switchCount
+            |> WorkspaceParams.setSwitchGenMode "switchGenMode" exp1Cfg.switchGenMode
+            |> WorkspaceParams.setUseParallel "useParallel" exp1Cfg.useParallel
+            |> WorkspaceParams.setSorterSetPruneMethod "sorterSetPruneMethod" exp1Cfg.sorterSetPruneMethod
+
+        (workspaceParams, runId)
 
 
     let runFolder = "testRnd"
 
     let makeEmAll
             (rootDir:string) 
-            (runIds:runId seq)
+            (randomSeeds:rngGen seq)
             (stageWeights:stageWeight seq) 
-            (noiseFractions:noiseFraction option seq) 
+            (noiseFractions:noiseFraction seq) 
             (mutationRates:mutationRate seq) 
+            (sorterSetPruneMethods:sorterSetPruneMethod seq)
         =
         
         let wnSortableSet = "sortableSet" |> WsComponentName.create
@@ -24,53 +122,60 @@ module WsOps =
         let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
         let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
         let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-        let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
-
 
         result {
 
-            for runId in runIds do
+            for randomSeed in randomSeeds do
                 for stageWeight in stageWeights do
                     for noiseFraction in noiseFractions do
                         for mutationRate in mutationRates do
-                            let runDir = IO.Path.Combine(rootDir, runFolder, runId |> RunId.value |> string)
-                            let fs = new WorkspaceFileStore(runDir)
-                            let wsParams = WsParamsGen.forGa runId stageWeight noiseFraction mutationRate
+                            for sorterSetPruneMethod in sorterSetPruneMethods do
+                                let curCfg = 
+                                    { defltCfg with 
+                                        rngGen = randomSeed;
+                                        stageWeight = stageWeight;
+                                        noiseFraction = noiseFraction;
+                                        mutationRate = mutationRate;
+                                        sorterSetPruneMethod = sorterSetPruneMethod
+                                        }
 
+                                let (wsParams, runId) = curCfg |> forGa
 
-                            let! wsCfg = WsOpsLib.genZero
-                                                wnSortableSet
-                                                wnSorterSetParent
-                                                wnSorterSetEvalParent
-                                                wsParams
-                                                fs
-                                                (fun s-> Console.WriteLine(s))
+                                let runDir = IO.Path.Combine(rootDir, runFolder, runId |> RunId.value |> string)
+                                let fs = new WorkspaceFileStore(runDir)
 
-                            let mutable curGen = 0
-                            let mutable curCfg = wsCfg
-                            let mutable curParams = wsParams
+                                let! wsCfg = WsOpsLib.genZero
+                                                    wnSortableSet
+                                                    wnSorterSetParent
+                                                    wnSorterSetEvalParent
+                                                    wsParams
+                                                    fs
+                                                    (fun s-> Console.WriteLine(s))
 
-                            while curGen < 500 do
-                                let! wsCfgN, wsPramsN = 
-                                    WsOpsLib.doGen
-                                        wnSortableSet
-                                        wnSorterSetParent
-                                        wnSorterSetMutator
-                                        wnSorterSetMutated
-                                        wnSorterSetPruned
-                                        wnParentMap
-                                        wnSorterSetEvalParent
-                                        wnSorterSetEvalMutated
-                                        wnSorterSetEvalPruned
-                                        wnSorterSetPruner
-                                        fs
-                                        (fun s-> Console.WriteLine(s))
-                                        curParams
-                                        curCfg
+                                let mutable curGen = 0
+                                let mutable curCfg = wsCfg
+                                let mutable curParams = wsParams
 
-                                curCfg <- wsCfgN
-                                curParams <- wsPramsN
-                                curGen <- curGen + 1
+                                while curGen < 5 do
+                                    let! wsCfgN, wsPramsN = 
+                                        WsOpsLib.doGen
+                                            wnSortableSet
+                                            wnSorterSetParent
+                                            wnSorterSetMutator
+                                            wnSorterSetMutated
+                                            wnSorterSetPruned
+                                            wnParentMap
+                                            wnSorterSetEvalParent
+                                            wnSorterSetEvalMutated
+                                            wnSorterSetEvalPruned
+                                            fs
+                                            (fun s-> Console.WriteLine(s))
+                                            curParams
+                                            curCfg
+
+                                    curCfg <- wsCfgN
+                                    curParams <- wsPramsN
+                                    curGen <- curGen + 1
 
             return ()
         }
@@ -312,7 +417,7 @@ module WsOps =
                                         |> SorterSpeed.getStageCount
                                         |> StageCount.value
                         
-                        $"{bpvs}\t{bsevs}{switchCt}\t{stageCt}\t{ct}"
+                        $"{bpvs}{bsevs}\t{switchCt}\t{stageCt}\t{ct}"
                     )
 
             let! res = fsReporting.appendLines None fileName newLines
@@ -350,7 +455,6 @@ module WsOps =
                               |> Result.sequence
                 let gps = taggedTupes |> List.groupBy(snd) |> List.map(snd >> List.map(fst))
                 let repLs = gps |> List.map(addToGroupReport fsReporter fsForRun reportFileName genBinSz)
-                let yab = 5
                 ()
 
             return ()

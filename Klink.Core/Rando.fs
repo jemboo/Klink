@@ -9,6 +9,9 @@ module RandomSeed =
     let create (seed: int) =
         (Math.Abs(seed) % 2147483647) |> RandomSeed
     let fromNow () = DateTime.Now.Ticks |> int |> create
+    let fromGuid (gu:Guid) = 
+        gu |> GuidUtils.toUint32s |> Array.sum
+        |> int |> create
 
 
 type rngType =

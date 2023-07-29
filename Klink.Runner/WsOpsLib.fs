@@ -46,7 +46,6 @@ module WsOpsLib =
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalMutated:wsComponentName)
             (wnSorterSetEvalPruned:wsComponentName)
-            (wnSorterSetPruner:wsComponentName)
             (fs:WorkspaceFileStore)
             (logger: string -> unit)            
             (wsParams:workspaceParams)
@@ -64,7 +63,6 @@ module WsOpsLib =
                         wnSorterSetEvalParent
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
-                        wnSorterSetPruner
                         wsParams
                         workspaceCfg
 

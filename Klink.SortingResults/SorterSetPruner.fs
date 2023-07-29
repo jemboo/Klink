@@ -24,6 +24,10 @@ type sorterSetPruner =
             stageWeight:stageWeight;
         }
 
+type sorterSetPruneMethod = 
+    | Whole = 1
+    | Shc = 2
+
 
 module SorterSetPruner =
 
@@ -171,6 +175,40 @@ module SorterSetPruner =
                 |> Array.map(fun (sev, ft) -> ((sev, 0.0), ft))
                 |> Array.sortByDescending(snd)
                 |> CollectionOps.takeUptoArray (sorterSetPruner.prunedCount |> SorterCount.value)
+
+
+
+    let runShcPrune
+            (sorterSetPruner:sorterSetPruner)
+            (rngGen:rngGen)
+            (sorterSetParentMap:sorterSetParentMap)
+            (sorterEvalsToPrune:sorterEval[])
+         =
+            let parentMap = sorterSetParentMap |> SorterSetParentMap.getParentMap
+            let taggedEvals = sorterEvalsToPrune |> Array.map(fun sev -> (sev, parentMap.[sev.sortrId]))
+
+            let stageWgt = getStageWeight sorterSetPruner
+            let sorterEvalsWithFitness = 
+                sorterEvalsToPrune 
+                |> Array.filter(SorterEval.getSorterSpeed >> Option.isSome)
+                |> Array.map(fun sEv -> 
+                     ( sEv,
+                       sEv |> SorterEval.getSorterSpeed |> Option.get |> SorterFitness.fromSpeed stageWgt
+                     )
+                   )
+
+            if (sorterEvalsWithFitness.Length = 0) then
+                [||]
+            elif sorterSetPruner.noiseFraction |> Option.isSome then
+                getSigmaSelection sorterEvalsWithFitness (sorterSetPruner.noiseFraction |> NoiseFraction.toFloat) rngGen
+                |> CollectionOps.takeUpto (sorterSetPruner.prunedCount |> SorterCount.value)
+                |> Seq.toArray
+            else
+                sorterEvalsWithFitness 
+                |> Array.map(fun (sev, ft) -> ((sev, 0.0), ft))
+                |> Array.sortByDescending(snd)
+                |> CollectionOps.takeUptoArray (sorterSetPruner.prunedCount |> SorterCount.value)
+
 
 
 

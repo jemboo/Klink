@@ -20,10 +20,12 @@ module WsCfgLib =
                 let! sorterEvalMode =wsParams |> WorkspaceParams.getSorterEvalMode "sorterEvalMode"
                 let! useParallel = wsParams |> WorkspaceParams.getUseParallel "useParallel"
 
-                let ssCfg = sortableSetCertainCfg.All_Bits order
+                let sortableSetCfg = 
+                    sortableSetCertainCfg.All_Bits order
                             |> sortableSetCfg.Certain
 
-                let srCfg = new sorterSetRndCfg(
+                let sorterSetCfg = 
+                    new sorterSetRndCfg(
                                 wnSorterSetParent,
                                 order,
                                 switchGenMode,
@@ -39,12 +41,12 @@ module WsCfgLib =
                 let causeAddSortableSet =  
                     new causeAddSortableSet(
                             wnSortableSet, 
-                            ssCfg)
+                            sortableSetCfg)
 
                 let causeAddSorterSetRnd =  
                     new causeAddSorterSetRnd(
                             wnSorterSetParent,
-                            srCfg,
+                            sorterSetCfg,
                             rngGenCreate)
 
                 let causeMakeSorterSetEvalParent = 
@@ -77,8 +79,7 @@ module WsCfgLib =
             (wnParentMap:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalMutated:wsComponentName)
-            (wnSorterSetEvalPruned:wsComponentName)
-            (wnSorterSetPruner:wsComponentName)            
+            (wnSorterSetEvalPruned:wsComponentName)        
             (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
          =
@@ -139,7 +140,6 @@ module WsCfgLib =
                             wnSorterSetMutated,
                             wnSorterSetEvalParent,
                             wnSorterSetEvalMutated,
-                            wnSorterSetPruner,
                             wnSorterSetPruned,
                             wnSorterSetEvalPruned,
                             rngGenPrune,
@@ -152,7 +152,7 @@ module WsCfgLib =
                         workspaceCfg 
                         |> WorkspaceCfg.addCauses 
                             [
-                                causeAddWorkspaceParams;
+                             //   causeAddWorkspaceParams;
                                 causeAddSortableSet;
                                 causeAddSorterSetMutator;
                                 causeMutateSorterSet;

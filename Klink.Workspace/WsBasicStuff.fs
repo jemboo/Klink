@@ -17,10 +17,10 @@ module CauseId =
             |> create
 
 
-type runId = private RunId of int
+type runId = private RunId of Guid
 module RunId =
     let value (RunId v) = v
-    let create (v: int) = RunId v
+    let create (v: Guid) = RunId v
 
 
 type wsComponentName = private WsComponentName of string

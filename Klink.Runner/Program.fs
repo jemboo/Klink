@@ -14,44 +14,43 @@ module Program =
         let logLevel = argResults.GetResults Log_Level
         let ears = argResults.GetResults Listener
         
-        let nf0 = 0.001 |> NoiseFraction.create |> Some
-        let nf1 = 0.025 |> NoiseFraction.create |> Some
-        let nf2 = 0.05 |> NoiseFraction.create |> Some
-        let nf3 = 0.25 |> NoiseFraction.create |> Some
-        let nf4 = 0.5 |> NoiseFraction.create |> Some
-        let nf5 = 1.0 |> NoiseFraction.create |> Some
-        let nf6 = 2.0 |> NoiseFraction.create |> Some
+
+
+        let rngGen0 = 10110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen1 = 20110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen2 = 22110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen3 = 12110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen4 = 13110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen5 = 31110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen6 = 14110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen7 = 15110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen8 = 16110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen9 = 17110 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen10 = 1811 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen11 = 1911 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen12 = 2011 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen13 = 2111 |> RandomSeed.create |> RngGen.createLcg
+        let rngGen14 = 2211 |> RandomSeed.create |> RngGen.createLcg
+
+
+        let nf0 = 0.001 |> NoiseFraction.create
+        let nf1 = 0.025 |> NoiseFraction.create
+        let nf2 = 0.050 |> NoiseFraction.create
+        let nf3 = 0.250 |> NoiseFraction.create |> Some
+        let nf4 = 0.500 |> NoiseFraction.create |> Some
+        let nf5 = 1.000 |> NoiseFraction.create |> Some
+        let nf6 = 2.000 |> NoiseFraction.create |> Some
 
         
         let sw0 = 0.05 |> StageWeight.create
-        let sw1 = 0.1 |> StageWeight.create
+        let sw1 = 0.10 |> StageWeight.create
         let sw2 = 0.25 |> StageWeight.create
-        let sw3 = 0.5 |> StageWeight.create
-        let sw4 = 1.0 |> StageWeight.create
-        let sw5 = 2.0 |> StageWeight.create
-        let sw6 = 4.0 |> StageWeight.create
-        let sw7 = 8.0 |> StageWeight.create
+        let sw3 = 0.50 |> StageWeight.create
+        let sw4 = 1.00 |> StageWeight.create
+        let sw5 = 2.00 |> StageWeight.create
+        let sw6 = 4.00 |> StageWeight.create
+        let sw7 = 8.00 |> StageWeight.create
 
-
-        let runId1 = 1 |> RunId.create
-        let runId2 = 2 |> RunId.create        
-        let runId3 = 3 |> RunId.create
-        let runId4 = 4 |> RunId.create
-        let runId5 = 5 |> RunId.create
-        let runId6 = 6 |> RunId.create
-        let runId7 = 7 |> RunId.create
-        let runId8 = 8 |> RunId.create
-        let runId9 = 9 |> RunId.create
-
-        let runId10 = 10 |> RunId.create
-        let runId11 = 11 |> RunId.create        
-        let runId12 = 12 |> RunId.create
-        let runId13 = 13 |> RunId.create
-        let runId14 = 14 |> RunId.create
-        let runId15 = 15 |> RunId.create
-        let runId16 = 16 |> RunId.create
-        let runId17 = 17 |> RunId.create
-        let runId18 = 18 |> RunId.create
 
         let mr0 = 0.0005 |> MutationRate.create
         let mr1 = 0.0010 |> MutationRate.create
@@ -64,8 +63,11 @@ module Program =
         let mr8 = 0.0500 |> MutationRate.create
         let mr9 = 0.0750 |> MutationRate.create
 
+        let sspm1 = sorterSetPruneMethod.Whole
+        let sspm2 = sorterSetPruneMethod.Shc
 
-        let runIds = [runId1; runId2; runId3; runId4; runId5; runId6; runId7; runId8;]
+        
+        let rngGens = [rngGen0; rngGen1; rngGen2;]
 
         let stageWeights = [sw0; sw1; sw2;]
 
@@ -73,21 +75,24 @@ module Program =
 
         let mutationRates = [mr2; mr5; mr8; ]
         
+        let sorterSetPruneMethods = [sspm1]
+
         Console.WriteLine($"//////747/////////")
         let tsStart = DateTime.Now
 
         
-        let yow = WsOps.reportEmAllG
-                    (rootDir |> List.head)
-                    [runId1; runId2; runId3; runId4; runId5;]
+        //let yow = WsOps.reportEmAllG
+        //            (rootDir |> List.head)
+        //            [runId1; runId2; runId3; runId4; runId5;]
 
 
-        //let yow = WsOps.makeEmAll 
-        //                    (rootDir |> List.head)
-        //                    [runId1; runId2; runId3; runId4; runId5; runId6]
-        //                    stageWeights
-        //                    noiseFractions
-        //                    mutationRates
+        let yow = Exp1Cfg.makeEmAll 
+                            (rootDir |> List.head)
+                            rngGens
+                            stageWeights
+                            noiseFractions
+                            mutationRates
+                            sorterSetPruneMethods
 
         let tsEnd = DateTime.Now
 
