@@ -20,7 +20,7 @@ module Program =
         Console.WriteLine($"//////ppp78/////////")
         let tsStart = DateTime.Now
         
-        let runFolder = "testRnd3"
+        let runFolder = "testRnd7"
         let runDir = System.IO.Path.Combine((rootDir |> List.head), runFolder)
 
         let yow = Exp1Cfg.doReportPerfBins

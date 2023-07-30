@@ -79,6 +79,7 @@ module SorterSetEval
             (sorterEvalMode: sorterEvalMode)
             (sorterSet: sorterSet)
             (sortableSet: sortableSet)
+            (sorterEvalAdj:sorterEval -> sorterEval)
             (useParallel: useParallel) 
         =
         try
@@ -94,6 +95,7 @@ module SorterSetEval
 
           let sorters = sorterSet |> SorterSet.getSorters
           let sorterEvals = evalSorters sorterEvalMode sortableSet sorters useParallel
+                            |> Array.map(sorterEvalAdj)
           load
                 sorterSetEvalId
                 (sorterSet |> SorterSet.getId)

@@ -21,8 +21,14 @@ module WsCfgLib =
                 let! useParallel = wsParams |> WorkspaceParams.getUseParallel "useParallel"
 
                 let sortableSetCfg = 
-                    sortableSetCertainCfg.All_Bits order
-                            |> sortableSetCfg.Certain
+                    SortableSetCertainCfg.makeAllBitsReducedOneStage order
+                    //sortableSetCertainCfg.All_Bits_Reduced order
+                           |> sortableSetCfg.Certain
+
+                let wsParamsWithSortableSet = 
+                    wsParams |> WorkspaceParams.setSortableSetId "sortableSet"
+                                    (sortableSetCfg |> SortableSetCfg.getId)
+
 
                 let sorterSetCfg = 
                     new sorterSetRndCfg(
@@ -35,7 +41,7 @@ module WsCfgLib =
 
                 let causeAddWorkspaceParams =  
                     new causeAddWorkspaceParams(
-                            wsParams)
+                            wsParamsWithSortableSet)
 
 
                 let causeAddSortableSet =  
@@ -59,14 +65,15 @@ module WsCfgLib =
 
 
                 return
-                        workspaceCfg 
+                   ( workspaceCfg 
                         |> WorkspaceCfg.addCauses 
                             [
                                 causeAddWorkspaceParams;
                                 causeAddSortableSet; 
                                 causeAddSorterSetRnd;
                                 causeMakeSorterSetEvalParent;
-                            ]
+                            ],
+                     wsParamsWithSortableSet )
             }
 
 

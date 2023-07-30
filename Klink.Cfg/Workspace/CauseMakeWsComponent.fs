@@ -110,10 +110,14 @@ type causeMakeSorterSetEval
                 let! sorterSet = w |> Workspace.getComponent this.sorterSetName
                                    |> Result.bind(WorkspaceComponent.asSorterSet)
 
+                let order = sorterSet |> SorterSet.getOrder
+                let stageByPassAdj = 1 |> StageCount.create
+
                 let! wsSorterSetEval = SorterSetEval.make
                                         this.sorterEvalMode
                                         sorterSet
                                         sortableSet
+                                        (fun sev -> sev |> SorterEval.modifyForPrefix order stageByPassAdj)
                                         this.useParallel
                                      |> Result.map(workspaceComponent.SorterSetEval)
                 return w |> 

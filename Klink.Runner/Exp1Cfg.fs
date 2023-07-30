@@ -99,17 +99,18 @@ module Exp1Cfg =
                 let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
                 let fs = new WorkspaceFileStore(runDir)
 
-                let! wsCfg = WsOpsLib.genZero
-                                    wnSortableSet
-                                    wnSorterSetParent
-                                    wnSorterSetEvalParent
-                                    wsParams
-                                    fs
-                                    (fun s-> Console.WriteLine(s))
+                let! wsCfg_params = 
+                        WsOpsLib.genZero
+                                wnSortableSet
+                                wnSorterSetParent
+                                wnSorterSetEvalParent
+                                wsParams
+                                fs
+                                (fun s-> Console.WriteLine(s))
 
                 let mutable curGen = gaCfg.curGen |> Generation.value
-                let mutable curCfg = wsCfg
-                let mutable curParams = wsParams
+                let mutable curCfg = wsCfg_params |> fst
+                let mutable curParams = wsCfg_params |> snd
                 let maxGen = gaCfg.maxGen |> Generation.value
 
                 while curGen < maxGen do
@@ -143,7 +144,7 @@ module Exp1Cfg =
                 [sw0] 
                 [nf0]
                 [mr0] 
-                [sspm1]
+                [sspm2]
                 (10 |> Generation.create)
 
 
@@ -161,7 +162,6 @@ module Exp1Cfg =
         [
             sorterEvalProps.ErrorMsg;
             sorterEvalProps.Phenotype;
-            sorterEvalProps.SortableSetId;
             sorterEvalProps.SortedSetSize;
             sorterEvalProps.SorterId;
             sorterEvalProps.StageCount;
@@ -180,20 +180,20 @@ module Exp1Cfg =
             |> List.fold(fun st t -> sprintf "%s\t%s" st yab.[t]) ""
 
 
-    let binnedSorterEvalProps =
-        [
-            sorterEvalProps.SortableSetId;
-        ]
+    //let binnedSorterEvalProps =
+    //    [
+    //        sorterEvalProps.SortableSetId;
+    //    ]
 
-    let binnedSorterEvalHeaders () = 
-        binnedSorterEvalProps
-            |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
+    //let binnedSorterEvalHeaders () = 
+    //    binnedSorterEvalProps
+    //        |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
 
 
-    let binnedSorterEvalValues (sev:sorterEval) =
-        let yab = sev |> SorterEval.getSorterEvalProps
-        binnedSorterEvalProps
-            |> List.fold(fun st t -> sprintf "%s\t%s" st yab.[t]) ""
+    //let binnedSorterEvalValues (sev:sorterEval) =
+    //    let yab = sev |> SorterEval.getSorterEvalProps
+    //    binnedSorterEvalProps
+    //        |> List.fold(fun st t -> sprintf "%s\t%s" st yab.[t]) ""
 
 
     let standardParamProps =
@@ -203,6 +203,7 @@ module Exp1Cfg =
             "mutationRate";
             "noiseFraction";
             "order";
+            "sortableSet";
             "sorterCount";
             "sorterCountMutated";
             "stageWeight";
@@ -221,6 +222,7 @@ module Exp1Cfg =
             "mutationRate";
             "noiseFraction";
             "order";
+            "sortableSet";
             "sorterCount";
             "sorterCountMutated";
             "stageWeight";
@@ -233,7 +235,7 @@ module Exp1Cfg =
         result {
             let! genBin = wsps |> WorkspaceParams.getGeneration "generation"
                                |> Result.map(Generation.binnedValue genBinSz)
-            return $"{genBin}\t{binParamProps |> StringUtil.toCsvLine paramMap}"
+            return $"{ genBin }\t{ binParamProps |> StringUtil.toCsvLine paramMap }"
         }
 
 
@@ -244,10 +246,9 @@ module Exp1Cfg =
 
 
     let reportHeaderBinned () =
-        sprintf "%s%s%s%s"
+        sprintf "%s%s%s"
             "gen_bin\t"
             (binParamProps |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
-            (binnedSorterEvalHeaders ())
             "\tSwitchCt\tStageCt\tRecordCt"
 
 
@@ -381,17 +382,12 @@ module Exp1Cfg =
                 tupL |> List.map(fst >> _getSorterSetEvals)
                      |> Result.sequence
 
-            let sorterEvalFirst = 
-                        ssEvals 
-                        |> List.head |> SorterSetEval.getSorterEvals |> Array.head
-
             let! speedBins = 
                         ssEvals 
                         |> SorterSetEval.getAllSorterSpeedBins
                         |> Result.map(Seq.toList)
 
             let! bpvs = binnedParamValues wsPramsFirst (genBinSz |> Generation.value)
-            let bsevs = binnedSorterEvalValues sorterEvalFirst
 
             let newLines =
                 speedBins |> List.map(
@@ -404,7 +400,7 @@ module Exp1Cfg =
                                         |> SorterSpeed.getStageCount
                                         |> StageCount.value
                         
-                        $"{bpvs}{bsevs}\t{switchCt}\t{stageCt}\t{ct}"
+                        $"{bpvs}\t{switchCt}\t{stageCt}\t{ct}"
                     )
 
             let! res = fsReporting.appendLines None fileName newLines

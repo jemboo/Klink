@@ -15,7 +15,7 @@ module WsOpsLib =
          =
             result {
                 let emptyWsCfg = WorkspaceCfg.Empty
-                let! wsCfg = 
+                let! wsCfgNParams = 
                     WsCfgLib.initParentMapAndEval
                         wnSortableSet
                         wnSorterSetParent
@@ -23,14 +23,12 @@ module WsOpsLib =
                         wsParams
                         emptyWsCfg
 
-
                 let! wsGenZero = 
-                        wsCfg
-                            |> WorkspaceCfg.loadWorkspace fs logger
+                        wsCfgNParams |> fst |> WorkspaceCfg.loadWorkspace fs logger
 
                 let! res = fs.saveWorkSpace wsGenZero
                 logger ($"Saved Gen 0 to {wsGenZero |> Workspace.getId |> WorkspaceId.value}")
-                return wsCfg
+                return wsCfgNParams
              }
 
 
