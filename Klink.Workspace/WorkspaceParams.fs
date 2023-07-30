@@ -58,7 +58,7 @@ module WorkspaceParams =
         if workspaceParams.data.ContainsKey(key) then
            workspaceParams.data.[key] |> Ok
         else
-            $"the key: {key} was not found" |> Error
+            $"the key: {key} was not found (405)" |> Error
 
 
     let getGeneration

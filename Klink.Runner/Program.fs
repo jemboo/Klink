@@ -67,32 +67,39 @@ module Program =
         let sspm2 = sorterSetPruneMethod.Shc
 
         
-        let rngGens = [rngGen0; rngGen1; rngGen2;]
+        let rngGens = [rngGen0; rngGen1; rngGen2; rngGen3;]
 
-        let stageWeights = [sw0; sw1; sw2;]
+        let stageWeights = [sw0;] // sw1; sw2;]
 
-        let noiseFractions = [nf0; nf1; nf2; ]
+        let noiseFractions = [nf0;] // nf1; nf2; ]
 
-        let mutationRates = [mr2; mr5; mr8; ]
+        let mutationRates = [mr5; mr7; mr8; mr2; mr4; mr6]
         
         let sorterSetPruneMethods = [sspm1]
 
-        Console.WriteLine($"//////747/////////")
+        let maxGen = 1000 |> Generation.create
+
+        Console.WriteLine($"//////ppp78/////////")
         let tsStart = DateTime.Now
 
         
-        //let yow = WsOps.reportEmAllG
-        //            (rootDir |> List.head)
-        //            [runId1; runId2; runId3; runId4; runId5;]
+        let yow = Exp1Cfg.reportEmAllG
+                    (rootDir |> List.head)
+                    rngGens
+                    stageWeights
+                    noiseFractions
+                    mutationRates
+                    sorterSetPruneMethods
 
 
-        let yow = Exp1Cfg.makeEmAll 
-                            (rootDir |> List.head)
-                            rngGens
-                            stageWeights
-                            noiseFractions
-                            mutationRates
-                            sorterSetPruneMethods
+        //let yow = Exp1Cfg.makeEmAll 
+        //                    (rootDir |> List.head)
+        //                    rngGens
+        //                    stageWeights
+        //                    noiseFractions
+        //                    mutationRates
+        //                    maxGen
+        //                    sorterSetPruneMethods
 
         let tsEnd = DateTime.Now
 
@@ -102,9 +109,9 @@ module Program =
 
 
 
-        //match yow with
-        //| Ok msg -> Console.WriteLine($"done ... {msg}")
-        //| Error yow -> Console.WriteLine($"done ... {yow}")
+        match yow with
+        | Ok msg -> Console.WriteLine($"done ... {msg}")
+        | Error yow -> Console.WriteLine($"done ... {yow}")
 
 
         Console.Read() |> ignore

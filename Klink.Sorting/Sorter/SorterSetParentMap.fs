@@ -11,7 +11,7 @@ module Generation =
     let next (Generation v) = Generation (v + 1)
     let binnedValue (binSz:int) (gen:generation) =
         let gv = gen |> value
-        gv - (gv % binSz)
+        gv - 1 - ((gv - 1) % binSz)
 
 
 type sorterSetParentMap = 

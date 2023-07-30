@@ -49,7 +49,7 @@ module SorterSet =
         if sorterSet.sorterMap.ContainsKey id then
             sorterSet.sorterMap.[id] |> Ok
         else
-            sprintf "%s not found" (id |> SorterId.value |> string)
+            sprintf "%s not found (404)" (id |> SorterId.value |> string)
             |> Error
 
 

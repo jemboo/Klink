@@ -66,22 +66,22 @@ module WsOpsLib =
                         wsParams
                         workspaceCfg
 
-                let! wsGenPrune = 
-                        pruneCfg
-                            |> WorkspaceCfg.loadWorkspace fs logger
+                //let! wsGenPrune = 
+                //        pruneCfg
+                //            |> WorkspaceCfg.loadWorkspace fs logger
 
-                let! res = fs.saveWorkSpace wsGenPrune
+               // let! res = fs.saveWorkSpace wsGenPrune
 
-                let! curGen =  wsParams 
-                                |> WorkspaceParams.getGeneration "generation" 
-                                |> Result.map(Generation.value)
+                //let! curGen =  wsParams 
+                //                |> WorkspaceParams.getGeneration "generation" 
+                //                |> Result.map(Generation.value)
 
-                logger ($"Saved Gen {curGen} Prune to { wsGenPrune |> Workspace.getId |> WorkspaceId.value}")
+               // logger ($"Saved Gen {curGen} Prune to { wsGenPrune |> Workspace.getId |> WorkspaceId.value}")
 
 
                 let! wsParamsNextGen = 
                         wsParams |> WorkspaceParams.incrGeneration "generation"
-                                 |> Result.bind( WorkspaceParams.updateRngGen "rngGenMutate")
+                                 |> Result.bind(WorkspaceParams.updateRngGen "rngGenMutate")
                                  |> Result.bind(WorkspaceParams.updateRngGen "rngGenPrune")
 
                 let! nextGenCfg = 
@@ -109,9 +109,6 @@ module WsOpsLib =
 
 
                 let aggregatedCause = new causeLoadWorkspace (wsNextGen |> Workspace.getId)
-
-                let yab = nextGenCfg.id
-
                 let truncWsCfg = aggregatedCause.makeTruncatedWorkspaceCfg()
 
                 return truncWsCfg, wsParamsNextGen

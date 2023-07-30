@@ -152,8 +152,10 @@ type WorkspaceFileStore (wsRootDir:string) =
                 let! wsParams = this.compRetreive compIdParams compTypeParams
                                     |> Result.bind(WorkspaceComponent.asWorkspaceParams)
                 let rv = (wsComp, wsParams)
-                return rv
-            else return! $"{wscn |> WsComponentName.value} not found" |> Error
+                return Some rv
+            else 
+                return None
+               // return! $"{wscn |> WsComponentName.value} not found (403)" |> Error
         }
 
 
@@ -245,8 +247,10 @@ type WorkspaceFileStore (wsRootDir:string) =
             let! yab = wsDescrs
                             |> List.map(this.getComponentWithParams wscn)
                             |> Result.sequence
+                            
+            let foundComps = yab |> List.filter(Option.isSome) |> List.map(Option.get)
 
-            return! yab |> List.map(fun (wsC, wsP) -> (wsC |> WorkspaceComponent.asSorterSetEval, wsP))
+            return! foundComps |> List.map(fun (wsC, wsP) -> (wsC |> WorkspaceComponent.asSorterSetEval, wsP))
                        |> List.map(Result.tupLeft)
                        |> Result.sequence
 

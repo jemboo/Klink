@@ -76,7 +76,7 @@ module TextIO =
             if File.Exists(fp) then
                 File.ReadAllLines fp |> Ok
             else
-                sprintf "not found: %s" fp |> Error
+                sprintf "not found (401): %s" fp |> Error
         with ex ->
             ("error in TextIO.readAllLines: " + ex.Message) |> Result.Error
 
@@ -117,7 +117,7 @@ module TextIO =
             if File.Exists(fp) then
                 File.ReadAllText fp |> Ok
             else
-                sprintf "not found: %s" fp |> Error
+                sprintf "not found (402): %s" fp |> Error
         with ex ->
             ("error in TextIO.readAllText: " + ex.Message) |> Result.Error
 
