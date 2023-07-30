@@ -75,6 +75,12 @@ module SetOfSortableSetId =
     let value (SetOfSortableSetId v) = v
     let create id = (SetOfSortableSetId id)
 
+
+type switchCountCalcMethod = 
+    | Record
+    | For900
+    | For999
+
 module SwitchCount =
     let value (SwitchCount v) = v
     let create id = SwitchCount id
@@ -177,6 +183,15 @@ module SwitchCount =
             | _ -> 0
 
         create ct
+
+    let fromCalcMethod 
+            (m:switchCountCalcMethod) 
+            (order:order) =
+        match m with
+        | Record -> orderToRecordSwitchCount order
+        | For900 -> orderTo900SwitchCount order
+        | For999 -> orderTo999SwitchCount order
+
 
 module SwitchFrequency =
     let value (SwitchFrequency v) = v

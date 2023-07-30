@@ -91,14 +91,11 @@ module WsCfgLib =
                 let! order = wsParams |> WorkspaceParams.getOrder "order" 
                 let! sorterCount = wsParams |> WorkspaceParams.getSorterCount "sorterCount" 
                 let! sorterCountMutated = wsParams |> WorkspaceParams.getSorterCount "sorterCountMutated" 
+                let! sorterSetPruneMethod = wsParams |> WorkspaceParams.getSorterSetPruneMethod "sorterSetPruneMethod" 
                 let! stageWeight = wsParams |> WorkspaceParams.getStageWeight "stageWeight" 
                 let! sorterEvalMode = wsParams |> WorkspaceParams.getSorterEvalMode "sorterEvalMode" 
                 let! switchGenMode = wsParams |> WorkspaceParams.getSwitchGenMode "switchGenMode" 
                 let! useParallel = wsParams |> WorkspaceParams.getUseParallel "useParallel" 
-
-                let causeAddWorkspaceParams =  
-                    new causeAddWorkspaceParams(
-                            wsParams)
 
                 let ssCfg = sortableSetCertainCfg.All_Bits order
                             |> sortableSetCfg.Certain
@@ -106,7 +103,7 @@ module WsCfgLib =
                 let causeAddSortableSet =  
                     new causeAddSortableSet(
                             wnSortableSet, 
-                            ssCfg)
+                            ssCfg) :> ICause |> Ok
 
 
                 let causeAddSorterSetMutator = 
@@ -115,7 +112,7 @@ module WsCfgLib =
                             order, 
                             switchGenMode,
                             sorterCountMutated, 
-                            mutationRate)
+                            mutationRate) :> ICause |> Ok
 
                 let causeMutateSorterSet = 
                     new causeMutateSorterSet(
@@ -124,7 +121,7 @@ module WsCfgLib =
                             wnSorterSetMutator,
                             wnParentMap,
                             rngGenMutate
-                            )
+                            ) :> ICause |> Ok
 
                 let causeMakeSorterSetEvalMutated = 
                     new causeMakeSorterSetEval(
@@ -132,33 +129,55 @@ module WsCfgLib =
                             wnSorterSetMutated,
                             sorterEvalMode,
                             wnSorterSetEvalMutated,
-                            useParallel)
+                            useParallel) :> ICause |> Ok
 
                 let causePruneSorterSets = 
-                    new causePruneSorterSetsWhole(
-                            wnSorterSetParent,
-                            wnSorterSetMutated,
-                            wnSorterSetEvalParent,
-                            wnSorterSetEvalMutated,
-                            wnSorterSetPruned,
-                            wnSorterSetEvalPruned,
-                            rngGenPrune,
-                            sorterCount,
-                            noiseFraction,
-                            stageWeight
-                            )
+                    match sorterSetPruneMethod with
+                    | sorterSetPruneMethod.Whole ->
+                        new causePruneSorterSetsWhole(
+                                wnSorterSetParent,
+                                wnSorterSetMutated,
+                                wnSorterSetEvalParent,
+                                wnSorterSetEvalMutated,
+                                wnSorterSetPruned,
+                                wnSorterSetEvalPruned,
+                                rngGenPrune,
+                                sorterCount,
+                                noiseFraction,
+                                stageWeight
+                                ) :> ICause |> Ok
 
-                return
-                        workspaceCfg 
-                        |> WorkspaceCfg.addCauses 
+                    | sorterSetPruneMethod.Shc ->
+                        new causePruneSorterSetsShc(
+                                wnSorterSetParent,
+                                wnSorterSetMutated,
+                                wnSorterSetEvalParent,
+                                wnSorterSetEvalMutated,
+                                wnSorterSetPruned,
+                                wnParentMap,
+                                wnSorterSetEvalPruned,
+                                rngGenPrune,
+                                sorterCount,
+                                noiseFraction,
+                                stageWeight
+                                ) :> ICause |> Ok
+                    | _ ->
+                        $"sorterSetPruneMethod:{sorterSetPruneMethod} 
+                            not handled in makeMutantsAndPrune" |> Error
+
+                let! causeList = 
                             [
-                             //   causeAddWorkspaceParams;
                                 causeAddSortableSet;
                                 causeAddSorterSetMutator;
                                 causeMutateSorterSet;
                                 causeMakeSorterSetEvalMutated;
                                 causePruneSorterSets;
-                            ]
+                            ] |> Result.sequence
+
+                return
+                        workspaceCfg 
+                        |> WorkspaceCfg.addCauses 
+                            causeList
 
             }
 

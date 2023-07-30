@@ -10,6 +10,7 @@
     <Compile Include="WsOpsLib.fs" />
     <Compile Include="CliArguments.fs" />
     <None Include="App.config" />
+    <Compile Include="GaCfg.fs" />
     <Compile Include="Exp1Cfg.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
