@@ -44,9 +44,6 @@ type causeAddSortableSet
                             |> SortableSetCfg.makeSortableSet 
                             |> Result.map(workspaceComponent.SortableSet)
 
-
-
-
                 return w |> Workspace.addComponents 
                                 newWorkspaceId
                                 this.causeName

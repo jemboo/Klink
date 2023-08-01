@@ -17,22 +17,25 @@ module Program =
 
 
 
-        Console.WriteLine($"//////ppp78/////////")
+        Console.WriteLine($"//////batchB/////////")
         let tsStart = DateTime.Now
         
-        let runFolder = "testRnd7"
+        let runFolder = "batchB"
         let runDir = System.IO.Path.Combine((rootDir |> List.head), runFolder)
 
-        let yow = Exp1Cfg.doReportPerfBins
-                    runDir
-                    (10 |> Generation.create)
-                    (Exp1Cfg.cfgsForTestRun())
+        //let yow = Exp1Cfg.doReportPerfBins
+        //            runDir
+        //            (10 |> Generation.create)
+        //            (Exp1Cfg.cfgsForCompleteRun())
 
 
+        //let yow = Exp1Cfg.reportEmAll
+        //            runDir
+        //            (Exp1Cfg.cfgsForTestRun())
 
-        //let yow = Exp1Cfg.doRun 
-        //                    runDir
-        //                    (Exp1Cfg.cfgsForTestRun())
+        let yow = Exp1Cfg.doRun 
+                            runDir
+                            (Exp1Cfg.cfgsForTestRun())
 
         let tsEnd = DateTime.Now
 

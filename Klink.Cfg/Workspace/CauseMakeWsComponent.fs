@@ -52,8 +52,6 @@ type causeMutateSorterSet
                                       |> SorterSet.getSorters 
                                       |> Array.map(Sorter.getSorterId) )
 
-
-
                               
                 let! mutantSorterSet = SorterSetMutator.createMutantSorterSetFromParentMap
                                         parentMap
@@ -357,9 +355,10 @@ type causePruneSorterSetsShc
 
                 let sorterEvalsPruned = 
                         sorterSetEvalsAll 
-                        |> SorterSetPruner.runWholePrune 
+                        |> SorterSetPruner.runShcPrune 
                                 sorterSetPruner 
                                 _rngGen
+                                sorterSetParentMap
                         |> Array.map(fun ((s,_), _) -> s)
 
                 let mergedSorterMap = 
@@ -445,6 +444,7 @@ type causePruneSorterSetsShc
 
 type setupForNextGen
             (
+             wnSortableSet:wsComponentName,
              wnSorterSetParent:wsComponentName,
              wnSorterSetPruned:wsComponentName,
              wnSorterSetEvalParent:wsComponentName,
@@ -453,6 +453,7 @@ type setupForNextGen
              workspaceParams:workspaceParams) 
     = 
     member this.causeName = "setupForNextGen"
+    member this.wnSortableSet = wnSortableSet
     member this.wnSorterSetParent = wnSorterSetParent
     member this.wnSorterSetPruned = wnSorterSetPruned
     member this.wnSorterSetEvalParent = wnSorterSetEvalParent
@@ -466,6 +467,8 @@ type setupForNextGen
         fun (w: workspace) (newWorkspaceId: workspaceId) ->
 
             result {
+                let! sortableSet = 
+                        w |> Workspace.getComponent this.wnSortableSet
 
                 let! sorterSetNewParent = 
                         w |> Workspace.getComponent this.wnSorterSetPruned
@@ -486,6 +489,7 @@ type setupForNextGen
                             (w |> Workspace.getParentId)
                             this.causeName
                             [
+                                (this.wnSortableSet, sortableSet)
                                 (this.wnSorterSetParent, sorterSetNewParent)
                                 (this.wnSorterSetEvalParent, sorterSetEvalParentNew)
                                 (this.wnParentMap, sorterSetParentMap)

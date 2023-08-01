@@ -116,7 +116,7 @@ module WorkspaceCfg =
         _lastWorkspaceCfg workspaceCfg []
 
 
-    let loadWorkspace 
+    let runWorkspaceCfg 
             (fileStore:IWorkspaceStore)
             (logger: string->unit)
             (workspaceCfg:workspaceCfg)

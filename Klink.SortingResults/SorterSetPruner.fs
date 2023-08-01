@@ -143,11 +143,13 @@ module SorterSetPruner =
             let randy = rngGen |> Rando.fromRngGen
             let noiseMaker = RandVars.gaussianDistribution 0.0 noiseLevel randy
 
-            sorterEvalsWithFitness 
-            |> Seq.zip noiseMaker 
-            |> Seq.map(fun (n, (srtrEval, f)) ->((srtrEval, f), n + f) )
-            |> Seq.sortByDescending(snd)
-
+            let yab =
+                sorterEvalsWithFitness 
+                |> Seq.zip noiseMaker 
+                |> Seq.map(fun (n, (srtrEval, f)) ->((srtrEval, f), n + f) )
+                |> Seq.sortByDescending(snd)
+                |> Seq.toArray
+            yab
 
     let runWholePrune
             (sorterSetPruner:sorterSetPruner)
@@ -184,8 +186,17 @@ module SorterSetPruner =
             (sorterSetParentMap:sorterSetParentMap)
             (sorterEvalsToPrune:sorterEval[])
          =
-            let parentMap = sorterSetParentMap |> SorterSetParentMap.getParentMap
-            let taggedEvals = sorterEvalsToPrune |> Array.map(fun sev -> (sev, parentMap.[sev.sortrId]))
+            let extendedPm = sorterSetParentMap |> SorterSetParentMap.extendToParents
+            let familyGroups = sorterEvalsToPrune 
+                                |> Array.map(fun sev -> (sev, extendedPm.[sev.sortrId]))
+                                |> Array.groupBy(fun (sorterEv, sorterPid) -> sorterPid)
+                                |> Array.map(snd)
+                                |> Array.map(Array.map(fst))
+
+            let familyTargetSize = (sorterSetPruner.prunedCount |> SorterCount.value) / (familyGroups |> Array.length)
+                                   |> SorterCount.create
+
+            let familyPruner = make familyTargetSize sorterSetPruner.noiseFraction sorterSetPruner.stageWeight
 
             let stageWgt = getStageWeight sorterSetPruner
             let sorterEvalsWithFitness = 

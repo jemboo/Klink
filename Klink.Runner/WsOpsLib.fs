@@ -24,7 +24,7 @@ module WsOpsLib =
                         emptyWsCfg
 
                 let! wsGenZero = 
-                        wsCfgNParams |> fst |> WorkspaceCfg.loadWorkspace fs logger
+                        wsCfgNParams |> fst |> WorkspaceCfg.runWorkspaceCfg fs logger
 
                 let! res = fs.saveWorkSpace wsGenZero
                 logger ($"Saved Gen 0 to {wsGenZero |> Workspace.getId |> WorkspaceId.value}")
@@ -71,6 +71,7 @@ module WsOpsLib =
 
                 let! nextGenCfg = 
                      WsCfgLib.assignToNextGen
+                        wnSortableSet
                         wnSorterSetParent
                         wnSorterSetPruned
                         wnSorterSetEvalParent
@@ -81,7 +82,7 @@ module WsOpsLib =
 
                 let! wsNextGen = 
                         nextGenCfg
-                            |> WorkspaceCfg.loadWorkspace fs logger
+                            |> WorkspaceCfg.runWorkspaceCfg fs logger
 
                 let! res = fs.saveWorkSpace wsNextGen
 

@@ -22,13 +22,11 @@ module WsCfgLib =
 
                 let sortableSetCfg = 
                     SortableSetCertainCfg.makeAllBitsReducedOneStage order
-                    //sortableSetCertainCfg.All_Bits_Reduced order
                            |> sortableSetCfg.Certain
 
                 let wsParamsWithSortableSet = 
                     wsParams |> WorkspaceParams.setSortableSetId "sortableSet"
                                     (sortableSetCfg |> SortableSetCfg.getId)
-
 
                 let sorterSetCfg = 
                     new sorterSetRndCfg(
@@ -49,11 +47,13 @@ module WsCfgLib =
                             wnSortableSet, 
                             sortableSetCfg)
 
+
                 let causeAddSorterSetRnd =  
                     new causeAddSorterSetRnd(
                             wnSorterSetParent,
                             sorterSetCfg,
                             rngGenCreate)
+
 
                 let causeMakeSorterSetEvalParent = 
                     new causeMakeSorterSetEval(
@@ -103,15 +103,6 @@ module WsCfgLib =
                 let! sorterEvalMode = wsParams |> WorkspaceParams.getSorterEvalMode "sorterEvalMode" 
                 let! switchGenMode = wsParams |> WorkspaceParams.getSwitchGenMode "switchGenMode" 
                 let! useParallel = wsParams |> WorkspaceParams.getUseParallel "useParallel" 
-
-                let ssCfg = sortableSetCertainCfg.All_Bits order
-                            |> sortableSetCfg.Certain
-
-                let causeAddSortableSet =  
-                    new causeAddSortableSet(
-                            wnSortableSet, 
-                            ssCfg) :> ICause |> Ok
-
 
                 let causeAddSorterSetMutator = 
                     new causeAddSorterSetMutator(
@@ -174,7 +165,6 @@ module WsCfgLib =
 
                 let! causeList = 
                             [
-                                causeAddSortableSet;
                                 causeAddSorterSetMutator;
                                 causeMutateSorterSet;
                                 causeMakeSorterSetEvalMutated;
@@ -182,7 +172,7 @@ module WsCfgLib =
                             ] |> Result.sequence
 
                 return
-                        workspaceCfg 
+                        workspaceCfg
                         |> WorkspaceCfg.addCauses 
                             causeList
 
@@ -191,6 +181,7 @@ module WsCfgLib =
 
 
     let assignToNextGen
+            (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetPruned:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
@@ -203,6 +194,7 @@ module WsCfgLib =
             result {
                 let causeSetupForNextGen = 
                     new setupForNextGen(
+                            wnSortableSet,
                             wnSorterSetParent,
                             wnSorterSetPruned,
                             wnSorterSetEvalParent,

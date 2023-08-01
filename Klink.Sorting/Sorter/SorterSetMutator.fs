@@ -51,18 +51,17 @@ module SorterSetMutator =
 
     let createMutantSorterSetFromParentMap
             (sorterSetParentMap:sorterSetParentMap)
-            (sorterSetMutator:sorterSetMutator)
+            (ssm:sorterSetMutator)
             (rngGen:rngGen) 
             (sorterSetToMutate:sorterSet)
         =
         result {
             let! mutants = 
                 SorterMutator.makeMutants
-                    (sorterSetMutator |> getSorterMutator)
+                    (ssm |> getSorterMutator)
                     (rngGen |> Rando.fromRngGen)
                     (sorterSetParentMap |> SorterSetParentMap.getParentMap)
                     (sorterSetToMutate |> SorterSet.getSorters)
-
 
             return
                 SorterSet.load

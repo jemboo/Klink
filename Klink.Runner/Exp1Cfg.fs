@@ -21,6 +21,28 @@ module Exp1Cfg =
     let rngGen14 = 2211 |> RandomSeed.create |> RngGen.createLcg
 
 
+    let scP0 = 1   |> SorterCount.create
+    let scP1 = 2   |> SorterCount.create
+    let scP2 = 4   |> SorterCount.create
+    let scP3 = 8   |> SorterCount.create
+    let scP4 = 16  |> SorterCount.create
+    let scP5 = 32  |> SorterCount.create
+    let scP6 = 64  |> SorterCount.create
+    let scP7 = 128 |> SorterCount.create
+    let scP8 = 256 |> SorterCount.create
+
+
+    let scM0 = 1   |> SorterCount.create
+    let scM1 = 2   |> SorterCount.create
+    let scM2 = 4   |> SorterCount.create
+    let scM3 = 8   |> SorterCount.create
+    let scM4 = 16  |> SorterCount.create
+    let scM5 = 32  |> SorterCount.create
+    let scM6 = 64  |> SorterCount.create
+    let scM7 = 128 |> SorterCount.create
+    let scM8 = 256 |> SorterCount.create
+
+
     let nf0 = 0.001 |> NoiseFraction.create
     let nf1 = 0.025 |> NoiseFraction.create
     let nf2 = 0.050 |> NoiseFraction.create
@@ -50,20 +72,24 @@ module Exp1Cfg =
     let mr7 = 0.0250 |> MutationRate.create
     let mr8 = 0.0500 |> MutationRate.create
     let mr9 = 0.0750 |> MutationRate.create
+    let mr10 = 0.250 |> MutationRate.create
 
     let sspm1 = sorterSetPruneMethod.Whole
     let sspm2 = sorterSetPruneMethod.Shc
         
-    let rngGens = [rngGen0; rngGen1; rngGen2; rngGen3;]
+    let rngGens = [rngGen0; rngGen1; rngGen2; rngGen3; rngGen4; rngGen5; rngGen6; rngGen7;]
+
+    let sorterSetSizes = [(scP0, scM0); (scP0, scM1); (scP1, scM1); (scP1, scM2)]
 
     let stageWeights = [sw0; sw1; sw2;]
 
     let noiseFractions = [nf0; nf1; nf2; ]
 
-    let mutationRates = [mr5; mr7; mr8; mr2; mr4; mr6]
+    let mutationRates = [mr10; mr4; mr5; mr6; mr7;]
         
-    let sorterSetPruneMethods = [sspm1; sspm2]
+    let sorterSetPruneMethods = [sspm1;] // sspm2]
 
+    let switchGenModes = [switchGenMode.Switch; switchGenMode.Stage; switchGenMode.StageSymmetric]
 
     let wnSortableSet = "sortableSet" |> WsComponentName.create
     let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
@@ -140,22 +166,27 @@ module Exp1Cfg =
 
     let cfgsForTestRun () = 
         GaCfg.enumerate 
-                [rngGen0] 
+                rngGens
+                sorterSetSizes
+                switchGenModes
                 [sw0] 
                 [nf0]
-                [mr0] 
+                [mr4; mr5] 
                 [sspm2]
-                (10 |> Generation.create)
+                (1000 |> Generation.create)
+         
 
 
     let cfgsForCompleteRun () = 
         GaCfg.enumerate 
-                rngGens 
+                rngGens
+                []
+                switchGenModes
                 stageWeights 
                 noiseFractions
                 mutationRates 
                 sorterSetPruneMethods
-                (10 |> Generation.create)
+                (50 |> Generation.create)
 
 
     let standardSorterEvalProps =
@@ -423,6 +454,7 @@ module Exp1Cfg =
 
         let reportFileName = wnToQuery |> WsComponentName.value |> string
         let fsReporter = new WorkspaceFileStore(rootDir)
+
 
         fsReporter.appendLines None reportFileName [reportHeaderBinned ()] 
                 |> Result.ExtractOrThrow
