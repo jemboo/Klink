@@ -43,13 +43,15 @@ module Exp1Cfg =
     let scM8 = 256 |> SorterCount.create
 
 
+
     let nf0 = 0.001 |> NoiseFraction.create
     let nf1 = 0.025 |> NoiseFraction.create
     let nf2 = 0.050 |> NoiseFraction.create
-    let nf3 = 0.250 |> NoiseFraction.create |> Some
-    let nf4 = 0.500 |> NoiseFraction.create |> Some
-    let nf5 = 1.000 |> NoiseFraction.create |> Some
-    let nf6 = 2.000 |> NoiseFraction.create |> Some
+    let nf3 = 0.100 |> NoiseFraction.create
+    let nf4 = 0.250 |> NoiseFraction.create
+    let nf5 = 0.500 |> NoiseFraction.create |> Some
+    let nf6 = 1.000 |> NoiseFraction.create |> Some
+    let nf7 = 2.000 |> NoiseFraction.create |> Some
 
         
     let sw0 = 0.05 |> StageWeight.create
@@ -84,7 +86,7 @@ module Exp1Cfg =
 
     let stageWeights = [sw0; sw1; sw2;]
 
-    let noiseFractions = [nf0; nf1; nf2; ]
+    let noiseFractions = [nf0; nf2; nf3; nf4; ]
 
     let mutationRates = [mr10; mr4; mr5; mr6; mr7;]
         
@@ -230,16 +232,16 @@ module Exp1Cfg =
         }
 
 
-    let cfgsForTestRun () = 
+    let cfgsForTestRun (rndSkip:int) = 
         GaCfg.enumerate 
-                [rngGen1]
-                [(scP5, scM5)]
+                (GaCfg.rndGens |> Seq.skip(rndSkip) |> Seq.take 8)
+                [(scP7, scM7)]
                 [switchGenMode.StageSymmetric]
                 [sw0] 
-                [nf0]
-                [mr3;] 
+                [nf0; nf2; nf3; nf4; ]
+                [mr5; mr6; mr7] 
                 [sspm1]
-                (500 |> Generation.create)
+                (5000 |> Generation.create)
          
 
 

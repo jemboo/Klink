@@ -12,7 +12,8 @@ module IntSeries =
             let logm = (ticsPerLog * Math.Log2((value - 1) |> float)) |> int
             logo > logm
 
-
+    // 141 tics per log gives 10% of 10K
+    // 70 tics per log give 10% of 5K
     let logTics (ticsPerLog: float) (endVal: int) =
         seq {
             let mutable dex = 0

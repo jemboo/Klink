@@ -22,6 +22,15 @@ type gaCfg =
 
 module GaCfg =
 
+    let rndGens = 
+        let rngGenSeed = 1234 |> RandomSeed.create |> RngGen.createLcg
+        rngGenSeed |> Rando.toMoreRngGens
+
+    let sliceOfRndGens (modulo:int) =
+        rndGens |> Seq.mapi(fun dex rndg -> (dex, rndg))
+                |> Seq.filter(fun tup -> ((fst tup) % 16) = modulo)
+
+
     let defltCfg = 
         {
             gaCfg.curGen = 0 |> Generation.create

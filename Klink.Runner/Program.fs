@@ -17,25 +17,25 @@ module Program =
 
 
 
-        Console.WriteLine($"//////batchP5M5/////////")
+        Console.WriteLine($"//////batch128_0/////////")
         let tsStart = DateTime.Now
         
-        let runFolder = "batchP5M5"
+        let runFolder = "batch128_0"
         let runDir = System.IO.Path.Combine((rootDir |> List.head), runFolder)
 
         //let yow = Exp1Cfg.doReportPerfBins
         //            runDir
         //            (10 |> Generation.create)
-        //            (Exp1Cfg.cfgsForCompleteRun())
+        //            (Exp1Cfg.cfgsForCompleteRun(0))
 
 
-        let yow = Exp1Cfg.reportEmAll
-                    runDir
-                    (Exp1Cfg.cfgsForTestRun())
+        //let yow = Exp1Cfg.reportEmAll
+        //            runDir
+        //            (Exp1Cfg.cfgsForTestRun(0))
 
-        //let yow = Exp1Cfg.doRun
-        //                    runDir
-        //                    (Exp1Cfg.cfgsForTestRun())
+        let yow = Exp1Cfg.doRunRun
+                            runDir
+                            (Exp1Cfg.cfgsForTestRun(24))
 
 
         let tsEnd = DateTime.Now
