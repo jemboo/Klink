@@ -79,7 +79,8 @@ module Exp1Cfg =
         
     let rngGens = [rngGen0; rngGen1; rngGen2; rngGen3; rngGen4; rngGen5; rngGen6; rngGen7;]
 
-    let sorterSetSizes = [(scP0, scM0); (scP0, scM1); (scP1, scM1); (scP1, scM2)]
+    //let sorterSetSizes = [(scP0, scM0); (scP0, scM1); (scP1, scM1); (scP1, scM2)]
+    let sorterSetSizes = [(scP8, scM8);]
 
     let stageWeights = [sw0; sw1; sw2;]
 
@@ -87,7 +88,7 @@ module Exp1Cfg =
 
     let mutationRates = [mr10; mr4; mr5; mr6; mr7;]
         
-    let sorterSetPruneMethods = [sspm1;] // sspm2]
+    let sorterSetPruneMethods = [sspm2;] // sspm2]
 
     let switchGenModes = [switchGenMode.Switch; switchGenMode.Stage; switchGenMode.StageSymmetric]
 
@@ -125,7 +126,7 @@ module Exp1Cfg =
                 let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
                 let fs = new WorkspaceFileStore(runDir)
 
-                let! wsCfg_params = 
+                let! wsCfg_params, _ = 
                         WsOpsLib.genZero
                                 wnSortableSet
                                 wnSorterSetParent
@@ -164,23 +165,88 @@ module Exp1Cfg =
         }
 
 
+
+    let doRunRun
+            (rootDir:string)
+            (gaCfgs: gaCfg seq)
+        = 
+        let wnSortableSet = "sortableSet" |> WsComponentName.create
+        let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
+        let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
+        let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
+        let wnSorterSetPruned = "sorterSetPruned" |> WsComponentName.create
+        let wnParentMap = "parentMap" |> WsComponentName.create
+        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
+        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
+        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
+
+        result {
+            for gaCfg in gaCfgs do
+                let wsParams = gaCfg |> GaCfg.getWorkspaceParams
+                let runId = gaCfg |> GaCfg.getRunId
+
+                let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
+                let fs = new WorkspaceFileStore(runDir)
+
+                let! wsCfg_params, ws = 
+                        WsOpsLib.genZero
+                                wnSortableSet
+                                wnSorterSetParent
+                                wnSorterSetEvalParent
+                                wsParams
+                                fs
+                                (fun s-> Console.WriteLine(s))
+
+                let mutable curGen = gaCfg.curGen |> Generation.value
+                let mutable curCfg = wsCfg_params |> fst
+                let mutable curParams = wsCfg_params |> snd
+                let mutable curWorkspace = ws
+
+
+                let maxGen = gaCfg.maxGen |> Generation.value
+
+                while curGen < maxGen do
+                    let! wsN, wsPramsN = 
+                        WsOpsLib.doGenOnWorkspace
+                            wnSortableSet
+                            wnSorterSetParent
+                            wnSorterSetMutator
+                            wnSorterSetMutated
+                            wnSorterSetPruned
+                            wnParentMap
+                            wnSorterSetEvalParent
+                            wnSorterSetEvalMutated
+                            wnSorterSetEvalPruned
+                            fs
+                            (fun s-> Console.WriteLine(s))
+                            curParams
+                            curWorkspace
+
+                    curWorkspace <- wsN
+                    curParams <- wsPramsN
+                    curGen <- curGen + 1
+
+            return "success"
+        }
+
+
     let cfgsForTestRun () = 
         GaCfg.enumerate 
-                rngGens
-                sorterSetSizes
-                switchGenModes
+                [rngGen1]
+                [(scP5, scM5)]
+                [switchGenMode.StageSymmetric]
                 [sw0] 
                 [nf0]
-                [mr4; mr5] 
-                [sspm2]
-                (1000 |> Generation.create)
+                [mr3;] 
+                [sspm1]
+                (500 |> Generation.create)
          
 
 
     let cfgsForCompleteRun () = 
         GaCfg.enumerate 
                 rngGens
-                []
+                sorterSetSizes
                 switchGenModes
                 stageWeights 
                 noiseFractions

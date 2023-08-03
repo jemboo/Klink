@@ -187,38 +187,28 @@ module SorterSetPruner =
             (sorterEvalsToPrune:sorterEval[])
          =
             let extendedPm = sorterSetParentMap |> SorterSetParentMap.extendToParents
-            let familyGroups = sorterEvalsToPrune 
-                                |> Array.map(fun sev -> (sev, extendedPm.[sev.sortrId]))
-                                |> Array.groupBy(fun (sorterEv, sorterPid) -> sorterPid)
-                                |> Array.map(snd)
-                                |> Array.map(Array.map(fst))
+            let familySorterEvalGroups = 
+                    sorterEvalsToPrune 
+                            |> Array.map(fun sev -> (sev, extendedPm.[sev.sortrId]))
+                            |> Array.groupBy(fun (sorterEv, sorterPid) -> sorterPid)
+                            |> Array.map(snd)
+                            |> Array.map(Array.map(fst))
 
-            let familyTargetSize = (sorterSetPruner.prunedCount |> SorterCount.value) / (familyGroups |> Array.length)
-                                   |> SorterCount.create
+            let familyCount = (familySorterEvalGroups |> Array.length)
+            let familyPrunedCount = (sorterSetPruner.prunedCount |> SorterCount.value) 
+                                        / familyCount
+                                     |> SorterCount.create
 
-            let familyPruner = make familyTargetSize sorterSetPruner.noiseFraction sorterSetPruner.stageWeight
-
-            let stageWgt = getStageWeight sorterSetPruner
-            let sorterEvalsWithFitness = 
-                sorterEvalsToPrune 
-                |> Array.filter(SorterEval.getSorterSpeed >> Option.isSome)
-                |> Array.map(fun sEv -> 
-                     ( sEv,
-                       sEv |> SorterEval.getSorterSpeed |> Option.get |> SorterFitness.fromSpeed stageWgt
-                     )
-                   )
-
-            if (sorterEvalsWithFitness.Length = 0) then
-                [||]
-            elif sorterSetPruner.noiseFraction |> Option.isSome then
-                getSigmaSelection sorterEvalsWithFitness (sorterSetPruner.noiseFraction |> NoiseFraction.toFloat) rngGen
-                |> CollectionOps.takeUpto (sorterSetPruner.prunedCount |> SorterCount.value)
+            let familyRngGens = 
+                rngGen |> Rando.toMoreRngGens
+                |> Seq.take(familyCount)
                 |> Seq.toArray
-            else
-                sorterEvalsWithFitness 
-                |> Array.map(fun (sev, ft) -> ((sev, 0.0), ft))
-                |> Array.sortByDescending(snd)
-                |> CollectionOps.takeUptoArray (sorterSetPruner.prunedCount |> SorterCount.value)
+
+            let familyPruner = make familyPrunedCount sorterSetPruner.noiseFraction sorterSetPruner.stageWeight
+
+            familyRngGens
+                    |> Array.mapi(fun dex rg -> runWholePrune familyPruner rg familySorterEvalGroups.[dex])
+                    |> Array.concat
 
 
 

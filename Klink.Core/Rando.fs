@@ -119,6 +119,14 @@ module Rando =
     let nextRngGen (rg: rngGen) =
         rg |> fromRngGen |> toRngGen
 
+
+    let toMoreRngGens (rg: rngGen) =
+        let randy = fromRngGen rg
+        seq {
+            while true do
+                randy |> toRngGen
+        }
+
     let indexedRngGen 
             (index:int) 
             (rg: rngGen) 

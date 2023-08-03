@@ -133,3 +133,14 @@ module WorkspaceCfg =
                     fileStore.LoadWorkSpace(latestSavedId)
             return! restoredAncestorWs |> makeWorkspace future logger
         }
+
+
+    let runWorkspaceCfgOnWorkspace
+            (logger: string->unit)
+            (causes:ICause list)
+            (ws:workspace)
+        =
+        result {
+
+            return! ws |> makeWorkspace causes logger
+        }
