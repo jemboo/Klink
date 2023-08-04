@@ -21,26 +21,30 @@ module Exp1Cfg =
     let rngGen14 = 2211 |> RandomSeed.create |> RngGen.createLcg
 
 
-    let scP0 = 1   |> SorterCount.create
-    let scP1 = 2   |> SorterCount.create
-    let scP2 = 4   |> SorterCount.create
-    let scP3 = 8   |> SorterCount.create
-    let scP4 = 16  |> SorterCount.create
-    let scP5 = 32  |> SorterCount.create
-    let scP6 = 64  |> SorterCount.create
-    let scP7 = 128 |> SorterCount.create
-    let scP8 = 256 |> SorterCount.create
+    let scP0 = 1     |> SorterCount.create
+    let scP1 = 2     |> SorterCount.create
+    let scP2 = 4     |> SorterCount.create
+    let scP3 = 8     |> SorterCount.create
+    let scP4 = 16    |> SorterCount.create
+    let scP5 = 32    |> SorterCount.create
+    let scP6 = 64    |> SorterCount.create
+    let scP7 = 128   |> SorterCount.create
+    let scP8 = 256   |> SorterCount.create
+    let scP9 = 512   |> SorterCount.create
+    let scP10 = 1024 |> SorterCount.create
 
 
-    let scM0 = 1   |> SorterCount.create
-    let scM1 = 2   |> SorterCount.create
-    let scM2 = 4   |> SorterCount.create
-    let scM3 = 8   |> SorterCount.create
-    let scM4 = 16  |> SorterCount.create
-    let scM5 = 32  |> SorterCount.create
-    let scM6 = 64  |> SorterCount.create
-    let scM7 = 128 |> SorterCount.create
-    let scM8 = 256 |> SorterCount.create
+    let scM0 = 1     |> SorterCount.create
+    let scM1 = 2     |> SorterCount.create
+    let scM2 = 4     |> SorterCount.create
+    let scM3 = 8     |> SorterCount.create
+    let scM4 = 16    |> SorterCount.create
+    let scM5 = 32    |> SorterCount.create
+    let scM6 = 64    |> SorterCount.create
+    let scM7 = 128   |> SorterCount.create
+    let scM8 = 256   |> SorterCount.create
+    let scM9 = 512   |> SorterCount.create
+    let scM10 = 1024 |> SorterCount.create
 
 
 
@@ -82,7 +86,7 @@ module Exp1Cfg =
     let rngGens = [rngGen0; rngGen1; rngGen2; rngGen3; rngGen4; rngGen5; rngGen6; rngGen7;]
 
     //let sorterSetSizes = [(scP0, scM0); (scP0, scM1); (scP1, scM1); (scP1, scM2)]
-    let sorterSetSizes = [(scP8, scM8);]
+    let sorterSetSizes = [(scP9, scM9);]
 
     let stageWeights = [sw0; sw1; sw2;]
 
@@ -235,13 +239,13 @@ module Exp1Cfg =
     let cfgsForTestRun (rndSkip:int) = 
         GaCfg.enumerate 
                 (GaCfg.rndGens |> Seq.skip(rndSkip) |> Seq.take 8)
-                [(scP7, scM7)]
+                [(scP10, scM10)]
                 [switchGenMode.StageSymmetric]
                 [sw0] 
-                [nf0; nf2; nf3; nf4; ]
-                [mr5; mr6; mr7] 
+                [nf0; nf4;]
+                [mr5; mr7] 
                 [sspm1]
-                (5000 |> Generation.create)
+                (2500 |> Generation.create)
          
 
 
@@ -535,6 +539,50 @@ module Exp1Cfg =
                 let runId = gaCfg |> GaCfg.getRunId
 
                 let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
+                let fsForRun = new WorkspaceFileStore(runDir)
+                let! compTupes = fsForRun.getAllWorkspaceDescriptionsWithParams()
+                let dscrs = compTupes |> List.filter(
+                    fun (descr, prams) -> descr |> WorkspaceDescription.getLastCauseName = "setupForNextGen" )
+                let! taggedTupes = 
+                        dscrs |> List.map(fun (descr, prams) -> ((descr, prams), prams |> paramGroup genBinSz))
+                                |> List.map(Result.tupRight)
+                                |> Result.sequence
+                let gps = taggedTupes |> List.groupBy(snd) |> List.map(snd >> List.map(fst))
+                let repLs = gps |> List.map(addToGroupReport fsReporter fsForRun reportFileName genBinSz)
+                ()
+
+            return ()
+        }
+
+
+
+    let doReportPerfBins2
+            (rootDir:string)
+            (genBinSz: generation)
+        =
+
+        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
+        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
+        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
+        let wnToQuery = wnSorterSetEvalParent
+
+
+        let reportFileName = wnToQuery |> WsComponentName.value |> string
+        let fsReporter = new WorkspaceFileStore(rootDir)
+
+
+        fsReporter.appendLines None reportFileName [reportHeaderBinned ()] 
+                |> Result.ExtractOrThrow
+                |> ignore
+
+        let runDirs = IO.Directory.EnumerateDirectories(rootDir)
+
+        result {
+            for runDir in runDirs do
+
+                //let runId = gaCfg |> GaCfg.getRunId
+                //let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
+
                 let fsForRun = new WorkspaceFileStore(runDir)
                 let! compTupes = fsForRun.getAllWorkspaceDescriptionsWithParams()
                 let dscrs = compTupes |> List.filter(

@@ -84,7 +84,7 @@ module WorkspaceCfg =
                 | Ok wsCur ->
                 let nextId = makeWorkspaceId (wsCur |> Workspace.getId) [h]
                 let nextWs = h.Updater wsCur nextId
-                logger $"updatingQ: {h.Name}"
+                //logger $"updatingQ: {h.Name}"
                 _makeWorkspace nextWs t
 
         _makeWorkspace (startingWs |> Ok) causeHist
