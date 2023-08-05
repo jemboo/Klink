@@ -238,14 +238,14 @@ module Exp1Cfg =
 
     let cfgsForTestRun (rndSkip:int) = 
         GaCfg.enumerate 
-                (GaCfg.rndGens |> Seq.skip(rndSkip) |> Seq.take 8)
-                [(scP10, scM10)]
+                (GaCfg.rndGens |> Seq.skip(rndSkip) |> Seq.take 1)
+                [(scP5, scM5)]
                 [switchGenMode.StageSymmetric]
                 [sw0] 
-                [nf0; nf4;]
-                [mr5; mr7] 
-                [sspm1]
-                (2500 |> Generation.create)
+                [nf0; nf2; nf4;]
+                [mr3; mr5; mr7] 
+                [sspm2]
+                (25000 |> Generation.create)
          
 
 
@@ -309,6 +309,7 @@ module Exp1Cfg =
             "sortableSet";
             "sorterCount";
             "sorterCountMutated";
+            "sorterSetPruneMethod";
             "stageWeight";
             "sorterLength";
             "switchGenMode";
@@ -434,6 +435,45 @@ module Exp1Cfg =
         }
 
 
+
+    let reportEmAll2
+            (rootDir:string) 
+        =
+        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
+        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
+        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
+        let wnToQuery = wnSorterSetEvalParent
+
+        let reportFileName = wnToQuery |> WsComponentName.value |> string
+        let fsReporter = new WorkspaceFileStore(rootDir)
+
+        fsReporter.appendLines None reportFileName [reportHeaderStandard ()] 
+                |> Result.ExtractOrThrow
+                |> ignore
+
+
+        let runDirs = IO.Directory.EnumerateDirectories(rootDir)
+
+        result {
+        
+            for runDir in runDirs do
+
+                let fsForRun = new WorkspaceFileStore(runDir)
+                let fs = new WorkspaceFileStore(runDir)
+                let! ssEvalnPrams = fs.getAllSorterSetEvalsWithParamsByName wnToQuery
+
+                let! yab = ssEvalnPrams 
+                                |> List.map (fun (ssEval, wsPram) -> 
+                                    reportLines 
+                                            ssEval 
+                                            wsPram 
+                                            reportFileName
+                                            fsReporter)
+                            |> Result.sequence
+                return ()
+
+            return "success"
+        }
 
 
     let paramGroup (genBinSz:generation) 

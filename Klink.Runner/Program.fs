@@ -17,10 +17,10 @@ module Program =
 
 
 
-        Console.WriteLine($"//////batch1024/////////")
+        Console.WriteLine($"//////testShcYab/////////")
         let tsStart = DateTime.Now
         
-        let runFolder = "batch1024"
+        let runFolder = "testShc"
         let runDir = System.IO.Path.Combine((rootDir |> List.head), runFolder)
 
         //let yow = Exp1Cfg.doReportPerfBins
@@ -34,13 +34,12 @@ module Program =
         //            (1 |> Generation.create)
 
 
-        //let yow = Exp1Cfg.reportEmAll
+        //let yow = Exp1Cfg.reportEmAll2
         //            runDir
-        //            (Exp1Cfg.cfgsForTestRun(0))
 
         let yow = Exp1Cfg.doRunRun
                             runDir
-                            (Exp1Cfg.cfgsForTestRun(16))
+                            (Exp1Cfg.cfgsForTestRun(2) |> Seq.skip 0)
 
 
         let tsEnd = DateTime.Now
