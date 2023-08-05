@@ -20,15 +20,16 @@ module Program =
 
 
 
-        Console.WriteLine($"//////batch1024/////////")
+        Console.WriteLine($"//////testShcYab/////////")
         let tsStart = DateTime.Now
-        
+
         let runPath = System.IO.Path.Combine((workingDirectory |> List.head), (projectFolder |> List.head), (runFolder |> List.head))
         Console.WriteLine($"runPath: {runPath}")
         Console.WriteLine($"controlFile: {controlFile}")
         Console.WriteLine($"startingConfigIndex: {startingConfigIndex}")
         Console.WriteLine($"configCount: {configCount}")
         Console.WriteLine($"logLevel: {logLevel}")
+
 
         //let yow = Exp1Cfg.doReportPerfBins
         //            runDir
@@ -41,13 +42,13 @@ module Program =
         //            (1 |> Generation.create)
 
 
-        //let yow = Exp1Cfg.reportEmAll
+        //let yow = Exp1Cfg.reportEmAll2
         //            runDir
-        //            (Exp1Cfg.cfgsForTestRun(0))
 
-        //let yow = Exp1Cfg.doRunRun
-        //                    runDir
-        //                    (Exp1Cfg.cfgsForTestRun(16))
+
+        let yow = Exp1Cfg.doRunRun
+                            runPath
+                            (Exp1Cfg.cfgsForTestRun(2) |> Seq.skip 0)
 
 
         let tsEnd = DateTime.Now

@@ -163,9 +163,9 @@ module WsOpsLib =
                                 |> WorkspaceParams.getGeneration "generation" 
                                 |> Result.map(Generation.value)
 
-                //if (IntSeries.expoB 60.0 nextGenNumber) then
-                let! res = fs.saveWorkSpace wsNextGen
-                logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
+                if (IntSeries.expoB 60.0 nextGenNumber) then
+                    let! res = fs.saveWorkSpace wsNextGen
+                    logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
 
 
                 let aggregatedCause = new causeLoadWorkspace (wsNextGen |> Workspace.getId)
