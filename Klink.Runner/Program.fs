@@ -3,25 +3,32 @@ open Argu
 
 
 module Program = 
-    let [<EntryPoint>] main _ =
+    let [<EntryPoint>] main argv =
 
-        let parser = ArgumentParser.Create<CliArguments>(programName = "gadget.exe")
+        let parser = ArgumentParser.Create<CliArguments>(programName = "Klink.Runner.exe")
         Console.WriteLine(parser.PrintUsage())
-        let argResults = parser.Parse [||] // [| "--detach" ; "--listener" ; "localhost" ; "8080" |]
+        let argResults = parser.Parse argv
 
         let all = argResults.GetAllResults()
-        let rootDir = argResults.GetResults Working_Directory
-        let logLevel = argResults.GetResults Log_Level
-        let ears = argResults.GetResults Listener
-        
+        let workingDirectory = argResults.GetResults Working_Directory
+        let projectFolder = argResults.GetResults Project_Folder
+        let runFolder = argResults.GetResults Run_Folder
+        let controlFile = argResults.GetResults Control_File
+        let startingConfigIndex = argResults.GetResults Starting_Config_Index
+        let configCount = argResults.GetResults Config_Count
+        let logLevel = argResults.GetResults Log_level
 
 
 
         Console.WriteLine($"//////batch1024/////////")
         let tsStart = DateTime.Now
         
-        let runFolder = "batch1024"
-        let runDir = System.IO.Path.Combine((rootDir |> List.head), runFolder)
+        let runPath = System.IO.Path.Combine((workingDirectory |> List.head), (projectFolder |> List.head), (runFolder |> List.head))
+        Console.WriteLine($"runPath: {runPath}")
+        Console.WriteLine($"controlFile: {controlFile}")
+        Console.WriteLine($"startingConfigIndex: {startingConfigIndex}")
+        Console.WriteLine($"configCount: {configCount}")
+        Console.WriteLine($"logLevel: {logLevel}")
 
         //let yow = Exp1Cfg.doReportPerfBins
         //            runDir
@@ -38,9 +45,9 @@ module Program =
         //            runDir
         //            (Exp1Cfg.cfgsForTestRun(0))
 
-        let yow = Exp1Cfg.doRunRun
-                            runDir
-                            (Exp1Cfg.cfgsForTestRun(16))
+        //let yow = Exp1Cfg.doRunRun
+        //                    runDir
+        //                    (Exp1Cfg.cfgsForTestRun(16))
 
 
         let tsEnd = DateTime.Now
@@ -49,11 +56,9 @@ module Program =
 
         Console.WriteLine($"{tSpan.ToString()}")
 
-
-
-        match yow with
-        | Ok msg -> Console.WriteLine($"done ... {msg}")
-        | Error yow -> Console.WriteLine($"done ... {yow}")
+        //match yow with
+        //| Ok msg -> Console.WriteLine($"done ... {msg}")
+        //| Error yow -> Console.WriteLine($"done ... {yow}")
 
 
         Console.Read() |> ignore

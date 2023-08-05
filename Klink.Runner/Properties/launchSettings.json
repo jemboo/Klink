@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Klink.Runner": {
+      "commandName": "Project",
+      "commandLineArgs": "--working-directory Yowza\r\n--project-folder Gort\r\n--run-folder Shc\r\n--control-file ShcBatches\r\n--starting-config-index 1\r\n--config-count 3\r\n--log-level 6"
+    }
+  }
+}
