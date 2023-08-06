@@ -396,48 +396,6 @@ module Exp1Cfg =
 
     let reportEmAll
             (rootDir:string) 
-            (gaCfgs: gaCfg seq)
-        =
-        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-        let wnToQuery = wnSorterSetEvalParent
-
-        let reportFileName = wnToQuery |> WsComponentName.value |> string
-        let fsReporter = new WorkspaceFileStore(rootDir)
-
-        fsReporter.appendLines None reportFileName [reportHeaderStandard ()] 
-                |> Result.ExtractOrThrow
-                |> ignore
-
-
-        result {
-
-            for gaCfg in gaCfgs do
-
-                let runId = gaCfg |> GaCfg.getRunId
-
-                let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
-                let fs = new WorkspaceFileStore(runDir)
-                let! ssEvalnPrams = fs.getAllSorterSetEvalsWithParamsByName wnToQuery
-
-                let! yab = ssEvalnPrams 
-                                |> List.map (fun (ssEval, wsPram) -> 
-                                    reportLines 
-                                            ssEval 
-                                            wsPram 
-                                            reportFileName
-                                            fsReporter)
-                            |> Result.sequence
-                return ()
-
-            return "success"
-        }
-
-
-
-    let reportEmAll2
-            (rootDir:string) 
         =
         let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
         let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
@@ -551,52 +509,7 @@ module Exp1Cfg =
         }
 
 
-
     let doReportPerfBins
-            (rootDir:string)
-            (genBinSz: generation)
-            (gaCfgs: gaCfg seq)
-        =
-
-        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-        let wnToQuery = wnSorterSetEvalParent
-
-
-        let reportFileName = wnToQuery |> WsComponentName.value |> string
-        let fsReporter = new WorkspaceFileStore(rootDir)
-
-
-        fsReporter.appendLines None reportFileName [reportHeaderBinned ()] 
-                |> Result.ExtractOrThrow
-                |> ignore
-
-
-        result {
-            for gaCfg in gaCfgs do
-
-                let runId = gaCfg |> GaCfg.getRunId
-
-                let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
-                let fsForRun = new WorkspaceFileStore(runDir)
-                let! compTupes = fsForRun.getAllWorkspaceDescriptionsWithParams()
-                let dscrs = compTupes |> List.filter(
-                    fun (descr, prams) -> descr |> WorkspaceDescription.getLastCauseName = "setupForNextGen" )
-                let! taggedTupes = 
-                        dscrs |> List.map(fun (descr, prams) -> ((descr, prams), prams |> paramGroup genBinSz))
-                                |> List.map(Result.tupRight)
-                                |> Result.sequence
-                let gps = taggedTupes |> List.groupBy(snd) |> List.map(snd >> List.map(fst))
-                let repLs = gps |> List.map(addToGroupReport fsReporter fsForRun reportFileName genBinSz)
-                ()
-
-            return ()
-        }
-
-
-
-    let doReportPerfBins2
             (rootDir:string)
             (genBinSz: generation)
         =
@@ -619,9 +532,6 @@ module Exp1Cfg =
 
         result {
             for runDir in runDirs do
-
-                //let runId = gaCfg |> GaCfg.getRunId
-                //let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
 
                 let fsForRun = new WorkspaceFileStore(runDir)
                 let! compTupes = fsForRun.getAllWorkspaceDescriptionsWithParams()

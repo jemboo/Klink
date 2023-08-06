@@ -34,15 +34,9 @@ module Program =
         //let yow = Exp1Cfg.doReportPerfBins
         //            runDir
         //            (1 |> Generation.create)
-        //            (Exp1Cfg.cfgsForTestRun(8))
 
 
-        //let yow = Exp1Cfg.doReportPerfBins2
-        //            runDir
-        //            (1 |> Generation.create)
-
-
-        //let yow = Exp1Cfg.reportEmAll2
+        //let yow = Exp1Cfg.reportEmAll
         //            runDir
 
 
