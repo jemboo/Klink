@@ -3,43 +3,57 @@ open Argu
 
 
 module Program = 
-    let [<EntryPoint>] main _ =
+    let [<EntryPoint>] main argv =
 
-        let parser = ArgumentParser.Create<CliArguments>(programName = "gadget.exe")
+        let parser = ArgumentParser.Create<CliArguments>(programName = "Klink.Runner.exe")
         Console.WriteLine(parser.PrintUsage())
-        let argResults = parser.Parse [||] // [| "--detach" ; "--listener" ; "localhost" ; "8080" |]
+        let argResults = parser.Parse argv
 
         let all = argResults.GetAllResults()
-        let rootDir = argResults.GetResults Working_Directory
-        let logLevel = argResults.GetResults Log_Level
-        let ears = argResults.GetResults Listener
-        
+        let workingDirectory = argResults.GetResults Working_Directory |> List.head
+        let projectFolder = argResults.GetResults Project_Folder |> List.head
+        let projectFolder = argResults.GetResults Project_Folder |> List.head
+        let controlFile = argResults.GetResults Control_File |> List.head
+        let startingConfigIndex = argResults.GetResults Starting_Config_Index |> List.head
+        let configCount = argResults.GetResults Config_Count |> List.head
+        let logLevel = argResults.GetResults Log_level |> List.head
+        let iterationCt = argResults.GetResults Iteration_Count |> List.head
 
+        Console.WriteLine($"runPath: {projectFolder}")
+        Console.WriteLine($"controlFile: {controlFile}")
+        Console.WriteLine($"startingConfigIndex: {startingConfigIndex}")
+        Console.WriteLine($"configCount: {configCount}")
+        Console.WriteLine($"logLevel: {logLevel}")
+        Console.WriteLine($"iterations: {iterationCt}")
 
-
-        Console.WriteLine($"//////1024retst/////////")
+        Console.WriteLine($"//////{projectFolder}/////////")
         let tsStart = DateTime.Now
         
-        let runFolder = "1024retst"
-        let runDir = System.IO.Path.Combine((rootDir |> List.head), runFolder)
-
-        //let yow = Exp1Cfg.doReportPerfBins
-        //            runDir
-        //            (1 |> Generation.create)
-        //            (Exp1Cfg.cfgsForTestRun(8))
+        let runPath = System.IO.Path.Combine(workingDirectory, projectFolder) //, runFolder)
 
 
-        //let yow = Exp1Cfg.doReportPerfBins2
-        //            runDir
+
+        //let yow = GaReporting.doReportPerfBins
+        //            runPath
         //            (1 |> Generation.create)
 
 
-        //let yow = Exp1Cfg.reportEmAll2
-        //            runDir
+        //let yow = GaReporting.reportEmAll
+        //            runPath
 
-        let yow = Exp1Cfg.doRunRun
-                            runDir
-                            (Exp1Cfg.cfgsForTestRun(8) |> Seq.skip 0)
+
+        //let yow = Exp1Cfg.doRunRun
+        //                    runPath
+        //                    (Exp1Cfg.cfgsForTestRun(0) 
+        //                        |> Seq.skip 0
+        //                        |> Seq.take 8)
+
+
+        let yow = Exp1Cfg.continueUpdating
+                    runPath
+                    startingConfigIndex
+                    configCount
+                    iterationCt
 
 
         let tsEnd = DateTime.Now
@@ -48,11 +62,9 @@ module Program =
 
         Console.WriteLine($"{tSpan.ToString()}")
 
-
-
-        match yow with
-        | Ok msg -> Console.WriteLine($"done ... {msg}")
-        | Error yow -> Console.WriteLine($"done ... {yow}")
+        //match yow with
+        //| Ok msg -> Console.WriteLine($"done ... {msg}")
+        //| Error yow -> Console.WriteLine($"done ... {yow}")
 
 
         Console.Read() |> ignore

@@ -29,7 +29,7 @@ module WsFile =
 
 
     let writeToFile (fileType:wsFile) (fileName:string) (data: string) =
-        TextIO.writeToFile "txt" (Some wsRootDir) (getFolder fileType) fileName data
+        TextIO.writeToFileIfMissing "txt" (Some wsRootDir) (getFolder fileType) fileName data
 
     let writeLinesIfNew (fileType:wsFile) (fileName:string) (data: string seq) =
         TextIO.writeLinesIfNew "txt" (Some wsRootDir) (getFolder fileType) fileName data
