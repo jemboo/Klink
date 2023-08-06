@@ -17,10 +17,10 @@ module Program =
 
 
 
-        Console.WriteLine($"//////testShcYab/////////")
+        Console.WriteLine($"//////1024retst/////////")
         let tsStart = DateTime.Now
         
-        let runFolder = "testShc"
+        let runFolder = "1024retst"
         let runDir = System.IO.Path.Combine((rootDir |> List.head), runFolder)
 
         //let yow = Exp1Cfg.doReportPerfBins
@@ -39,7 +39,7 @@ module Program =
 
         let yow = Exp1Cfg.doRunRun
                             runDir
-                            (Exp1Cfg.cfgsForTestRun(2) |> Seq.skip 0)
+                            (Exp1Cfg.cfgsForTestRun(8) |> Seq.skip 0)
 
 
         let tsEnd = DateTime.Now

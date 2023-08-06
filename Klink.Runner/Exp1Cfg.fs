@@ -238,14 +238,14 @@ module Exp1Cfg =
 
     let cfgsForTestRun (rndSkip:int) = 
         GaCfg.enumerate 
-                (GaCfg.rndGens |> Seq.skip(rndSkip) |> Seq.take 1)
-                [(scP5, scM5)]
+                (GaCfg.rndGens |> Seq.skip(rndSkip) |> Seq.take 8)
+                [(scP8, scM8)]
                 [switchGenMode.StageSymmetric]
                 [sw0] 
-                [nf0; nf2; nf4;]
-                [mr3; mr5; mr7] 
-                [sspm2]
-                (25000 |> Generation.create)
+                [nf3;]
+                [mr6]
+                [sspm1]
+                (10000 |> Generation.create)
          
 
 
