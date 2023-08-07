@@ -163,7 +163,7 @@ module WsOpsLib =
                                 |> WorkspaceParams.getGeneration "generation" 
                                 |> Result.map(Generation.value)
 
-                if (IntSeries.expoB 100.0 nextGenNumber) then
+                if (IntSeries.expoB 200.0 nextGenNumber) then
                     let! res = fs.saveWorkSpace wsNextGen
                     logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
 

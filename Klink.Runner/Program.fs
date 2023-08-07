@@ -42,18 +42,18 @@ module Program =
         //            runPath
 
 
-        //let yow = Exp1Cfg.doRunRun
-        //                    runPath
-        //                    (Exp1Cfg.cfgsForTestRun(0) 
-        //                        |> Seq.skip 0
-        //                        |> Seq.take 8)
+        let yow = Exp1Cfg.doRunRun
+                        runPath
+                        (Exp1Cfg.cfgsForTestRun(0) 
+                            |> Seq.skip startingConfigIndex
+                            |> Seq.take configCount)
 
 
-        let yow = Exp1Cfg.continueUpdating
-                    runPath
-                    startingConfigIndex
-                    configCount
-                    iterationCt
+        //let yow = Exp1Cfg.continueUpdating
+        //            runPath
+        //            startingConfigIndex
+        //            configCount
+        //            iterationCt
 
 
         let tsEnd = DateTime.Now
