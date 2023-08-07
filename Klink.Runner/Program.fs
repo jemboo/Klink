@@ -44,7 +44,7 @@ module Program =
 
         let yow = Exp1Cfg.doRunRun
                         runPath
-                        (Exp1Cfg.cfgsForTestRun(0) 
+                        (Exp1Cfg.cfgsForTestRun() 
                             |> Seq.skip startingConfigIndex
                             |> Seq.take configCount)
 
