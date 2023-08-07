@@ -13,8 +13,11 @@ type WorkspaceFileStore (wsRootDir:string) =
         | Some v -> v |> string
         | None -> ""
 
-    member this.writeToFile (wsCompType:workspaceComponentType option) (fileName:string) (data: string) =
-        TextIO.writeToFile this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
+    member this.writeToFileIfMissing (wsCompType:workspaceComponentType option) (fileName:string) (data: string) =
+        TextIO.writeToFileIfMissing this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
+
+    member this.writeToFileOverwrite (wsCompType:workspaceComponentType option) (fileName:string) (data: string) =
+        TextIO.writeToFileOverwrite this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
 
     member this.writeLinesIfNew (wsCompType:workspaceComponentType option) (fileName:string) (data: string seq) =
         TextIO.writeLinesIfNew this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
@@ -35,13 +38,24 @@ type WorkspaceFileStore (wsRootDir:string) =
            let filePath = Path.Combine(this.wsRootDir, this.getFolderName wsCompType)
            Directory.GetFiles(filePath)
 
+    member this.markLastWorkspaceId (wsId:workspaceId) = 
+           TextIO.writeToFileOverwrite this.fileExt (Some this.wsRootDir) "" "lastUpdate" (wsId |> WorkspaceId.value |> string )
+
+    member this.getLastWorkspaceId =
+           //result {
+           //     let! txt = TextIO.readAllText this.fileExt (Some this.wsRootDir) "" "lastUpdate"
+           //     return txt |> Guid.Parse |> WorkspaceId.create
+           //}
+           TextIO.readAllText this.fileExt (Some this.wsRootDir) "" "lastUpdate"
+           |> Result.map (Guid.Parse >> WorkspaceId.create)
+
 
     member this.compStore (wsComp:workspaceComponent) 
         = 
         result {
             let cereal, wsCompType = wsComp |> WorkspaceComponentDto.toJsonT
             let fileName = wsComp |> WorkspaceComponent.getId |> string
-            let! res = this.writeToFile (Some wsCompType) fileName cereal
+            let! res = this.writeToFileIfMissing (Some wsCompType) fileName cereal
             return fileName
         }
 
@@ -101,22 +115,6 @@ type WorkspaceFileStore (wsRootDir:string) =
         this.getAllFiles (Some wsCompType)
             |> Array.map(Path.GetFileNameWithoutExtension >> Guid.Parse)
             |> Array.map(fun gu -> this.compRetreive gu wsCompType)
-
-
-    //member this.getComponent
-    //            (wscn:wsComponentName)
-    //            (wsd:workspaceDescription)
-    //    =
-    //    result {
-    //        let yab = wsd |> WorkspaceDescription.getComponents
-    //        if yab.ContainsKey wscn then
-    //            let compDescr = yab.[wscn]
-    //            let compId = compDescr |> WorkspaceComponentDescr.getId
-    //            let compType = compDescr |> WorkspaceComponentDescr.getCompType
-    //            return! Some (this.compRetreive compId compType)
-    //        else 
-    //            return! None
-    //    }
 
 
     member this.getComponent
@@ -272,12 +270,21 @@ type WorkspaceFileStore (wsRootDir:string) =
             return! wsd |> Workspace.ofWorkspaceDescription this.compRetreive
         }
 
+    member this.loadParameters (id:workspaceId) =
+        result {
+            let fileName = id |> WorkspaceId.value |> string
+            let! cereal = this.readAllText (Some workspaceComponentType.WorkspaceDescription) fileName
+            let! wsd = cereal |> WorkspaceDescriptionDto.fromJson
+            return! wsd |> Workspace.ofWorkspaceDescription this.compRetreive
+        }
+
     member this.saveWorkSpace (workspace:workspace) =
         result {
             let fileName = workspace |> Workspace.getId |> WorkspaceId.value |> string
             let cereal = workspace |> Workspace.toWorkspaceDescription
                                    |> WorkspaceDescriptionDto.toJson
-            let! res = this.writeToFile (Some workspaceComponentType.WorkspaceDescription) fileName cereal
+            let! res = this.writeToFileIfMissing (Some workspaceComponentType.WorkspaceDescription) fileName cereal
+            let! res2 = this.markLastWorkspaceId (workspace |> Workspace.getId)
             let _, comps = workspace |> Workspace.getWsComponents |> Map.toArray |> Array.unzip
             let! _ = comps |> Array.toList |> List.map(this.compStore) |> Result.sequence
             return fileName

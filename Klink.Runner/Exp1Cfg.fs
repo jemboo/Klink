@@ -98,6 +98,34 @@ module Exp1Cfg =
 
     let switchGenModes = [switchGenMode.Switch; switchGenMode.Stage; switchGenMode.StageSymmetric]
 
+    
+
+    let cfgsForTestRun (rndSkip:int) = 
+        GaCfg.enumerate 
+                (GaCfg.rndGens |> Seq.skip(rndSkip))
+                [(scP2, scM2)]
+                [switchGenMode.StageSymmetric]
+                [sw0] 
+                [nf3;]
+                [mr6]
+                [sspm1]
+                (2 |> Generation.create)
+         
+
+
+    let cfgsForCompleteRun () = 
+        GaCfg.enumerate 
+                rngGens
+                sorterSetSizes
+                switchGenModes
+                stageWeights 
+                noiseFractions
+                mutationRates 
+                sorterSetPruneMethods
+                (50 |> Generation.create)
+
+
+
     let wnSortableSet = "sortableSet" |> WsComponentName.create
     let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
     let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
@@ -107,29 +135,19 @@ module Exp1Cfg =
     let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
     let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
     let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-    let wnSorterSetPruner = "sorterSetPruner" |> WsComponentName.create
-        
+
 
     let doRun
-            (rootDir:string)
+            (projectDir:string)
             (gaCfgs: gaCfg seq)
         = 
-        let wnSortableSet = "sortableSet" |> WsComponentName.create
-        let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
-        let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
-        let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
-        let wnSorterSetPruned = "sorterSetPruned" |> WsComponentName.create
-        let wnParentMap = "parentMap" |> WsComponentName.create
-        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
 
         result {
             for gaCfg in gaCfgs do
                 let wsParams = gaCfg |> GaCfg.getWorkspaceParams
                 let runId = gaCfg |> GaCfg.getRunId
 
-                let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
+                let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
                 let fs = new WorkspaceFileStore(runDir)
 
                 let! wsCfg_params, _ = 
@@ -171,27 +189,16 @@ module Exp1Cfg =
         }
 
 
-
     let doRunRun
-            (rootDir:string)
+            (projectDir:string)
             (gaCfgs: gaCfg seq)
         = 
-        let wnSortableSet = "sortableSet" |> WsComponentName.create
-        let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
-        let wnSorterSetMutator = "sorterSetMutator" |> WsComponentName.create
-        let wnSorterSetMutated = "sorterSetMutated" |> WsComponentName.create
-        let wnSorterSetPruned = "sorterSetPruned" |> WsComponentName.create
-        let wnParentMap = "parentMap" |> WsComponentName.create
-        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-
         result {
             for gaCfg in gaCfgs do
                 let wsParams = gaCfg |> GaCfg.getWorkspaceParams
                 let runId = gaCfg |> GaCfg.getRunId
 
-                let runDir = IO.Path.Combine(rootDir, runId |> RunId.value |> string)
+                let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
                 let fs = new WorkspaceFileStore(runDir)
 
                 let! wsCfg_params, ws = 
@@ -236,314 +243,61 @@ module Exp1Cfg =
         }
 
 
-    let cfgsForTestRun (rndSkip:int) = 
-        GaCfg.enumerate 
-                (GaCfg.rndGens |> Seq.skip(rndSkip) |> Seq.take 1)
-                [(scP5, scM5)]
-                [switchGenMode.StageSymmetric]
-                [sw0] 
-                [nf0; nf2; nf4;]
-                [mr3; mr5; mr7] 
-                [sspm2]
-                (25000 |> Generation.create)
-         
-
-
-    let cfgsForCompleteRun () = 
-        GaCfg.enumerate 
-                rngGens
-                sorterSetSizes
-                switchGenModes
-                stageWeights 
-                noiseFractions
-                mutationRates 
-                sorterSetPruneMethods
-                (50 |> Generation.create)
-
-
-    let standardSorterEvalProps =
-        [
-            sorterEvalProps.ErrorMsg;
-            sorterEvalProps.Phenotype;
-            sorterEvalProps.SortedSetSize;
-            sorterEvalProps.SorterId;
-            sorterEvalProps.StageCount;
-            sorterEvalProps.Success;
-            sorterEvalProps.SwitchCount;
-        ]
-
-    let standardSorterEvalHeaders () = 
-        standardSorterEvalProps
-            |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
-
-
-    let standardSorterEvalValues (sev:sorterEval) =
-        let yab = sev |> SorterEval.getSorterEvalProps
-        standardSorterEvalProps
-            |> List.fold(fun st t -> sprintf "%s\t%s" st yab.[t]) ""
-
-
-    //let binnedSorterEvalProps =
-    //    [
-    //        sorterEvalProps.SortableSetId;
-    //    ]
-
-    //let binnedSorterEvalHeaders () = 
-    //    binnedSorterEvalProps
-    //        |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
-
-
-    //let binnedSorterEvalValues (sev:sorterEval) =
-    //    let yab = sev |> SorterEval.getSorterEvalProps
-    //    binnedSorterEvalProps
-    //        |> List.fold(fun st t -> sprintf "%s\t%s" st yab.[t]) ""
-
-
-    let standardParamProps =
-        [
-            "generation";
-            "runId";
-            "mutationRate";
-            "noiseFraction";
-            "order";
-            "sortableSet";
-            "sorterCount";
-            "sorterCountMutated";
-            "sorterSetPruneMethod";
-            "stageWeight";
-            "sorterLength";
-            "switchGenMode";
-        ]
-        
-
-    let standardParamValues (wsps:workspaceParams) =
-        let paramMap t = (wsps |> WorkspaceParams.getMap).[t]
-        standardParamProps |> StringUtil.toCsvLine paramMap
-
-    let binParamProps =
-        [
-            "runId";
-            "mutationRate";
-            "noiseFraction";
-            "order";
-            "sortableSet";
-            "sorterCount";
-            "sorterCountMutated";
-            "stageWeight";
-            "sorterLength";
-            "switchGenMode";
-        ]
-
-    let binnedParamValues (wsps:workspaceParams) (genBinSz:int) =
-        let paramMap t = (wsps |> WorkspaceParams.getMap).[t]
-        result {
-            let! genBin = wsps |> WorkspaceParams.getGeneration "generation"
-                               |> Result.map(Generation.binnedValue genBinSz)
-            return $"{ genBin }\t{ binParamProps |> StringUtil.toCsvLine paramMap }"
-        }
-
-
-    let reportHeaderStandard () =
-        sprintf "%s%s" 
-            (standardParamProps |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
-            (standardSorterEvalHeaders ())
-
-
-    let reportHeaderBinned () =
-        sprintf "%s%s%s"
-            "gen_bin\t"
-            (binParamProps |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
-            "\tSwitchCt\tStageCt\tRecordCt"
-
-
-    let reportLines
-            (sorterSetEval:sorterSetEval) 
-            (wsps:workspaceParams)
-            (fileName:string)
-            (fs:WorkspaceFileStore)
+    let continueUpdating
+            (projectDir:string)
+            (firstFolderIndex:int)
+            (folderNum:int)
+            (iterationCount:int)
         =
-        let lines = 
-            sorterSetEval 
-                |> SorterSetEval.getSorterEvals 
-                |> Array.map(fun sev ->
-                                    sprintf "%s%s" 
-                                        (standardParamValues wsps)
-                                        (standardSorterEvalValues sev))
-        fs.appendLines None fileName lines
-
-
-    let reportEm (rootDir:string) (runId:runId) 
-        =
-        let runDir = System.IO.Path.Combine(rootDir, runId |> RunId.value |> string)
-        let reportFileName = "SorterEvalReport"
-        let fs = new WorkspaceFileStore(runDir)
-
-        fs.appendLines None reportFileName [reportHeaderStandard ()] 
-                |> Result.ExtractOrThrow
-                |> ignore
-
-        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
+        let runDirs = IO.Directory.EnumerateDirectories(projectDir)
+                        |> Seq.toArray
+                        |> Array.sort
+                        |> Array.skip firstFolderIndex
+                        |> Array.take folderNum
         result {
-            let! compTupes = fs.getAllSorterSetEvalsWithParamsByName wnSorterSetEvalMutated
-            let yab = compTupes 
-                        |> List.map (fun (ssEval, wsPram) -> 
-                            reportLines ssEval wsPram reportFileName fs)
-            return "success"
-        }
-
-
-    let reportEmAll
-            (rootDir:string) 
-        =
-        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-        let wnToQuery = wnSorterSetEvalParent
-
-        let reportFileName = wnToQuery |> WsComponentName.value |> string
-        let fsReporter = new WorkspaceFileStore(rootDir)
-
-        fsReporter.appendLines None reportFileName [reportHeaderStandard ()] 
-                |> Result.ExtractOrThrow
-                |> ignore
-
-
-        let runDirs = IO.Directory.EnumerateDirectories(rootDir)
-
-        result {
-        
             for runDir in runDirs do
+                Console.WriteLine(runDir)
 
-                let fsForRun = new WorkspaceFileStore(runDir)
                 let fs = new WorkspaceFileStore(runDir)
-                let! ssEvalnPrams = fs.getAllSorterSetEvalsWithParamsByName wnToQuery
 
-                let! yab = ssEvalnPrams 
-                                |> List.map (fun (ssEval, wsPram) -> 
-                                    reportLines 
-                                            ssEval 
-                                            wsPram 
-                                            reportFileName
-                                            fsReporter)
-                            |> Result.sequence
-                return ()
+                let! workspaceId = fs.getLastWorkspaceId
+                
+                Console.WriteLine($" wsId: {workspaceId}")
+
+                let! wsLoaded = fs.loadWorkSpace workspaceId
+                let! paramsLoaded = wsLoaded 
+                                    |> Workspace.getComponent ("workspaceParams" |> WsComponentName.create)
+                                    |> Result.bind(WorkspaceComponent.asWorkspaceParams)
+                let! genLoaded = paramsLoaded |> WorkspaceParams.getGeneration "generation"
+                                 |> Result.map(Generation.value)
+
+                let mutable curGen = genLoaded
+                let mutable curParams = paramsLoaded
+                let mutable curWorkspace = wsLoaded
+
+
+                let maxGen = curGen + iterationCount
+                while curGen < maxGen do
+                    let! wsN, wsPramsN = 
+                        WsOpsLib.doGenOnWorkspace
+                            wnSortableSet
+                            wnSorterSetParent
+                            wnSorterSetMutator
+                            wnSorterSetMutated
+                            wnSorterSetPruned
+                            wnParentMap
+                            wnSorterSetEvalParent
+                            wnSorterSetEvalMutated
+                            wnSorterSetEvalPruned
+                            fs
+                            (fun s-> Console.WriteLine(s))
+                            curParams
+                            curWorkspace
+
+                    curWorkspace <- wsN
+                    curParams <- wsPramsN
+                    curGen <- curGen + 1
+
 
             return "success"
-        }
-
-
-    let paramGroup (genBinSz:generation) 
-                   (wsPram:workspaceParams)  =
-        result {
-            let! gen = wsPram |> WorkspaceParams.getGeneration "generation"
-                              |> Result.map(Generation.binnedValue (genBinSz |> Generation.value))
-            let! mr = wsPram |> WorkspaceParams.getMutationRate "mutationRate"
-            let! nf = wsPram |> WorkspaceParams.getNoiseFraction "noiseFraction"
-            let! order = wsPram |> WorkspaceParams.getOrder "order"
-            let! runId = wsPram |> WorkspaceParams.getRunId "runId"
-            let! sct = wsPram |> WorkspaceParams.getSorterCount "sorterCount"
-            let! scM = wsPram |> WorkspaceParams.getSorterCount "sorterCountMutated"
-            let! sLen = wsPram |> WorkspaceParams.getSorterCount "sorterLength"
-            let! stw = wsPram |> WorkspaceParams.getStageWeight "stageWeight"
-            let! sgm = wsPram |> WorkspaceParams.getSwitchGenMode "switchGenMode"
-            return [
-                        gen :> obj; 
-                        mr :> obj; 
-                        nf :> obj; 
-                        order :> obj; 
-                        runId :> obj; 
-                        sct :> obj; 
-                        scM :> obj; 
-                        sLen :> obj; 
-                        stw :> obj; 
-                        sgm :> obj;
-                   ] |> GuidUtils.guidFromObjs
-        }
-
-
-    let addToGroupReport 
-            (fsReporting:WorkspaceFileStore)
-            (fsRun:WorkspaceFileStore)
-            (fileName:string)
-            (genBinSz:generation)
-            (tupL:(workspaceDescription*workspaceParams) list) =
-
-        let _getSorterSetEvals worspaceDescr = 
-            let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-            result {
-                return! fsRun.getComponent wnSorterSetEvalParent worspaceDescr
-                              |> Result.bind(WorkspaceComponent.asSorterSetEval)
-            }
-
-        result {
-            let wsPramsFirst = tupL |> List.head |> snd
-            let! ssEvals = 
-                tupL |> List.map(fst >> _getSorterSetEvals)
-                     |> Result.sequence
-
-            let! speedBins = 
-                        ssEvals 
-                        |> SorterSetEval.getAllSorterSpeedBins
-                        |> Result.map(Seq.toList)
-
-            let! bpvs = binnedParamValues wsPramsFirst (genBinSz |> Generation.value)
-
-            let newLines =
-                speedBins |> List.map(
-                    fun (srtrSpeed, ct) -> 
-
-                        let switchCt = srtrSpeed 
-                                        |> SorterSpeed.getSwitchCount
-                                        |> SwitchCount.value
-                        let stageCt = srtrSpeed 
-                                        |> SorterSpeed.getStageCount
-                                        |> StageCount.value
-                        
-                        $"{bpvs}\t{switchCt}\t{stageCt}\t{ct}"
-                    )
-
-            let! res = fsReporting.appendLines None fileName newLines
-            return ()
-        }
-
-
-    let doReportPerfBins
-            (rootDir:string)
-            (genBinSz: generation)
-        =
-
-        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-        let wnToQuery = wnSorterSetEvalParent
-
-
-        let reportFileName = wnToQuery |> WsComponentName.value |> string
-        let fsReporter = new WorkspaceFileStore(rootDir)
-
-
-        fsReporter.appendLines None reportFileName [reportHeaderBinned ()] 
-                |> Result.ExtractOrThrow
-                |> ignore
-
-        let runDirs = IO.Directory.EnumerateDirectories(rootDir)
-
-        result {
-            for runDir in runDirs do
-
-                let fsForRun = new WorkspaceFileStore(runDir)
-                let! compTupes = fsForRun.getAllWorkspaceDescriptionsWithParams()
-                let dscrs = compTupes |> List.filter(
-                    fun (descr, prams) -> descr |> WorkspaceDescription.getLastCauseName = "setupForNextGen" )
-                let! taggedTupes = 
-                        dscrs |> List.map(fun (descr, prams) -> ((descr, prams), prams |> paramGroup genBinSz))
-                                |> List.map(Result.tupRight)
-                                |> Result.sequence
-                let gps = taggedTupes |> List.groupBy(snd) |> List.map(snd >> List.map(fst))
-                let repLs = gps |> List.map(addToGroupReport fsReporter fsForRun reportFileName genBinSz)
-                ()
-
-            return ()
         }

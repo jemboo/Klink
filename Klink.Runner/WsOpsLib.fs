@@ -50,7 +50,7 @@ module WsOpsLib =
             (workspaceCfg:workspaceCfg)
          =
             result {
-                let! pruneCfg = 
+                let! workspaceCfgPrune = 
                      WsCfgLib.makeMutantsAndPrune
                         wnSortableSet
                         wnSorterSetParent
@@ -69,7 +69,7 @@ module WsOpsLib =
                                  |> Result.bind(WorkspaceParams.updateRngGen "rngGenMutate")
                                  |> Result.bind(WorkspaceParams.updateRngGen "rngGenPrune")
 
-                let! nextGenCfg = 
+                let! workspaceCfgNextGen = 
                      WsCfgLib.assignToNextGen
                         wnSortableSet
                         wnSorterSetParent
@@ -78,16 +78,16 @@ module WsOpsLib =
                         wnSorterSetEvalPruned
                         wnParentMap
                         wsParamsNextGen
-                        pruneCfg
+                        workspaceCfgPrune
 
                 let! wsNextGen = 
-                        nextGenCfg
+                        workspaceCfgNextGen
                             |> WorkspaceCfg.runWorkspaceCfg fs logger
 
                 let! res = fs.saveWorkSpace wsNextGen
 
                 let! nextGenNumber = 
-                            wsParams 
+                            wsParamsNextGen 
                                 |> WorkspaceParams.getGeneration "generation" 
                                 |> Result.map(Generation.value)
 
@@ -120,7 +120,7 @@ module WsOpsLib =
                 
                 let baseWsCfg = WorkspaceCfg.Empty
 
-                let! pruneCfg = 
+                let! workspaceCfgPrune = 
                      WsCfgLib.makeMutantsAndPrune
                         wnSortableSet
                         wnSorterSetParent
@@ -148,13 +148,13 @@ module WsOpsLib =
                         wnSorterSetEvalPruned
                         wnParentMap
                         wsParamsNextGen
-                        pruneCfg
+                        workspaceCfgPrune
 
-                let! wsNextGen = 
+                let! wsNextGen =
                         ws
-                            |> WorkspaceCfg.runWorkspaceCfgOnWorkspace
-                                    logger
-                                    (nextGenCfg.history) 
+                        |> WorkspaceCfg.runWorkspaceCfgOnWorkspace
+                                logger
+                                (nextGenCfg.history) 
 
 
 
@@ -163,13 +163,9 @@ module WsOpsLib =
                                 |> WorkspaceParams.getGeneration "generation" 
                                 |> Result.map(Generation.value)
 
-                if (IntSeries.expoB 60.0 nextGenNumber) then
+                if (IntSeries.expoB 100.0 nextGenNumber) then
                     let! res = fs.saveWorkSpace wsNextGen
                     logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
-
-
-                let aggregatedCause = new causeLoadWorkspace (wsNextGen |> Workspace.getId)
-                let truncWsCfg = aggregatedCause.makeTruncatedWorkspaceCfg()
 
                 return wsNextGen, wsParamsNextGen
              }
