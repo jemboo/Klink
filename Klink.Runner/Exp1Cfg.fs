@@ -68,17 +68,22 @@ module Exp1Cfg =
     let sw7 = 8.00 |> StageWeight.create
 
 
-    let mr0 = 0.0005 |> MutationRate.create
-    let mr1 = 0.0010 |> MutationRate.create
-    let mr2 = 0.0020 |> MutationRate.create
-    let mr3 = 0.0030 |> MutationRate.create
-    let mr4 = 0.0050 |> MutationRate.create
-    let mr5 = 0.0075 |> MutationRate.create
-    let mr6 = 0.0100 |> MutationRate.create
-    let mr7 = 0.0250 |> MutationRate.create
-    let mr8 = 0.0500 |> MutationRate.create
-    let mr9 = 0.0750 |> MutationRate.create
-    let mr10 = 0.250 |> MutationRate.create
+    let mr0 =  0.0005 |> MutationRate.create
+    let mr1 =  0.0010 |> MutationRate.create
+    let mr2 =  0.0020 |> MutationRate.create
+    let mr3 =  0.0030 |> MutationRate.create
+    let mr4 =  0.0050 |> MutationRate.create
+    let mr5 =  0.0075 |> MutationRate.create
+    let mr6 =  0.0100 |> MutationRate.create
+    let mr7 =  0.0200 |> MutationRate.create
+    let mr8 =  0.0300 |> MutationRate.create
+    let mr9 =  0.0400 |> MutationRate.create
+    let mr10 = 0.0500 |> MutationRate.create
+    let mr11 = 0.0600 |> MutationRate.create
+    let mr12 = 0.0700 |> MutationRate.create
+    let mr13 = 0.0800 |> MutationRate.create
+    let mr14 = 0.0900 |> MutationRate.create
+    let mr15 = 0.1000 |> MutationRate.create
 
     let sspm1 = sorterSetPruneMethod.Whole
     let sspm2 = sorterSetPruneMethod.Shc
@@ -100,16 +105,16 @@ module Exp1Cfg =
 
     
 
-    let cfgsForTestRun () = 
+    let cfgsForTestRun (iterationCt:int) = 
         GaCfg.enumerate 
                 (GaCfg.rndGens)
                 [(scP8, scM8)]
                 [switchGenMode.StageSymmetric]
                 [sw0] 
                 [nf4;]
-                [mr0;mr1;mr2;mr3;mr4;mr5;mr6;mr7;mr8]
+                [mr0;mr1;mr2;mr3;mr4;mr5;mr6;mr7;mr8;mr9;mr10;mr11;mr12;mr13;mr14;mr15]
                 [sspm2]
-                (1000 |> Generation.create)
+                (iterationCt |> Generation.create)
          
 
 
