@@ -2,8 +2,7 @@
 open System
 
 
-module WsOpsLib = 
-
+module Exp1WsOps = 
 
     let genZero
             (wnSortableSet:wsComponentName)
@@ -16,7 +15,7 @@ module WsOpsLib =
             result {
                 let emptyWsCfg = WorkspaceCfg.Empty
                 let! wsCfgNParams = 
-                    WsCfgLib.initParentMapAndEval
+                    Exp1Causes.initParentMapAndEval
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetEvalParent
@@ -30,8 +29,6 @@ module WsOpsLib =
                 logger ($"Saved Gen 0 to {wsGenZero |> Workspace.getId |> WorkspaceId.value}")
                 return wsCfgNParams, wsGenZero
              }
-
-
 
 
     let doGen
@@ -51,7 +48,7 @@ module WsOpsLib =
          =
             result {
                 let! workspaceCfgPrune = 
-                     WsCfgLib.makeMutantsAndPrune
+                     Exp1Causes.makeMutantsAndPrune
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetMutator
@@ -70,7 +67,7 @@ module WsOpsLib =
                                  |> Result.bind(WorkspaceParams.updateRngGen "rngGenPrune")
 
                 let! workspaceCfgNextGen = 
-                     WsCfgLib.assignToNextGen
+                     Exp1Causes.assignToNextGen
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetPruned
@@ -121,7 +118,7 @@ module WsOpsLib =
                 let baseWsCfg = WorkspaceCfg.Empty
 
                 let! workspaceCfgPrune = 
-                     WsCfgLib.makeMutantsAndPrune
+                     Exp1Causes.makeMutantsAndPrune
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetMutator
@@ -140,7 +137,7 @@ module WsOpsLib =
                                  |> Result.bind(WorkspaceParams.updateRngGen "rngGenPrune")
 
                 let! nextGenCfg = 
-                     WsCfgLib.assignToNextGen
+                     Exp1Causes.assignToNextGen
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetPruned
@@ -157,15 +154,14 @@ module WsOpsLib =
                                 (nextGenCfg.history) 
 
 
-
                 let! nextGenNumber = 
                             wsParams 
                                 |> WorkspaceParams.getGeneration "generation" 
                                 |> Result.map(Generation.value)
 
-                //if (IntSeries.expoB 200.0 nextGenNumber) then
-                let! res = fs.saveWorkSpace wsNextGen
-                logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
+                if (IntSeries.expoB 10.0 nextGenNumber) then
+                    let! res = fs.saveWorkSpace wsNextGen
+                    logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
 
                 return wsNextGen, wsParamsNextGen
              }

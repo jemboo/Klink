@@ -53,37 +53,31 @@ module Exp1Cfg =
     let nf2 = 0.050 |> NoiseFraction.create
     let nf3 = 0.100 |> NoiseFraction.create
     let nf4 = 0.250 |> NoiseFraction.create
-    let nf5 = 0.500 |> NoiseFraction.create |> Some
-    let nf6 = 1.000 |> NoiseFraction.create |> Some
-    let nf7 = 2.000 |> NoiseFraction.create |> Some
+    let nf5 = 0.500 |> NoiseFraction.create
+    let nf6 = 1.000 |> NoiseFraction.create
+    let nf7 = 2.000 |> NoiseFraction.create
 
         
     let sw0 = 0.05 |> StageWeight.create
     let sw1 = 0.10 |> StageWeight.create
     let sw2 = 0.25 |> StageWeight.create
     let sw3 = 0.50 |> StageWeight.create
-    let sw4 = 1.00 |> StageWeight.create
-    let sw5 = 2.00 |> StageWeight.create
-    let sw6 = 4.00 |> StageWeight.create
-    let sw7 = 8.00 |> StageWeight.create
+    let sw4 = 0.75 |> StageWeight.create
+    let sw5 = 1.00 |> StageWeight.create
+    let sw6 = 2.00 |> StageWeight.create
+    let sw7 = 4.00 |> StageWeight.create
 
 
-    let mr0 =  0.0005 |> MutationRate.create
-    let mr1 =  0.0010 |> MutationRate.create
-    let mr2 =  0.0020 |> MutationRate.create
-    let mr3 =  0.0030 |> MutationRate.create
-    let mr4 =  0.0050 |> MutationRate.create
-    let mr5 =  0.0075 |> MutationRate.create
-    let mr6 =  0.0100 |> MutationRate.create
-    let mr7 =  0.0200 |> MutationRate.create
-    let mr8 =  0.0300 |> MutationRate.create
-    let mr9 =  0.0400 |> MutationRate.create
-    let mr10 = 0.0500 |> MutationRate.create
-    let mr11 = 0.0600 |> MutationRate.create
-    let mr12 = 0.0700 |> MutationRate.create
-    let mr13 = 0.0800 |> MutationRate.create
-    let mr14 = 0.0900 |> MutationRate.create
-    let mr15 = 0.1000 |> MutationRate.create
+    
+    let mr000 =  0.0075 |> MutationRate.create
+    let mr00 =   0.0100 |> MutationRate.create
+    let mr0 =    0.0125 |> MutationRate.create
+    let mr1 =    0.0150 |> MutationRate.create
+    let mr2 =    0.0200 |> MutationRate.create
+    let mr3 =    0.0250 |> MutationRate.create
+    let mr4 =    0.0300 |> MutationRate.create
+    let mr5 =    0.0350 |> MutationRate.create
+    let mr6 =    0.0400 |> MutationRate.create
 
     let sspm1 = sorterSetPruneMethod.Whole
     let sspm2 = sorterSetPruneMethod.Shc
@@ -97,7 +91,8 @@ module Exp1Cfg =
 
     let noiseFractions = [nf0; nf2; nf3; nf4; ]
 
-    let mutationRates = [mr10; mr4; mr5; mr6; mr7;]
+    //let mutationRates = [mr1; mr2; mr3; mr4; mr5; mr6;]
+    let mutationRates = [mr00; mr00; mr0; mr1]
         
     let sorterSetPruneMethods = [sspm2;] // sspm2]
 
@@ -106,20 +101,20 @@ module Exp1Cfg =
     
 
     let cfgsForTestRun (iterationCt:int) = 
-        GaCfg.enumerate 
-                (GaCfg.rndGens)
+        Exp1Cfg.enumerate 
+                (Exp1Cfg.rndGens)
                 [(scP8, scM8)]
-                [switchGenMode.StageSymmetric]
-                [sw0] 
-                [nf4;]
-                [mr0;mr1;mr2;mr3;mr4;mr5;mr6;mr7;mr8;mr9;mr10;mr11;mr12;mr13;mr14;mr15]
+                [switchGenMode.Stage; switchGenMode.Switch; switchGenMode.StageSymmetric]
+                [sw0; sw2; sw4; sw6]
+                [nf0; nf3;]
+                mutationRates
                 [sspm2]
                 (iterationCt |> Generation.create)
          
 
 
     let cfgsForCompleteRun () = 
-        GaCfg.enumerate 
+        Exp1Cfg.enumerate 
                 rngGens
                 sorterSetSizes
                 switchGenModes
@@ -144,19 +139,19 @@ module Exp1Cfg =
 
     let doRun
             (projectDir:string)
-            (gaCfgs: gaCfg seq)
+            (gaCfgs: exp1Cfg seq)
         = 
 
         result {
             for gaCfg in gaCfgs do
-                let wsParams = gaCfg |> GaCfg.getWorkspaceParams
-                let runId = gaCfg |> GaCfg.getRunId
+                let wsParams = gaCfg |> Exp1Cfg.getWorkspaceParams
+                let runId = gaCfg |> Exp1Cfg.getRunId
 
                 let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
                 let fs = new WorkspaceFileStore(runDir)
 
                 let! wsCfg_params, _ = 
-                        WsOpsLib.genZero
+                        Exp1WsOps.genZero
                                 wnSortableSet
                                 wnSorterSetParent
                                 wnSorterSetEvalParent
@@ -171,7 +166,7 @@ module Exp1Cfg =
 
                 while curGen < maxGen do
                     let! wsCfgN, wsPramsN = 
-                        WsOpsLib.doGen
+                        Exp1WsOps.doGen
                             wnSortableSet
                             wnSorterSetParent
                             wnSorterSetMutator
@@ -196,18 +191,18 @@ module Exp1Cfg =
 
     let doRunRun
             (projectDir:string)
-            (gaCfgs: gaCfg seq)
+            (gaCfgs: exp1Cfg seq)
         = 
         result {
             for gaCfg in gaCfgs do
-                let wsParams = gaCfg |> GaCfg.getWorkspaceParams
-                let runId = gaCfg |> GaCfg.getRunId
+                let wsParams = gaCfg |> Exp1Cfg.getWorkspaceParams
+                let runId = gaCfg |> Exp1Cfg.getRunId
 
                 let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
                 let fs = new WorkspaceFileStore(runDir)
 
                 let! wsCfg_params, ws = 
-                        WsOpsLib.genZero
+                        Exp1WsOps.genZero
                                 wnSortableSet
                                 wnSorterSetParent
                                 wnSorterSetEvalParent
@@ -225,7 +220,7 @@ module Exp1Cfg =
 
                 while curGen < maxGen do
                     let! wsN, wsPramsN = 
-                        WsOpsLib.doGenOnWorkspace
+                        Exp1WsOps.doGenOnWorkspace
                             wnSortableSet
                             wnSorterSetParent
                             wnSorterSetMutator
@@ -284,7 +279,7 @@ module Exp1Cfg =
                 let maxGen = curGen + iterationCount
                 while curGen < maxGen do
                     let! wsN, wsPramsN = 
-                        WsOpsLib.doGenOnWorkspace
+                        Exp1WsOps.doGenOnWorkspace
                             wnSortableSet
                             wnSorterSetParent
                             wnSorterSetMutator

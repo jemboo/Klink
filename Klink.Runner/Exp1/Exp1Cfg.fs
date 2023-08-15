@@ -1,7 +1,7 @@
 ﻿namespace global
 open System
 
-type gaCfg =
+type exp1Cfg =
     {
         curGen:generation
         maxGen:generation
@@ -20,7 +20,7 @@ type gaCfg =
     }
 
 
-module GaCfg =
+module Exp1Cfg =
 
     let rndGens = 
         let rngGenSeed = 1234 |> RandomSeed.create |> RngGen.createLcg
@@ -31,26 +31,26 @@ module GaCfg =
                 |> Seq.filter(fun tup -> ((fst tup) % 16) = modulo)
 
 
-    let defltCfg = 
+    let defltCfg =
         {
-            gaCfg.curGen = 0 |> Generation.create
-            gaCfg.maxGen = 50 |> Generation.create
-            gaCfg.mutationRate = 0.01 |> MutationRate.create
-            gaCfg.noiseFraction = 0.01 |> NoiseFraction.create
-            gaCfg.order = 16 |> Order.createNr
-            gaCfg.rngGen = 1234 |> RandomSeed.create |> RngGen.createLcg
-            gaCfg.sorterEvalMode = sorterEvalMode.DontCheckSuccess
-            gaCfg.sorterCount = 1 |> SorterCount.create
-            gaCfg.sorterCountMutated = 2 |> SorterCount.create
-            gaCfg.sorterSetPruneMethod = sorterSetPruneMethod.Whole
-            gaCfg.stageWeight = 0.1 |> StageWeight.create
-            gaCfg.switchCountCalcMethod = switchCountCalcMethod.For999
-            gaCfg.switchGenMode = switchGenMode.Stage
-            gaCfg.useParallel = true |> UseParallel.create
+            exp1Cfg.curGen = 0 |> Generation.create
+            exp1Cfg.maxGen = 50 |> Generation.create
+            exp1Cfg.mutationRate = 0.01 |> MutationRate.create
+            exp1Cfg.noiseFraction = 0.01 |> NoiseFraction.create
+            exp1Cfg.order = 16 |> Order.createNr
+            exp1Cfg.rngGen = 1234 |> RandomSeed.create |> RngGen.createLcg
+            exp1Cfg.sorterEvalMode = sorterEvalMode.DontCheckSuccess
+            exp1Cfg.sorterCount = 1 |> SorterCount.create
+            exp1Cfg.sorterCountMutated = 2 |> SorterCount.create
+            exp1Cfg.sorterSetPruneMethod = sorterSetPruneMethod.Whole
+            exp1Cfg.stageWeight = 0.1 |> StageWeight.create
+            exp1Cfg.switchCountCalcMethod = switchCountCalcMethod.For999
+            exp1Cfg.switchGenMode = switchGenMode.Stage
+            exp1Cfg.useParallel = true |> UseParallel.create
         }
 
 
-    let getRunId (cfg:gaCfg) =
+    let getRunId (cfg:exp1Cfg) =
         [
             cfg.mutationRate |> MutationRate.value :> obj;
             cfg.noiseFraction |> NoiseFraction.value :> obj;
@@ -68,7 +68,7 @@ module GaCfg =
         ] |> GuidUtils.guidFromObjs |> RunId.create
 
 
-    let getWorkspaceParams (gaCfg:gaCfg)
+    let getWorkspaceParams (gaCfg:exp1Cfg)
         =
         let _nextRngGen rng =
             rng
@@ -131,3 +131,62 @@ module GaCfg =
                                                 switchGenMode = switchGenMode
                                             }
             }
+
+
+
+type exp1CfgDto = 
+    { 
+        curGen:generation
+        maxGen:generation
+        mutationRate:mutationRate
+        noiseFraction:noiseFraction
+        order:order
+        rngGenDto:rngGenDto
+
+    }
+
+
+type sparseIntArrayDto = 
+    { 
+      emptyVal:int; 
+      length:int; 
+      indexes:int[];
+      values:int[]
+    }
+
+module SparseIntArrayDto =
+
+    let fromDto 
+            (dto:sparseIntArrayDto) 
+        =
+        result {
+            return 
+                SparseArray.create
+                    dto.length
+                    dto.indexes
+                    dto.values
+                    dto.emptyVal
+        }
+
+    let toDto 
+            (sia:sparseArray<int>) 
+        =
+        { 
+            emptyVal = sia |> SparseArray.getEmptyVal; 
+            length = sia |> SparseArray.getLength; 
+            indexes = sia |> SparseArray.getIndexes;
+            values =  sia |> SparseArray.getValues
+        }
+        
+    let fromJson 
+            (cereal:string)
+        =
+        result {
+            let! dto = Json.deserialize<sparseIntArrayDto> cereal
+            return! fromDto dto
+        }
+
+    let toJson 
+            (sia:sparseArray<int>) 
+        = 
+        sia |> toDto |> Json.serialize

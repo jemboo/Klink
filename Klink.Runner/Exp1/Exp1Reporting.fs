@@ -2,7 +2,7 @@
 open System
 
 
-module GaReporting =
+module Exp1Reporting =
 
     let standardSorterEvalProps =
         [
@@ -122,17 +122,19 @@ module GaReporting =
 
 
     let reportEmAll
-            (projectDir:string) 
+            (projectDir:string)
+            (fileName:string)
+            (firstFolderIndex:int)
+            (folderNum:int)
         =
         let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
         let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
         let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
         let wnToQuery = wnSorterSetEvalParent
 
-        let reportFileName = wnToQuery |> WsComponentName.value |> string
         let fsReporter = new WorkspaceFileStore(projectDir)
 
-        fsReporter.appendLines None reportFileName [reportHeaderStandard ()] 
+        fsReporter.appendLines None fileName [reportHeaderStandard ()] 
                 |> Result.ExtractOrThrow
                 |> ignore
 
@@ -141,7 +143,7 @@ module GaReporting =
 
         result {
         
-            for runDir in runDirs do
+            for runDir in (runDirs |> Seq.skip firstFolderIndex |> Seq.take folderNum) do
 
                 let fsForRun = new WorkspaceFileStore(runDir)
                 let fs = new WorkspaceFileStore(runDir)
@@ -152,7 +154,7 @@ module GaReporting =
                                     reportLines 
                                             ssEval 
                                             wsPram 
-                                            reportFileName
+                                            fileName
                                             fsReporter)
                             |> Result.sequence
                 return ()

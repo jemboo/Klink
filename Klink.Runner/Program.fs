@@ -12,6 +12,7 @@ module Program =
         let all = argResults.GetAllResults()
         let workingDirectory = argResults.GetResults Working_Directory |> List.head
         let projectFolder = argResults.GetResults Project_Folder |> List.head
+        let reportFileName = argResults.GetResults Report_File_Name |> List.head
         let procedure = argResults.GetResults Procedure |> List.head
         let startingConfigIndex = argResults.GetResults Starting_Config_Index |> List.head
         let configCount = argResults.GetResults Config_Count |> List.head
@@ -25,7 +26,9 @@ module Program =
         Console.WriteLine($"logLevel: {logLevel}")
         Console.WriteLine($"iterations: {iterationCt}")
 
+        Console.WriteLine($"//////hi/////////")
         Console.WriteLine($"//////{projectFolder}/////////")
+
         let tsStart = DateTime.Now
         
         let runPath = System.IO.Path.Combine(workingDirectory, projectFolder) //, runFolder)
@@ -48,12 +51,15 @@ module Program =
             |> ignore
 
         elif procedure = "reportAll" then
-            GaReporting.reportEmAll
-                    runPath
+            Exp1Reporting.reportEmAll
+                            runPath
+                            reportFileName
+                            startingConfigIndex
+                            configCount
             |> ignore
 
         elif procedure = "reportBins" then
-            GaReporting.doReportPerfBins
+            Exp1Reporting.doReportPerfBins
                     runPath
                     (1 |> Generation.create)
             |> ignore
