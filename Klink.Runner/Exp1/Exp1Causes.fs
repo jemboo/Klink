@@ -204,9 +204,9 @@ module Exp1Causes =
                             )
 
                 return
-                        workspaceCfg 
-                        |> WorkspaceCfg.addCauses 
-                            [
-                                causeSetupForNextGen;
-                            ]
+                    workspaceCfg 
+                    |> WorkspaceCfg.addCauses 
+                        [
+                            causeSetupForNextGen;
+                        ]
             }

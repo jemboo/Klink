@@ -2,24 +2,7 @@
 open System
 
 
-module Exp1Cfg =
-
-    let rngGen0 = 10110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen1 = 20110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen2 = 22110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen3 = 12110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen4 = 13110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen5 = 31110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen6 = 14110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen7 = 15110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen8 = 16110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen9 = 17110 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen10 = 1811 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen11 = 1911 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen12 = 2011 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen13 = 2111 |> RandomSeed.create |> RngGen.createLcg
-    let rngGen14 = 2211 |> RandomSeed.create |> RngGen.createLcg
-
+module Exp1Run =
 
     let scP0 = 1     |> SorterCount.create
     let scP1 = 2     |> SorterCount.create
@@ -45,7 +28,6 @@ module Exp1Cfg =
     let scM8 = 256   |> SorterCount.create
     let scM9 = 512   |> SorterCount.create
     let scM10 = 1024 |> SorterCount.create
-
 
 
     let nf0 = 0.001 |> NoiseFraction.create
@@ -81,8 +63,6 @@ module Exp1Cfg =
 
     let sspm1 = sorterSetPruneMethod.Whole
     let sspm2 = sorterSetPruneMethod.Shc
-        
-    let rngGens = [rngGen0; rngGen1; rngGen2; rngGen3; rngGen4; rngGen5; rngGen6; rngGen7;]
 
     //let sorterSetSizes = [(scP0, scM0); (scP0, scM1); (scP1, scM1); (scP1, scM2)]
     let sorterSetSizes = [(scP9, scM9);]
@@ -98,11 +78,9 @@ module Exp1Cfg =
 
     let switchGenModes = [switchGenMode.Switch; switchGenMode.Stage; switchGenMode.StageSymmetric]
 
-    
-
     let cfgsForTestRun (iterationCt:int) = 
-        Exp1Cfg.enumerate 
-                (Exp1Cfg.rndGens)
+        Exp1CfgOld.enumerate 
+                (Exp1CfgOld.rndGens)
                 [(scP8, scM8)]
                 [switchGenMode.Stage; switchGenMode.Switch; switchGenMode.StageSymmetric]
                 [sw0; sw2; sw4; sw6]
@@ -114,8 +92,8 @@ module Exp1Cfg =
 
 
     let cfgsForCompleteRun () = 
-        Exp1Cfg.enumerate 
-                rngGens
+        Exp1CfgOld.enumerate 
+                (Exp1CfgOld.rndGens)
                 sorterSetSizes
                 switchGenModes
                 stageWeights 
@@ -123,7 +101,6 @@ module Exp1Cfg =
                 mutationRates 
                 sorterSetPruneMethods
                 (50 |> Generation.create)
-
 
 
     let wnSortableSet = "sortableSet" |> WsComponentName.create
@@ -139,19 +116,18 @@ module Exp1Cfg =
 
     let doRun
             (projectDir:string)
-            (gaCfgs: exp1Cfg seq)
+            (wsParamsS: workspaceParams seq)
+            (maxGen:generation)
         = 
-
         result {
-            for gaCfg in gaCfgs do
-                let wsParams = gaCfg |> Exp1Cfg.getWorkspaceParams
-                let runId = gaCfg |> Exp1Cfg.getRunId
+            for wsParams in wsParamsS do
+                let! runId = wsParams |> WorkspaceParams.getRunId "runId"
 
                 let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
                 let fs = new WorkspaceFileStore(runDir)
 
                 let! wsCfg_params, _ = 
-                        Exp1WsOps.genZero
+                        Exp1WsOps.setupWorkspace
                                 wnSortableSet
                                 wnSorterSetParent
                                 wnSorterSetEvalParent
@@ -159,12 +135,11 @@ module Exp1Cfg =
                                 fs
                                 (fun s-> Console.WriteLine(s))
 
-                let mutable curGen = gaCfg.curGen |> Generation.value
+                let mutable curGen = 0
                 let mutable curCfg = wsCfg_params |> fst
                 let mutable curParams = wsCfg_params |> snd
-                let maxGen = gaCfg.maxGen |> Generation.value
 
-                while curGen < maxGen do
+                while curGen < (maxGen |> Generation.value) do
                     let! wsCfgN, wsPramsN = 
                         Exp1WsOps.doGen
                             wnSortableSet
@@ -191,35 +166,32 @@ module Exp1Cfg =
 
     let doRunRun
             (projectDir:string)
-            (gaCfgs: exp1Cfg seq)
+            (wsParamsS: workspaceParams seq)
+            (maxGen:generation)
         = 
         result {
-            for gaCfg in gaCfgs do
-                let wsParams = gaCfg |> Exp1Cfg.getWorkspaceParams
-                let runId = gaCfg |> Exp1Cfg.getRunId
+            for wsParams in wsParamsS do
 
+                let! runId = wsParams |> WorkspaceParams.getRunId "runId"
                 let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
                 let fs = new WorkspaceFileStore(runDir)
 
                 let! wsCfg_params, ws = 
-                        Exp1WsOps.genZero
+                        Exp1WsOps.setupWorkspace
                                 wnSortableSet
                                 wnSorterSetParent
                                 wnSorterSetEvalParent
                                 wsParams
                                 fs
                                 (fun s-> Console.WriteLine(s))
-
-                let mutable curGen = gaCfg.curGen |> Generation.value
-                let mutable curCfg = wsCfg_params |> fst
+                let! cg = wsParams |> WorkspaceParams.getGeneration "generation"
+                                   |> Result.map(Generation.value)
+                let mutable curGen = cg
                 let mutable curParams = wsCfg_params |> snd
                 let mutable curWorkspace = ws
 
-
-                let maxGen = gaCfg.maxGen |> Generation.value
-
-                while curGen < maxGen do
-                    let! wsN, wsPramsN = 
+                while curGen < (maxGen |> Generation.value) do
+                    let! wsN, wsPramsN =
                         Exp1WsOps.doGenOnWorkspace
                             wnSortableSet
                             wnSorterSetParent
@@ -297,7 +269,6 @@ module Exp1Cfg =
                     curWorkspace <- wsN
                     curParams <- wsPramsN
                     curGen <- curGen + 1
-
 
             return "success"
         }

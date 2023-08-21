@@ -87,6 +87,23 @@ module WorkspaceParams =
             workspaceParams |> addItem key (nextGen |> string)
         }
 
+    let filterGeneration
+            (key:string) 
+            (fF: generation -> bool)
+            (workspaceParams:workspaceParams) 
+        =
+        workspaceParams |> getGeneration key |> Result.filterF fF
+
+    let generationGte
+            (genVal:generation)
+            (workspaceParams:workspaceParams) 
+        =
+        workspaceParams 
+            |> filterGeneration
+                    "generation"
+                    (fun gen -> 
+                            (gen |> Generation.value) >= (genVal |> Generation.value))
+
 
     let getMutationRate
             (key:string) 

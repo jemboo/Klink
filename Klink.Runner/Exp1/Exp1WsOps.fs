@@ -4,7 +4,7 @@ open System
 
 module Exp1WsOps = 
 
-    let genZero
+    let setupWorkspace
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)           
@@ -22,11 +22,17 @@ module Exp1WsOps =
                         wsParams
                         emptyWsCfg
 
-                let! wsGenZero = 
+                let! wsGenZero =
                         wsCfgNParams |> fst |> WorkspaceCfg.runWorkspaceCfg fs logger
 
+                let! curGenNumber = 
+                            wsCfgNParams |> snd 
+                                |> WorkspaceParams.getGeneration "generation" 
+                                |> Result.map(Generation.value)
+
+
                 let! res = fs.saveWorkSpace wsGenZero
-                logger ($"Saved Gen 0 to {wsGenZero |> Workspace.getId |> WorkspaceId.value}")
+                logger ($"Saved Gen {curGenNumber} to {wsGenZero |> Workspace.getId |> WorkspaceId.value}")
                 return wsCfgNParams, wsGenZero
              }
 
@@ -152,7 +158,6 @@ module Exp1WsOps =
                         |> WorkspaceCfg.runWorkspaceCfgOnWorkspace
                                 logger
                                 (nextGenCfg.history) 
-
 
                 let! nextGenNumber = 
                             wsParams 

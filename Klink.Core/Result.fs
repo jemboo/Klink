@@ -62,6 +62,9 @@ module Result =
         | Ok x -> onSuccess x
         | Error err -> onError err
 
+    let filterF (fF:'a->bool) (res:Result<'a,'b>) =
+        res |> bimap fF (fun _ -> false)
+
 
     // F# VERSION DIFFERENCE
     // The `map`, `mapError` and `bind` functions are built-in to F# 4.1 and newer (from VS2017),

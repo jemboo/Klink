@@ -1,10 +1,8 @@
 ﻿namespace global
 open System
 
-type exp1Cfg =
+type exp1Cfg0 =
     {
-        curGen:generation
-        maxGen:generation
         mutationRate:mutationRate
         noiseFraction:noiseFraction
         order:order
@@ -14,17 +12,17 @@ type exp1Cfg =
         sorterCountMutated:sorterCount
         sorterSetPruneMethod:sorterSetPruneMethod
         stageWeight:stageWeight
-        switchCountCalcMethod:switchCountCalcMethod
+        orderToSwitchCount:orderToSwitchCount
         switchGenMode:switchGenMode
-        useParallel:useParallel
     }
 
 
-module Exp1Cfg =
+module Exp1CfgOld =
 
     let rndGens = 
         let rngGenSeed = 1234 |> RandomSeed.create |> RngGen.createLcg
         rngGenSeed |> Rando.toMoreRngGens
+
 
     let sliceOfRndGens (modulo:int) =
         rndGens |> Seq.mapi(fun dex rndg -> (dex, rndg))
@@ -33,25 +31,23 @@ module Exp1Cfg =
 
     let defltCfg =
         {
-            exp1Cfg.curGen = 0 |> Generation.create
-            exp1Cfg.maxGen = 50 |> Generation.create
-            exp1Cfg.mutationRate = 0.01 |> MutationRate.create
-            exp1Cfg.noiseFraction = 0.01 |> NoiseFraction.create
-            exp1Cfg.order = 16 |> Order.createNr
-            exp1Cfg.rngGen = 1234 |> RandomSeed.create |> RngGen.createLcg
-            exp1Cfg.sorterEvalMode = sorterEvalMode.DontCheckSuccess
-            exp1Cfg.sorterCount = 1 |> SorterCount.create
-            exp1Cfg.sorterCountMutated = 2 |> SorterCount.create
-            exp1Cfg.sorterSetPruneMethod = sorterSetPruneMethod.Whole
-            exp1Cfg.stageWeight = 0.1 |> StageWeight.create
-            exp1Cfg.switchCountCalcMethod = switchCountCalcMethod.For999
-            exp1Cfg.switchGenMode = switchGenMode.Stage
-            exp1Cfg.useParallel = true |> UseParallel.create
+            exp1Cfg0.mutationRate = 0.01 |> MutationRate.create
+            exp1Cfg0.noiseFraction = 0.01 |> NoiseFraction.create
+            exp1Cfg0.order = 16 |> Order.createNr
+            exp1Cfg0.rngGen = 1234 |> RandomSeed.create |> RngGen.createLcg
+            exp1Cfg0.sorterEvalMode = sorterEvalMode.DontCheckSuccess
+            exp1Cfg0.sorterCount = 1 |> SorterCount.create
+            exp1Cfg0.sorterCountMutated = 2 |> SorterCount.create
+            exp1Cfg0.sorterSetPruneMethod = sorterSetPruneMethod.Whole
+            exp1Cfg0.stageWeight = 0.1 |> StageWeight.create
+            exp1Cfg0.orderToSwitchCount = orderToSwitchCount.For999
+            exp1Cfg0.switchGenMode = switchGenMode.Stage
         }
 
 
-    let getRunId (cfg:exp1Cfg) =
+    let getRunId (cfg:exp1Cfg0) =
         [
+
             cfg.mutationRate |> MutationRate.value :> obj;
             cfg.noiseFraction |> NoiseFraction.value :> obj;
             cfg.order |> Order.value :> obj;
@@ -61,14 +57,15 @@ module Exp1Cfg =
             cfg.sorterCountMutated |> SorterCount.value :> obj;
             cfg.sorterSetPruneMethod :> obj;
             cfg.stageWeight |> StageWeight.value :> obj;
-            cfg.switchCountCalcMethod :> obj;
+            cfg.orderToSwitchCount :> obj;
             cfg.switchGenMode :> obj;
-            cfg.useParallel :> obj;
 
         ] |> GuidUtils.guidFromObjs |> RunId.create
 
 
-    let getWorkspaceParams (gaCfg:exp1Cfg)
+    let toWorkspaceParams 
+            (useParallel:useParallel)
+            (gaCfg:exp1Cfg0)
         =
         let _nextRngGen rng =
             rng
@@ -78,14 +75,13 @@ module Exp1Cfg =
         let rngGenCreate = (_nextRngGen gaCfg.rngGen)
         let rngGenMutate = (_nextRngGen rngGenCreate)
         let rngGenPrune = (_nextRngGen rngGenMutate)
-        let switchCount = gaCfg.order |> SwitchCount.fromCalcMethod (gaCfg.switchCountCalcMethod)
+        let switchCount = gaCfg.order |> SwitchCount.fromOrder (gaCfg.orderToSwitchCount)
 
         WorkspaceParams.make Map.empty
         |> WorkspaceParams.setRunId "runId" (gaCfg |> getRunId)
         |> WorkspaceParams.setRngGen "rngGenCreate" rngGenCreate
         |> WorkspaceParams.setRngGen "rngGenMutate" rngGenMutate
         |> WorkspaceParams.setRngGen "rngGenPrune" rngGenPrune
-        |> WorkspaceParams.setGeneration "generation" gaCfg.curGen
         |> WorkspaceParams.setMutationRate "mutationRate" gaCfg.mutationRate
         |> WorkspaceParams.setNoiseFraction "noiseFraction" (Some gaCfg.noiseFraction)
         |> WorkspaceParams.setOrder "order" gaCfg.order
@@ -95,8 +91,8 @@ module Exp1Cfg =
         |> WorkspaceParams.setStageWeight "stageWeight" gaCfg.stageWeight
         |> WorkspaceParams.setSwitchCount "sorterLength" switchCount
         |> WorkspaceParams.setSwitchGenMode "switchGenMode" gaCfg.switchGenMode
-        |> WorkspaceParams.setUseParallel "useParallel" gaCfg.useParallel
         |> WorkspaceParams.setSorterSetPruneMethod "sorterSetPruneMethod" gaCfg.sorterSetPruneMethod
+        |> WorkspaceParams.setUseParallel "useParallel" useParallel
 
 
     let enumerate
@@ -119,8 +115,7 @@ module Exp1Cfg =
                                 for mutationRate in mutationRates do
                                     for sorterSetPruneMethod in sorterSetPruneMethods do
                                         yield
-                                            { defltCfg with 
-                                                maxGen = maxGen;
+                                            { defltCfg with
                                                 rngGen = rngGen;
                                                 sorterCount = fst sorterSetSize
                                                 sorterCountMutated = snd sorterSetSize
@@ -134,59 +129,59 @@ module Exp1Cfg =
 
 
 
-type exp1CfgDto = 
-    { 
-        curGen:generation
-        maxGen:generation
-        mutationRate:mutationRate
-        noiseFraction:noiseFraction
-        order:order
-        rngGenDto:rngGenDto
+//type exp1CfgDto = 
+//    { 
+//        curGen:generation
+//        maxGen:generation
+//        mutationRate:mutationRate
+//        noiseFraction:noiseFraction
+//        order:order
+//        rngGenDto:rngGenDto
 
-    }
+//    }
 
 
-type sparseIntArrayDto = 
-    { 
-      emptyVal:int; 
-      length:int; 
-      indexes:int[];
-      values:int[]
-    }
+//type sparseIntArrayDto = 
+//    { 
+//      emptyVal:int; 
+//      length:int; 
+//      indexes:int[];
+//      values:int[]
+//    }
 
-module SparseIntArrayDto =
+//module SparseIntArrayDto =
 
-    let fromDto 
-            (dto:sparseIntArrayDto) 
-        =
-        result {
-            return 
-                SparseArray.create
-                    dto.length
-                    dto.indexes
-                    dto.values
-                    dto.emptyVal
-        }
+//    let fromDto 
+//            (dto:sparseIntArrayDto) 
+//        =
+//        result {
+//            return 
+//                SparseArray.create
+//                    dto.length
+//                    dto.indexes
+//                    dto.values
+//                    dto.emptyVal
+//        }
 
-    let toDto 
-            (sia:sparseArray<int>) 
-        =
-        { 
-            emptyVal = sia |> SparseArray.getEmptyVal; 
-            length = sia |> SparseArray.getLength; 
-            indexes = sia |> SparseArray.getIndexes;
-            values =  sia |> SparseArray.getValues
-        }
+//    let toDto 
+//            (sia:sparseArray<int>) 
+//        =
+//        { 
+//            emptyVal = sia |> SparseArray.getEmptyVal; 
+//            length = sia |> SparseArray.getLength; 
+//            indexes = sia |> SparseArray.getIndexes;
+//            values =  sia |> SparseArray.getValues
+//        }
         
-    let fromJson 
-            (cereal:string)
-        =
-        result {
-            let! dto = Json.deserialize<sparseIntArrayDto> cereal
-            return! fromDto dto
-        }
+//    let fromJson 
+//            (cereal:string)
+//        =
+//        result {
+//            let! dto = Json.deserialize<sparseIntArrayDto> cereal
+//            return! fromDto dto
+//        }
 
-    let toJson 
-            (sia:sparseArray<int>) 
-        = 
-        sia |> toDto |> Json.serialize
+//    let toJson 
+//            (sia:sparseArray<int>) 
+//        = 
+//        sia |> toDto |> Json.serialize

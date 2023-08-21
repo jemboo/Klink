@@ -19,8 +19,8 @@ type WorkspaceFileStore (wsRootDir:string) =
     member this.writeToFileOverwrite (wsCompType:workspaceComponentType option) (fileName:string) (data: string) =
         TextIO.writeToFileOverwrite this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
 
-    member this.writeLinesIfNew (wsCompType:workspaceComponentType option) (fileName:string) (data: string seq) =
-        TextIO.writeLinesIfNew this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
+    member this.writeLinesEnsureHeader (wsCompType:workspaceComponentType option) (fileName:string) (hdr: seq<string>) (data: string seq) =
+        TextIO.writeLinesEnsureHeader this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName hdr data
 
     member this.appendLines (wsCompType:workspaceComponentType option) (fileName:string) (data: string seq) =
         TextIO.appendLines this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
@@ -216,7 +216,7 @@ type WorkspaceFileStore (wsRootDir:string) =
         }
 
 
-    member this.getAllComponentsWithParamsByName
+    member this.getAllComponentsWithParams
                      (wscn:wsComponentName)
         = 
         result {
@@ -232,8 +232,9 @@ type WorkspaceFileStore (wsRootDir:string) =
 
         }
 
-    member this.getAllSorterSetEvalsWithParamsByName
+    member this.getAllSorterSetEvalsWithParams
                      (wscn:wsComponentName)
+                     (fF:workspaceParams -> bool)
         = 
         result {
             let! wsDescrs = 
@@ -242,13 +243,19 @@ type WorkspaceFileStore (wsRootDir:string) =
                       |> Array.toList
                       |> Result.sequence
 
-            let! yab = wsDescrs
-                            |> List.map(this.getComponentWithParams wscn)
-                            |> Result.sequence
+            let! tupOpts = 
+                    wsDescrs
+                      |> List.map(this.getComponentWithParams wscn)
+                      |> Result.sequence
                             
-            let foundComps = yab |> List.filter(Option.isSome) |> List.map(Option.get)
+            let foundComps = tupOpts 
+                             |> List.filter(Option.isSome) 
+                             |> List.map(Option.get)
+                             |> List.filter(fun (cp, wsps) -> wsps |> fF)
 
-            return! foundComps |> List.map(fun (wsC, wsP) -> (wsC |> WorkspaceComponent.asSorterSetEval, wsP))
+
+            return! foundComps 
+                       |> List.map(fun (wsC, wsP) -> (wsC |> WorkspaceComponent.asSorterSetEval, wsP))
                        |> List.map(Result.tupLeft)
                        |> Result.sequence
 

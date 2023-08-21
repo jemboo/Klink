@@ -147,11 +147,12 @@ module TextIO =
             ("error in TextIO.appendLines: " + ex.Message) |> Result.Error
 
 
-    let writeLinesIfNew
+    let writeLinesEnsureHeader
             (ext:string) 
             (root:string option) 
             (folder:string) 
             (file:string)
+            (hdr: seq<string>)
             (data: seq<string>)
         =
         try
@@ -166,8 +167,10 @@ module TextIO =
             Directory.CreateDirectory(fldr) |> ignore
             let fp = Path.Combine(fldr, fne)
             if File.Exists(fp) then
+                File.AppendAllLines(fp, data)
                 true |> Ok
             else
+                File.AppendAllLines(fp, hdr)
                 File.AppendAllLines(fp, data)
                 true |> Ok
         with ex ->

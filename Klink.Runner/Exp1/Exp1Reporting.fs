@@ -86,8 +86,7 @@ module Exp1Reporting =
     let reportLines
             (sorterSetEval:sorterSetEval) 
             (wsps:workspaceParams)
-            (fileName:string)
-            (fs:WorkspaceFileStore)
+            (lineAppender:seq<string> -> Result<bool,string>)
         =
         let lines = 
             sorterSetEval 
@@ -96,34 +95,38 @@ module Exp1Reporting =
                                     sprintf "%s%s" 
                                         (standardParamValues wsps)
                                         (standardSorterEvalValues sev))
-        fs.appendLines None fileName lines
+        lineAppender lines
 
 
-    let reportEm (projectDir:string) (runId:runId) 
+    let reportEm (projectDir:string) 
+                 (runId:runId) 
+                 (minGen:generation)
         =
         let runDir = System.IO.Path.Combine(projectDir, runId |> RunId.value |> string)
         let reportFileName = "SorterEvalReport"
         let fs = new WorkspaceFileStore(runDir)
 
-        fs.appendLines None reportFileName [reportHeaderStandard ()] 
-                |> Result.ExtractOrThrow
-                |> ignore
+        let _lineWriter (lines:string seq) =
+            fs.writeLinesEnsureHeader None reportFileName [reportHeaderStandard ()] lines
 
         let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
         let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
         let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
         result {
-            let! compTupes = fs.getAllSorterSetEvalsWithParamsByName wnSorterSetEvalMutated
+            let! compTupes = 
+                fs.getAllSorterSetEvalsWithParams 
+                    wnSorterSetEvalMutated 
+                    (WorkspaceParams.generationGte minGen)
             let yab = compTupes 
                         |> List.map (fun (ssEval, wsPram) -> 
-                            reportLines ssEval wsPram reportFileName fs)
+                            reportLines ssEval wsPram _lineWriter)
             return "success"
         }
 
 
     let reportEmAll
             (projectDir:string)
-            (fileName:string)
+            (reportFileName:string)
             (firstFolderIndex:int)
             (folderNum:int)
         =
@@ -134,9 +137,8 @@ module Exp1Reporting =
 
         let fsReporter = new WorkspaceFileStore(projectDir)
 
-        fsReporter.appendLines None fileName [reportHeaderStandard ()] 
-                |> Result.ExtractOrThrow
-                |> ignore
+        let _lineWriter (lines:string seq) =
+            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderStandard ()] lines
 
 
         let runDirs = IO.Directory.EnumerateDirectories(projectDir)
@@ -144,18 +146,18 @@ module Exp1Reporting =
         result {
         
             for runDir in (runDirs |> Seq.skip firstFolderIndex |> Seq.take folderNum) do
-
-                let fsForRun = new WorkspaceFileStore(runDir)
                 let fs = new WorkspaceFileStore(runDir)
-                let! ssEvalnPrams = fs.getAllSorterSetEvalsWithParamsByName wnToQuery
+                let! ssEvalnPrams = 
+                    fs.getAllSorterSetEvalsWithParams 
+                        wnToQuery
+                        (fun _ -> true)
 
                 let! yab = ssEvalnPrams 
                                 |> List.map (fun (ssEval, wsPram) -> 
                                     reportLines 
                                             ssEval 
                                             wsPram 
-                                            fileName
-                                            fsReporter)
+                                            _lineWriter)
                             |> Result.sequence
                 return ()
 
@@ -193,9 +195,8 @@ module Exp1Reporting =
 
 
     let addToGroupReport 
-            (fsReporting:WorkspaceFileStore)
+            (lineAppender:seq<string> -> Result<bool,string>)
             (fsRun:WorkspaceFileStore)
-            (fileName:string)
             (genBinSz:generation)
             (tupL:(workspaceDescription*workspaceParams) list) =
 
@@ -233,7 +234,7 @@ module Exp1Reporting =
                         $"{bpvs}\t{switchCt}\t{stageCt}\t{ct}"
                     )
 
-            let! res = fsReporting.appendLines None fileName newLines
+            let! res = lineAppender newLines
             return ()
         }
 
@@ -252,10 +253,8 @@ module Exp1Reporting =
         let reportFileName = wnToQuery |> WsComponentName.value |> string
         let fsReporter = new WorkspaceFileStore(projectDir)
 
-
-        fsReporter.appendLines None reportFileName [reportHeaderBinned ()] 
-                |> Result.ExtractOrThrow
-                |> ignore
+        let _lineWriter (lines:string seq) =
+            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderBinned ()] lines
 
         let runDirs = IO.Directory.EnumerateDirectories(projectDir)
 
@@ -271,7 +270,7 @@ module Exp1Reporting =
                                 |> List.map(Result.tupRight)
                                 |> Result.sequence
                 let gps = taggedTupes |> List.groupBy(snd) |> List.map(snd >> List.map(fst))
-                let repLs = gps |> List.map(addToGroupReport fsReporter fsForRun reportFileName genBinSz)
+                let repLs = gps |> List.map(addToGroupReport _lineWriter fsForRun genBinSz)
                 ()
 
             return ()

@@ -12,6 +12,7 @@ type CliArguments =
     | Config_Count of int
     | Iteration_Count of int
     | Log_level of int
+    | Use_Parallel of bool
 
     interface IArgParserTemplate with
         member s.Usage =
@@ -24,4 +25,5 @@ type CliArguments =
             | Config_Count _ -> "set the number of consecutive folders to process"
             | Iteration_Count _ -> "set the number of iterations to do for each folder"
             | Log_level _ -> "set the log level (0, 1, or 2)"
+            | Use_Parallel _ -> "run the sorterEval loop in parallel"
 
