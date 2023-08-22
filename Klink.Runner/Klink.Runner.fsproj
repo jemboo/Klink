@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="GaCfg.fs" />
+    <Compile Include="ShcCfg.fs" />
     <Compile Include="Exp1\Exp1Cfg.fs" />
     <Compile Include="Exp1\Exp1Causes.fs" />
     <Compile Include="Exp1\Exp1WsOps.fs" />

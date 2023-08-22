@@ -31,6 +31,12 @@ module Program =
         Console.WriteLine($"//////hi/////////")
         Console.WriteLine($"//////{projectFolder}/////////")
 
+
+
+        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
+        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
+        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
+
         let tsStart = DateTime.Now
         
         let runPath = System.IO.Path.Combine(workingDirectory, projectFolder) //, runFolder)
@@ -58,6 +64,7 @@ module Program =
             Exp1Reporting.reportEmAll
                 runPath
                 reportFileName
+                wnSorterSetEvalParent
                 startingConfigIndex
                 configCount
             |> ignore

@@ -1,6 +1,31 @@
 ﻿namespace global
 open System
 
+
+module Exp1Cfg =
+    
+    let defaultInitRunCfg16 =
+    {
+        shcInitRunCfg.newGenerations = 100 |> Generation.create
+        mutationRate = 0.01 |> MutationRate.create
+        noiseFraction = 0.01 |> NoiseFraction.create
+        order = 16 |> Order.createNr
+        rngGen = 123 |> RandomSeed.create |> RngGen.createLcg
+        sorterEvalMode = sorterEvalMode.DontCheckSuccess
+        sorterCount = 16 |> SorterCount.create
+        sorterCountMutated = 32 |> SorterCount.create
+        sorterSetPruneMethod = sorterSetPruneMethod.Shc
+        stageWeight = 0.01 |> StageWeight.create
+        orderToSwitchCount = orderToSwitchCount.For999
+        switchGenMode = switchGenMode.Switch
+        reportFreqFunc = "linear"
+        reportFreqParams = [|"1"|]
+    }
+
+
+
+
+
 type exp1Cfg0 =
     {
         mutationRate:mutationRate

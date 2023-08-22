@@ -100,6 +100,7 @@ module Exp1Reporting =
 
     let reportEm (projectDir:string) 
                  (runId:runId) 
+                 (sorterSetEvalWsName:wsComponentName)
                  (minGen:generation)
         =
         let runDir = System.IO.Path.Combine(projectDir, runId |> RunId.value |> string)
@@ -115,7 +116,7 @@ module Exp1Reporting =
         result {
             let! compTupes = 
                 fs.getAllSorterSetEvalsWithParams 
-                    wnSorterSetEvalMutated 
+                    sorterSetEvalWsName 
                     (WorkspaceParams.generationGte minGen)
             let yab = compTupes 
                         |> List.map (fun (ssEval, wsPram) -> 
@@ -127,14 +128,10 @@ module Exp1Reporting =
     let reportEmAll
             (projectDir:string)
             (reportFileName:string)
+            (sorterSetEvalWsName:wsComponentName)
             (firstFolderIndex:int)
             (folderNum:int)
         =
-        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-        let wnToQuery = wnSorterSetEvalParent
-
         let fsReporter = new WorkspaceFileStore(projectDir)
 
         let _lineWriter (lines:string seq) =
@@ -149,7 +146,7 @@ module Exp1Reporting =
                 let fs = new WorkspaceFileStore(runDir)
                 let! ssEvalnPrams = 
                     fs.getAllSorterSetEvalsWithParams 
-                        wnToQuery
+                        sorterSetEvalWsName
                         (fun _ -> true)
 
                 let! yab = ssEvalnPrams 
