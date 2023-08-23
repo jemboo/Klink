@@ -3,18 +3,6 @@
 open System
 
 
-type generation = private Generation of int
-
-module Generation =
-    let value (Generation v) = v
-    let create dex = Generation dex
-    let next (Generation v) = Generation (v + 1)
-    let add ct (Generation v) = Generation (v + ct)
-    let binnedValue (binSz:int) (gen:generation) =
-        let gv = gen |> value
-        gv - 1 - ((gv - 1) % binSz)
-
-
 type sorterSetParentMap = 
         private {
         id: sorterSetParentMapId;

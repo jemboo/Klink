@@ -15,8 +15,7 @@ type shcInitRunCfg =
         stageWeight:stageWeight
         orderToSwitchCount:orderToSwitchCount
         switchGenMode:switchGenMode
-        reportFreqFunc:string
-        reportFreqParams:string array
+        reportFilter:generationFilter
     }
 
 
@@ -84,8 +83,7 @@ type shcInitRunCfgDto =
         stageWeight:float
         orderToSwitchCount:orderToSwitchCount
         switchGenMode:switchGenMode
-        reportFreqFunc:string
-        reportFreqParams:string array
+        reportGenFilter:string
     }
 
 
@@ -105,8 +103,7 @@ module ShcInitRunCfgDto =
             stageWeight = cfg.stageWeight |> StageWeight.value
             orderToSwitchCount = cfg.orderToSwitchCount
             switchGenMode = cfg.switchGenMode
-            reportFreqFunc = cfg.reportFreqFunc
-            reportFreqParams = cfg.reportFreqParams
+            reportGenFilter = cfg.reportFilter |> GenerationFilterDto.toJson
         }
 
 
@@ -116,30 +113,32 @@ module ShcInitRunCfgDto =
 
 
     let fromDto (cfg:shcInitRunCfgDto) =
-        {
-            shcInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create
-            mutationRate = cfg.mutationRate |> MutationRate.create
-            noiseFraction = cfg.noiseFraction |> NoiseFraction.create
-            order = cfg.order |> Order.createNr
-            rngGen = cfg.rngGen |> RngGenDto.fromDto |> Result.ExtractOrThrow
-            sorterEvalMode = cfg.sorterEvalMode
-            sorterCount = cfg.sorterCount |> SorterCount.create
-            sorterCountMutated = cfg.sorterCountMutated |> SorterCount.create
-            sorterSetPruneMethod = cfg.sorterSetPruneMethod
-            stageWeight = cfg.stageWeight |> StageWeight.create
-            orderToSwitchCount = cfg.orderToSwitchCount
-            switchGenMode = cfg.switchGenMode
-            reportFreqFunc = cfg.reportFreqFunc
-            reportFreqParams = cfg.reportFreqParams
+        result {
+            let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromJson
+            return
+                {
+                    shcInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create
+                    mutationRate = cfg.mutationRate |> MutationRate.create
+                    noiseFraction = cfg.noiseFraction |> NoiseFraction.create
+                    order = cfg.order |> Order.createNr
+                    rngGen = cfg.rngGen |> RngGenDto.fromDto |> Result.ExtractOrThrow
+                    sorterEvalMode = cfg.sorterEvalMode
+                    sorterCount = cfg.sorterCount |> SorterCount.create
+                    sorterCountMutated = cfg.sorterCountMutated |> SorterCount.create
+                    sorterSetPruneMethod = cfg.sorterSetPruneMethod
+                    stageWeight = cfg.stageWeight |> StageWeight.create
+                    orderToSwitchCount = cfg.orderToSwitchCount
+                    switchGenMode = cfg.switchGenMode
+                    reportFilter = reportFilter
+                }
         }
-
 
     let fromJson 
             (cereal:string)
         =
         result {
             let! dto = Json.deserialize<shcInitRunCfgDto> cereal
-            return fromDto dto
+            return! fromDto dto
         }
 
 

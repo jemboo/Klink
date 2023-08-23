@@ -11,6 +11,7 @@
     <Compile Include="Switch.fs" />
     <Compile Include="SwitchGen.fs" />
     <Compile Include="Stage.fs" />
+    <Compile Include="Sorter\Generation.fs" />
     <Compile Include="Sorter\Sorter.fs" />
     <Compile Include="Sorter\SorterMutator.fs" />
     <Compile Include="Sorter\SorterSet.fs" />

@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="SorterSetEval\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="SortableSet\SortableSetCfgOld.fs" />
     <Compile Include="SortableSet\SortableSetCfg.fs" />
     <Compile Include="SorterSet\SorterSetRndCfg.fs" />
@@ -24,10 +28,6 @@
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="SorterSetEval\" />
   </ItemGroup>
 
 </Project>
