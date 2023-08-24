@@ -3,25 +3,18 @@ open System
 
 
 module Exp1Cfg =
-    
-    let defaultInitRunCfg16 =
-        {
-            shcInitRunCfg.newGenerations = 100 |> Generation.create
-            mutationRate = 0.01 |> MutationRate.create
-            noiseFraction = 0.01 |> NoiseFraction.create
-            order = 16 |> Order.createNr
-            rngGen = 123 |> RandomSeed.create |> RngGen.createLcg
-            sorterEvalMode = sorterEvalMode.DontCheckSuccess
-            sorterCount = 16 |> SorterCount.create
-            sorterCountMutated = 32 |> SorterCount.create
-            sorterSetPruneMethod = sorterSetPruneMethod.Shc
-            stageWeight = 0.01 |> StageWeight.create
-            orderToSwitchCount = orderToSwitchCount.For999
-            switchGenMode = switchGenMode.Switch
-            reportFilter = {modGenerationFilter.modulus = 1}
-                            |> generationFilter.ModF
-        }
+    open ShcCfgParams
 
+    let testShcInitRunCfgPlex =
+    {
+        shcInitRunCfgPlex.mutationRates = [|mr0;mr2;mr4|];
+        noiseFractions = [|nf0;nf3|];
+        rngGens = rndGens 0 2 ;
+        tupSorterSetSizes = [|ssz2_3|];
+        sorterSetPruneMethods = [|sspm1; sspm2|];
+        stageWeights = [|sw0|];
+        switchGenModes = [|switchGenMode.Switch|];
+    }
 
 
 type exp1Cfg0 =

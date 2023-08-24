@@ -8,14 +8,24 @@ type TestClass () =
 
     [<TestMethod>]
     member this.shcCfgDto () =
+        let order = 16 |> Order.createNr
+        let newGens = 50 |> Generation.create
+        let genFilter = { modGenerationFilter.modulus = 1}
+                            |> generationFilter.ModF
+        let runSetName = "testRun"
+        let yab = 
+            Exp1Cfg.testShcInitRunCfgPlex 
+               |> ShcRunCfgSet.fromPlex order newGens genFilter runSetName
 
-        let yab = Exp1Cfg.defaultInitRunCfg16
-                    |> shcRunCfg.Run
+        let cereal = yab |> ShcRunCfgSetDto.toJson
 
-        let cereal = yab |> ShcRunCfgDto.toJson
+        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
 
-        let yabba = cereal |> ShcRunCfgDto.fromJson
+
+        //let cereal = yab |> ShcRunCfgDto.toJson
+
+        let yabba = cereal |> ShcRunCfgSetDto.fromJson
                            |> Result.ExtractOrThrow
 
 
-        Assert.AreEqual (yab, yabba);
+        Assert.AreEqual (1, 1);

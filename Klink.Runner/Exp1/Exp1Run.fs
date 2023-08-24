@@ -4,103 +4,44 @@ open System
 
 module Exp1Run =
 
-    let scP0 = 1     |> SorterCount.create
-    let scP1 = 2     |> SorterCount.create
-    let scP2 = 4     |> SorterCount.create
-    let scP3 = 8     |> SorterCount.create
-    let scP4 = 16    |> SorterCount.create
-    let scP5 = 32    |> SorterCount.create
-    let scP6 = 64    |> SorterCount.create
-    let scP7 = 128   |> SorterCount.create
-    let scP8 = 256   |> SorterCount.create
-    let scP9 = 512   |> SorterCount.create
-    let scP10 = 1024 |> SorterCount.create
+    let scriptFolder = "scripts"
+    let toDoFolder = "toDo"
+    let runningFolder = "running"
+    let completedFolder = "completed"
+
+    let scriptToDoPath (root:string) =
+        IO.Path.Combine(root, scriptFolder, toDoFolder)
+
+    let scriptRunningPath (root:string) =
+        IO.Path.Combine(root, scriptFolder, runningFolder)
+
+    let scriptCompletedPath (root:string) =
+        IO.Path.Combine(root, scriptFolder, completedFolder)
+
+    let getNextScript (root:string) =
+        try
+            let nextScriptSourcePath = 
+                IO.Directory.EnumerateFiles (scriptToDoPath root)
+                    |> Seq.head
+            let scriptName = IO.Path.GetFileName(nextScriptSourcePath)
+            let runFolder = (scriptRunningPath root)
+            IO.Directory.CreateDirectory(runFolder)
+            let nextScriptWorkingPath = IO.Path.Combine(runFolder, scriptName)
+            IO.File.Move(nextScriptSourcePath, nextScriptWorkingPath)
+            nextScriptWorkingPath |> Ok
+        with ex ->
+            ("error in getNextScript: " + ex.Message) |> Result.Error
 
 
-    let scM0 = 1     |> SorterCount.create
-    let scM1 = 2     |> SorterCount.create
-    let scM2 = 4     |> SorterCount.create
-    let scM3 = 8     |> SorterCount.create
-    let scM4 = 16    |> SorterCount.create
-    let scM5 = 32    |> SorterCount.create
-    let scM6 = 64    |> SorterCount.create
-    let scM7 = 128   |> SorterCount.create
-    let scM8 = 256   |> SorterCount.create
-    let scM9 = 512   |> SorterCount.create
-    let scM10 = 1024 |> SorterCount.create
+    let runNextScript (root:string) =
+        result {
+            let! script = 
+                getNextScript root
+            
+            let! cfgSet = script |> ShcRunCfgSetDto.fromJson
 
-
-    let nf0 = 0.001 |> NoiseFraction.create
-    let nf1 = 0.025 |> NoiseFraction.create
-    let nf2 = 0.050 |> NoiseFraction.create
-    let nf3 = 0.100 |> NoiseFraction.create
-    let nf4 = 0.250 |> NoiseFraction.create
-    let nf5 = 0.500 |> NoiseFraction.create
-    let nf6 = 1.000 |> NoiseFraction.create
-    let nf7 = 2.000 |> NoiseFraction.create
-
-        
-    let sw0 = 0.05 |> StageWeight.create
-    let sw1 = 0.10 |> StageWeight.create
-    let sw2 = 0.25 |> StageWeight.create
-    let sw3 = 0.50 |> StageWeight.create
-    let sw4 = 0.75 |> StageWeight.create
-    let sw5 = 1.00 |> StageWeight.create
-    let sw6 = 2.00 |> StageWeight.create
-    let sw7 = 4.00 |> StageWeight.create
-
-
-    
-    let mr000 =  0.0075 |> MutationRate.create
-    let mr00 =   0.0100 |> MutationRate.create
-    let mr0 =    0.0125 |> MutationRate.create
-    let mr1 =    0.0150 |> MutationRate.create
-    let mr2 =    0.0200 |> MutationRate.create
-    let mr3 =    0.0250 |> MutationRate.create
-    let mr4 =    0.0300 |> MutationRate.create
-    let mr5 =    0.0350 |> MutationRate.create
-    let mr6 =    0.0400 |> MutationRate.create
-
-    let sspm1 = sorterSetPruneMethod.Whole
-    let sspm2 = sorterSetPruneMethod.Shc
-
-    //let sorterSetSizes = [(scP0, scM0); (scP0, scM1); (scP1, scM1); (scP1, scM2)]
-    let sorterSetSizes = [(scP9, scM9);]
-
-    let stageWeights = [sw0; sw1; sw2;]
-
-    let noiseFractions = [nf0; nf2; nf3; nf4; ]
-
-    //let mutationRates = [mr1; mr2; mr3; mr4; mr5; mr6;]
-    let mutationRates = [mr00; mr00; mr0; mr1]
-        
-    let sorterSetPruneMethods = [sspm2;] // sspm2]
-
-    let switchGenModes = [switchGenMode.Switch; switchGenMode.Stage; switchGenMode.StageSymmetric]
-
-    let cfgsForTestRun (iterationCt:int) = 
-        Exp1CfgOld.enumerate 
-                (Exp1CfgOld.rndGens)
-                [(scP8, scM8)]
-                [switchGenMode.Stage; switchGenMode.Switch; switchGenMode.StageSymmetric]
-                [sw0; sw2; sw4; sw6]
-                [nf0; nf3;]
-                mutationRates
-                [sspm2]
-                (iterationCt |> Generation.create)
-         
-
-
-    let cfgsForCompleteRun () = 
-        Exp1CfgOld.enumerate 
-                (Exp1CfgOld.rndGens)
-                sorterSetSizes
-                switchGenModes
-                stageWeights 
-                noiseFractions
-                mutationRates 
-                sorterSetPruneMethods
-                (50 |> Generation.create)
+            return cfgSet
+        }
 
 
     let wnSortableSet = "sortableSet" |> WsComponentName.create

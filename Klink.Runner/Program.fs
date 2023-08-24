@@ -13,24 +13,17 @@ module Program =
         let workingDirectory = argResults.GetResults Working_Directory |> List.head
         let projectFolder = argResults.GetResults Project_Folder |> List.head
         let reportFileName = argResults.GetResults Report_File_Name |> List.head
-        let procedure = argResults.GetResults Procedure |> List.head
-        let startingConfigIndex = argResults.GetResults Starting_Config_Index |> List.head
-        let configCount = argResults.GetResults Config_Count |> List.head
         let logLevel = argResults.GetResults Log_level |> List.head
-        let iterationCt = argResults.GetResults Iteration_Count |> List.head
         let useParallel = argResults.GetResults Use_Parallel |> List.head
                           |> UseParallel.create
 
-        Console.WriteLine($"runPath: {projectFolder}")
-        Console.WriteLine($"procedure: {procedure}")
-        Console.WriteLine($"startingConfigIndex: {startingConfigIndex}")
-        Console.WriteLine($"configCount: {configCount}")
+        Console.WriteLine($"workingDirectory: {workingDirectory}")
+        Console.WriteLine($"projectFolder: {projectFolder}")
         Console.WriteLine($"logLevel: {logLevel}")
-        Console.WriteLine($"iterations: {iterationCt}")
 
         Console.WriteLine($"//////hi/////////")
-        Console.WriteLine($"//////{projectFolder}/////////")
-
+        let runPath = System.IO.Path.Combine(workingDirectory, projectFolder)
+        Console.WriteLine($"//////{ runPath }/////////")
 
 
         let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
@@ -39,44 +32,46 @@ module Program =
 
         let tsStart = DateTime.Now
         
-        let runPath = System.IO.Path.Combine(workingDirectory, projectFolder) //, runFolder)
+        let res = Exp1Run.runNextScript runPath
 
-        if procedure = "doRun" then
 
-           Exp1Run.doRunRun
-                runPath
-                (Exp1Run.cfgsForTestRun(iterationCt) 
-                    |> Seq.skip startingConfigIndex
-                    |> Seq.take configCount
-                    |> Seq.map (Exp1CfgOld.toWorkspaceParams useParallel))
-                (iterationCt |> Generation.create)
-            |> ignore
 
-        elif procedure = "continueRun" then
-           Exp1Run.continueUpdating
-                runPath
-                startingConfigIndex
-                configCount
-                iterationCt
-            |> ignore
+        //if procedure = "doRun" then
 
-        elif procedure = "reportAll" then
-            Exp1Reporting.reportEmAll
-                runPath
-                reportFileName
-                wnSorterSetEvalParent
-                startingConfigIndex
-                configCount
-            |> ignore
+        //   Exp1Run.doRunRun
+        //        runPath
+        //        (Exp1Run.cfgsForTestRun(iterationCt) 
+        //            |> Seq.skip 0
+        //            |> Seq.take configCount
+        //            |> Seq.map (Exp1CfgOld.toWorkspaceParams useParallel))
+        //        (iterationCt |> Generation.create)
+        //    |> ignore
 
-        elif procedure = "reportBins" then
-            Exp1Reporting.doReportPerfBins
-                    runPath
-                    (1 |> Generation.create)
-            |> ignore
+        //elif procedure = "continueRun" then
+        //   Exp1Run.continueUpdating
+        //        runPath
+        //        startingConfigIndex
+        //        configCount
+        //        iterationCt
+        //    |> ignore
 
-        else
-            Console.WriteLine $"procedure: {procedure} is not handled"
+        //elif procedure = "reportAll" then
+        //    Exp1Reporting.reportEmAll
+        //        runPath
+        //        reportFileName
+        //        wnSorterSetEvalParent
+        //        startingConfigIndex
+        //        configCount
+        //    |> ignore
+
+        //elif procedure = "reportBins" then
+        //    Exp1Reporting.doReportPerfBins
+        //            runPath
+        //            (1 |> Generation.create)
+        //    |> ignore
+
+        //else
+        //    Console.WriteLine $"procedure: {procedure} is not handled"
 
 
         let tsEnd = DateTime.Now
@@ -85,9 +80,6 @@ module Program =
 
         Console.WriteLine($"{tSpan.ToString()}")
 
-        //match yow with
-        //| Ok msg -> Console.WriteLine($"done ... {msg}")
-        //| Error yow -> Console.WriteLine($"done ... {yow}")
 
 
         Console.Read() |> ignore
