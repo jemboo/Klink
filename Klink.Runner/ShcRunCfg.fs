@@ -30,27 +30,9 @@ type shcInitRunCfgPlex =
     }
 
 
-module ShcInitRunCfgs =
+module ShcInitRunCfgPlex =
 
-    let getRunId (cfg:shcInitRunCfg) =
-        [
-            cfg.mutationRate |> MutationRate.value :> obj;
-            cfg.noiseFraction |> NoiseFraction.value :> obj;
-            cfg.order |> Order.value :> obj;
-            cfg.rngGen :> obj;
-            cfg.sorterEvalMode :> obj
-            cfg.sorterCount |> SorterCount.value :> obj;
-            cfg.sorterCountMutated |> SorterCount.value :> obj;
-            cfg.sorterSetPruneMethod :> obj;
-            cfg.stageWeight |> StageWeight.value :> obj;
-            cfg.switchCount :> obj;
-            cfg.switchGenMode :> obj;
-
-        ] |> GuidUtils.guidFromObjs |> RunId.create
-
-
-
-    let fromPlex<'a>
+    let fromFunc<'a>
             (order:order)
             (newGenerations:generation)
             (reportFilter:generationFilter)
@@ -76,25 +58,30 @@ module ShcInitRunCfgs =
                                             tupSorterSetSize switchGenMode 
                                             stageWeight noiseFraction
                                             mutationRate sorterSetPruneMethod
-                                        //{ 
-                                        //    shcInitRunCfg.mutationRate = mutationRate;
-                                        //    newGenerations = newGenerations
-                                        //    noiseFraction = noiseFraction
-                                        //    order = order
-                                        //    rngGen = rngGen
-                                        //    sorterEvalMode = sorterEvalMode.DontCheckSuccess
-                                        //    sorterCount = fst tupSorterSetSize
-                                        //    sorterCountMutated = snd tupSorterSetSize
-                                        //    sorterSetPruneMethod = sorterSetPruneMethod;
-                                        //    stageWeight = stageWeight
-                                        //    switchCount = (SwitchCount.orderTo999SwitchCount order)
-                                        //    switchGenMode = switchGenMode
-                                        //    reportFilter = reportFilter
-                                        //}
         }
 
 
-    let makeInitRunCfgFromPlex
+module ShcInitRunCfgs =
+
+    let getRunId (cfg:shcInitRunCfg) =
+        [
+            cfg.mutationRate |> MutationRate.value :> obj;
+            cfg.noiseFraction |> NoiseFraction.value :> obj;
+            cfg.order |> Order.value :> obj;
+            cfg.rngGen :> obj;
+            cfg.sorterEvalMode :> obj
+            cfg.sorterCount |> SorterCount.value :> obj;
+            cfg.sorterCountMutated |> SorterCount.value :> obj;
+            cfg.sorterSetPruneMethod :> obj;
+            cfg.stageWeight |> StageWeight.value :> obj;
+            cfg.switchCount :> obj;
+            cfg.switchGenMode :> obj;
+
+        ] |> GuidUtils.guidFromObjs |> RunId.create
+
+
+
+    let fromPlex
             (order:order)
             (newGenerations:generation)
             (reportFilter:generationFilter)
@@ -119,7 +106,8 @@ module ShcInitRunCfgs =
                     switchGenMode = switchGenMode
                     reportFilter = reportFilter
                 }
-        fromPlex order newGenerations reportFilter plex _toIr
+
+        ShcInitRunCfgPlex.fromFunc order newGenerations reportFilter plex _toIr
 
 
 
@@ -157,17 +145,29 @@ module ShcInitRunCfgs =
 
 
 
-type shcContinueRunCfg =
+type shcContinueRunCfgs =
     {
         runId:runId
         newGenerations:generation
     }
 
 
-module ShcContinueRunCfg =
-        ()
+module ShcContinueRunCfgs =
 
+    let fromPlex
+            (order:order)
+            (newGenerations:generation)
+            (reportFilter:generationFilter)
+            (plex:shcInitRunCfgPlex)
+        =
 
+        let _toCrc newGenerations (gaCfg:shcInitRunCfg) =
+                { 
+                    shcContinueRunCfgs.runId = (gaCfg |> ShcInitRunCfgs.getRunId);
+                    newGenerations = newGenerations
+                }
+        ShcInitRunCfgs.fromPlex order newGenerations reportFilter plex
+        |> Seq.map(_toCrc newGenerations)
 
 
 
@@ -184,7 +184,7 @@ type shcReportCfg =
 
 type shcRunCfg =
     | InitRun of shcInitRunCfg
-    | Continue of shcContinueRunCfg
+    | Continue of shcContinueRunCfgs
     | Report of shcReportCfg
 
 
@@ -193,6 +193,7 @@ type shcRunCfg =
 type shcRunCfgSet = {setName:string; runCfgs:shcRunCfg[]}
 
 module ShcRunCfgSet =
+
     let initRunFromPlex 
             (order:order)
             (newGenerations:generation)
@@ -202,8 +203,24 @@ module ShcRunCfgSet =
         =
         let runCfgs = 
             plex |>
-            ShcInitRunCfgs.makeInitRunCfgFromPlex order newGenerations reportFilter
+            ShcInitRunCfgs.fromPlex order newGenerations reportFilter
                   |> Seq.map(shcRunCfg.InitRun)
+                  |> Seq.toArray
+
+        {setName = runSetName; runCfgs = runCfgs}
+
+
+    let continueRunFromPlex 
+            (order:order)
+            (newGenerations:generation)
+            (reportFilter:generationFilter)
+            (runSetName:string)
+            (plex:shcInitRunCfgPlex)
+        =
+        let runCfgs = 
+            plex |>
+            ShcContinueRunCfgs.fromPlex order newGenerations reportFilter
+                  |> Seq.map(shcRunCfg.Continue)
                   |> Seq.toArray
 
         {setName = runSetName; runCfgs = runCfgs}

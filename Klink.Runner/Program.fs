@@ -18,8 +18,6 @@ module Program =
         let logLevel = argResults.GetResults Log_level |> List.head
 
 
-
-
         let useParallel = argResults.GetResults Use_Parallel |> List.head
                           |> UseParallel.create
 
@@ -40,11 +38,9 @@ module Program =
         let tsStart = DateTime.Now
 
 
-
         let reportError (errorMsg:string) =
             Console.WriteLine(errorMsg)
             () |> Ok
-
 
 
         let (scriptFileName, shcRunCfgSet) =

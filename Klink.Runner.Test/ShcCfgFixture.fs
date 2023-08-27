@@ -22,16 +22,38 @@ type TestClass () =
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
         |> ignore
 
-
         let yabba = cereal |> ShcRunCfgSetDto.fromJson
                            |> Result.ExtractOrThrow
-
 
         Assert.AreEqual (1, 1);
 
 
+
     [<TestMethod>]
-    member this.pares () =
+    member this.shcCfgContinueRunDto () =
+        let order = 16 |> Order.createNr
+        let newGens = 50 |> Generation.create
+        let genFilter = { modGenerationFilter.modulus = 1}
+                            |> generationFilter.ModF
+        let runSetName = "continueRun"
+        let yab = 
+            Exp1Cfg.testShcInitRunCfgPlex 
+               |> ShcRunCfgSet.continueRunFromPlex order newGens genFilter runSetName
+
+        let cereal = yab |> ShcRunCfgSetDto.toJson
+
+        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
+        |> ignore
+
+        let yabba = cereal |> ShcRunCfgSetDto.fromJson
+                           |> Result.ExtractOrThrow
+
+        Assert.AreEqual (1, 1);
+
+
+
+    [<TestMethod>]
+    member this.shcRunCfgSetDto () =
 
         let runSetName = "testRun"
 
