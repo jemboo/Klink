@@ -56,42 +56,10 @@ module Program =
 
 
 
-        //if procedure = "doRun" then
-
-        //   Exp1Run.doRunRun
-        //        runPath
-        //        (Exp1Run.cfgsForTestRun(iterationCt) 
-        //            |> Seq.skip 0
-        //            |> Seq.take configCount
-        //            |> Seq.map (Exp1CfgOld.toWorkspaceParams useParallel))
-        //        (iterationCt |> Generation.create)
-        //    |> ignore
-
-        //elif procedure = "continueRun" then
-        //   Exp1Run.continueUpdating
-        //        runPath
-        //        startingConfigIndex
-        //        configCount
-        //        iterationCt
-        //    |> ignore
-
-        //elif procedure = "reportAll" then
         //    Exp1Reporting.reportEmAll
-        //        runPath
-        //        reportFileName
-        //        wnSorterSetEvalParent
-        //        startingConfigIndex
-        //        configCount
-        //    |> ignore
 
-        //elif procedure = "reportBins" then
         //    Exp1Reporting.doReportPerfBins
-        //            runPath
-        //            (1 |> Generation.create)
-        //    |> ignore
 
-        //else
-        //    Console.WriteLine $"procedure: {procedure} is not handled"
 
 
         let tsEnd = DateTime.Now
