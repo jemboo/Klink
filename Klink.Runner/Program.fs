@@ -10,20 +10,27 @@ module Program =
         let argResults = parser.Parse argv
 
         let all = argResults.GetAllResults()
+
         let workingDirectory = argResults.GetResults Working_Directory |> List.head
         let projectFolder = argResults.GetResults Project_Folder |> List.head
         let reportFileName = argResults.GetResults Report_File_Name |> List.head
+
         let logLevel = argResults.GetResults Log_level |> List.head
+
+
+
+
         let useParallel = argResults.GetResults Use_Parallel |> List.head
                           |> UseParallel.create
+
 
         Console.WriteLine($"workingDirectory: {workingDirectory}")
         Console.WriteLine($"projectFolder: {projectFolder}")
         Console.WriteLine($"logLevel: {logLevel}")
 
         Console.WriteLine($"//////hi/////////")
-        let runPath = System.IO.Path.Combine(workingDirectory, projectFolder)
-        Console.WriteLine($"//////{ runPath }/////////")
+        let projectFolderPath = System.IO.Path.Combine(workingDirectory, projectFolder)
+        Console.WriteLine($"//////{ projectFolderPath }/////////")
 
 
         let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
@@ -31,8 +38,25 @@ module Program =
         let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
 
         let tsStart = DateTime.Now
-        
-        let res = Exp1Run.runNextScript runPath
+
+
+
+        let reportError (errorMsg:string) =
+            Console.WriteLine(errorMsg)
+            () |> Ok
+
+
+
+        let (scriptFileName, shcRunCfgSet) =
+                ShcRun.getNextRunCfgSet projectFolderPath
+                |> Result.ExtractOrThrow
+
+        let yab =
+                Exp1Run.procRunCfgSet projectFolderPath useParallel shcRunCfgSet
+                |> Result.ExtractOrThrow
+
+        let boink = ShcRun.finishScript scriptFileName projectFolderPath
+                    |> Result.ExtractOrThrow
 
 
 

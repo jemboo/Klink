@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Klink.Runner": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--working-directory C:\\Klink --project-folder ShcT --log-level 6"
     }
   }
 }

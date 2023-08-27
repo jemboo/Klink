@@ -7,12 +7,14 @@
 
   <ItemGroup>
     <Compile Include="ShcCfgParams.fs" />
-    <Compile Include="ShcCfg.fs" />
-    <Compile Include="Exp1\Exp1Cfg.fs" />
+    <Compile Include="ShcRunCfg.fs" />
+    <Compile Include="ShcRunCfgDto.fs" />
+    <Compile Include="ShcRun.fs" />
     <Compile Include="Exp1\Exp1Causes.fs" />
     <Compile Include="Exp1\Exp1WsOps.fs" />
     <Compile Include="Exp1\Exp1Reporting.fs" />
     <Compile Include="Exp1\Exp1Run.fs" />
+    <Compile Include="Exp1\Exp1Cfg.fs" />
     <Compile Include="CliArguments.fs" />
     <None Include="App.config" />
     <Compile Include="Program.fs" />

@@ -100,7 +100,7 @@ module WorkspaceParams =
         =
         workspaceParams 
             |> filterGeneration
-                    "generation"
+                    "generation_current"
                     (fun gen -> 
                             (gen |> Generation.value) >= (genVal |> Generation.value))
 

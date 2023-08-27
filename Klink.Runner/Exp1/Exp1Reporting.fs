@@ -28,7 +28,7 @@ module Exp1Reporting =
 
     let standardParamProps =
         [
-            "generation";
+            "generation_current";
             "runId";
             "mutationRate";
             "noiseFraction";
@@ -64,7 +64,7 @@ module Exp1Reporting =
     let binnedParamValues (wsps:workspaceParams) (genBinSz:int) =
         let paramMap t = (wsps |> WorkspaceParams.getMap).[t]
         result {
-            let! genBin = wsps |> WorkspaceParams.getGeneration "generation"
+            let! genBin = wsps |> WorkspaceParams.getGeneration "generation_current"
                                |> Result.map(Generation.binnedValue genBinSz)
             return $"{ genBin }\t{ binParamProps |> StringUtil.toCsvLine paramMap }"
         }
@@ -165,7 +165,7 @@ module Exp1Reporting =
     let paramGroup (genBinSz:generation) 
                    (wsPram:workspaceParams)  =
         result {
-            let! gen = wsPram |> WorkspaceParams.getGeneration "generation"
+            let! gen = wsPram |> WorkspaceParams.getGeneration "generation_current"
                               |> Result.map(Generation.binnedValue (genBinSz |> Generation.value))
             let! mr = wsPram |> WorkspaceParams.getMutationRate "mutationRate"
             let! nf = wsPram |> WorkspaceParams.getNoiseFraction "noiseFraction"

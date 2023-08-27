@@ -14,7 +14,7 @@ module Exp1WsOps =
          =
             result {
                 let emptyWsCfg = WorkspaceCfg.Empty
-                let! wsCfgNParams = 
+                let! (wsCfg, wsParams) = 
                     Exp1Causes.initParentMapAndEval
                         wnSortableSet
                         wnSorterSetParent
@@ -23,17 +23,17 @@ module Exp1WsOps =
                         emptyWsCfg
 
                 let! wsGenZero =
-                        wsCfgNParams |> fst |> WorkspaceCfg.runWorkspaceCfg fs logger
+                        wsCfg |> WorkspaceCfg.runWorkspaceCfg fs logger
 
                 let! curGenNumber = 
-                            wsCfgNParams |> snd 
-                                |> WorkspaceParams.getGeneration "generation" 
+                            wsParams
+                                |> WorkspaceParams.getGeneration "generation_current" 
                                 |> Result.map(Generation.value)
 
 
                 let! res = fs.saveWorkSpace wsGenZero
                 logger ($"Saved Gen {curGenNumber} to {wsGenZero |> Workspace.getId |> WorkspaceId.value}")
-                return wsCfgNParams, wsGenZero
+                return (wsCfg, wsParams), wsGenZero
              }
 
 
@@ -68,7 +68,7 @@ module Exp1WsOps =
                         workspaceCfg
 
                 let! wsParamsNextGen = 
-                        wsParams |> WorkspaceParams.incrGeneration "generation"
+                        wsParams |> WorkspaceParams.incrGeneration "generation_current"
                                  |> Result.bind(WorkspaceParams.updateRngGen "rngGenMutate")
                                  |> Result.bind(WorkspaceParams.updateRngGen "rngGenPrune")
 
@@ -91,7 +91,7 @@ module Exp1WsOps =
 
                 let! nextGenNumber = 
                             wsParamsNextGen 
-                                |> WorkspaceParams.getGeneration "generation" 
+                                |> WorkspaceParams.getGeneration "generation_current" 
                                 |> Result.map(Generation.value)
 
                 logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
@@ -138,7 +138,7 @@ module Exp1WsOps =
                         baseWsCfg
 
                 let! wsParamsNextGen = 
-                        wsParams |> WorkspaceParams.incrGeneration "generation"
+                        wsParams |> WorkspaceParams.incrGeneration "generation_current"
                                  |> Result.bind(WorkspaceParams.updateRngGen "rngGenMutate")
                                  |> Result.bind(WorkspaceParams.updateRngGen "rngGenPrune")
 
@@ -161,7 +161,7 @@ module Exp1WsOps =
 
                 let! nextGenNumber = 
                             wsParams 
-                                |> WorkspaceParams.getGeneration "generation" 
+                                |> WorkspaceParams.getGeneration "generation_current" 
                                 |> Result.map(Generation.value)
 
                 if (IntSeries.expoB 10.0 nextGenNumber) then

@@ -1,134 +1,6 @@
 ﻿namespace global
 open System
 
-type shcInitRunCfg =
-    {
-        mutationRate:mutationRate
-        newGenerations:generation
-        noiseFraction:noiseFraction
-        order:order
-        rngGen:rngGen
-        sorterEvalMode:sorterEvalMode
-        sorterCount:sorterCount
-        sorterCountMutated:sorterCount
-        sorterSetPruneMethod:sorterSetPruneMethod
-        stageWeight:stageWeight
-        switchCount:switchCount
-        switchGenMode:switchGenMode
-        reportFilter:generationFilter
-    }
-
-type shcInitRunCfgPlex =
-    {
-        mutationRates:mutationRate[]
-        noiseFractions:noiseFraction[]
-        rngGens:rngGen[]
-        tupSorterSetSizes:(sorterCount*sorterCount)[]
-        sorterSetPruneMethods:sorterSetPruneMethod[]
-        stageWeights:stageWeight[]
-        switchGenModes:switchGenMode[]
-    }
-
-
-module ShcInitRunCfgs =
-    let fromPlex 
-            (order:order)
-            (newGenerations:generation)
-            (reportFilter:generationFilter)
-            (plex:shcInitRunCfgPlex)
-            =
-        seq {
-            
-        for rngGen in plex.rngGens do
-            for tupSorterSetSize in plex.tupSorterSetSizes do
-                for switchGenMode in plex.switchGenModes do
-                    for stageWeight in plex.stageWeights do
-                        for noiseFraction in plex.noiseFractions do
-                            for mutationRate in plex.mutationRates do
-                                for sorterSetPruneMethod in plex.sorterSetPruneMethods do
-                                    yield
-                                        { 
-                                            shcInitRunCfg.mutationRate = mutationRate;
-                                            newGenerations = newGenerations
-                                            noiseFraction = noiseFraction
-                                            order = order
-                                            rngGen = rngGen
-                                            sorterEvalMode = sorterEvalMode.DontCheckSuccess
-                                            sorterCount = fst tupSorterSetSize
-                                            sorterCountMutated = snd tupSorterSetSize
-                                            sorterSetPruneMethod = sorterSetPruneMethod;
-                                            stageWeight = stageWeight
-                                            switchCount = (SwitchCount.orderTo999SwitchCount order)
-                                            switchGenMode = switchGenMode
-                                            reportFilter = reportFilter
-                                        }
-        }
-
-
-
-type shcContinueRunCfg =
-    {
-        runId:runId
-        newGenerations:generation
-    }
-
-
-type shcReportCfg =
-    {
-        runIds:runId array
-        genMin:generation
-        genMax:generation
-        evalCompName:wsComponentName
-        reportFreqFunc:string
-        reportFreqParams:string array
-    }
-
-
-type shcRunCfg =
-    | Run of shcInitRunCfg
-    | Continue of shcContinueRunCfg
-    | Report of shcReportCfg
-
-
-module ShcRunCfg =
-
-    let getRunId (cfg:shcInitRunCfg) =
-        [
-            cfg.mutationRate |> MutationRate.value :> obj;
-            cfg.noiseFraction |> NoiseFraction.value :> obj;
-            cfg.order |> Order.value :> obj;
-            cfg.rngGen :> obj;
-            cfg.sorterEvalMode :> obj
-            cfg.sorterCount |> SorterCount.value :> obj;
-            cfg.sorterCountMutated |> SorterCount.value :> obj;
-            cfg.sorterSetPruneMethod :> obj;
-            cfg.stageWeight |> StageWeight.value :> obj;
-            cfg.switchCount :> obj;
-            cfg.switchGenMode :> obj;
-
-        ] |> GuidUtils.guidFromObjs |> RunId.create
-
-
-
-
-type shcRunCfgSet = {setName:string; runCfgs:shcRunCfg[]}
-
-module ShcRunCfgSet =
-    let fromPlex 
-            (order:order)
-            (newGenerations:generation)
-            (reportFilter:generationFilter)
-            (runSetName:string)
-            (plex:shcInitRunCfgPlex)
-        =
-        let runCfgs = 
-            plex |>
-            ShcInitRunCfgs.fromPlex order newGenerations reportFilter
-                  |> Seq.map(shcRunCfg.Run)
-                  |> Seq.toArray
-
-        {setName = runSetName; runCfgs = runCfgs}
-
 
 
 type shcInitRunCfgDto =
@@ -145,7 +17,7 @@ type shcInitRunCfgDto =
         stageWeight:float
         switchCount:int
         switchGenMode:switchGenMode
-        reportGenFilter:string
+        reportGenFilter:generationFilterDto
     }
 
 
@@ -165,7 +37,7 @@ module ShcInitRunCfgDto =
             stageWeight = cfg.stageWeight |> StageWeight.value
             switchCount = cfg.switchCount |> SwitchCount.value
             switchGenMode = cfg.switchGenMode
-            reportGenFilter = cfg.reportFilter |> GenerationFilterDto.toJson
+            reportGenFilter = cfg.reportFilter |> GenerationFilterDto.toDto
         }
 
 
@@ -176,7 +48,7 @@ module ShcInitRunCfgDto =
 
     let fromDto (cfg:shcInitRunCfgDto) =
         result {
-            let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromJson
+            let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
             return
                 {
                     shcInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create
@@ -287,7 +159,7 @@ module ShcRunCfgDto =
 
     let toDto (cfg:shcRunCfg) =
         match cfg with
-        | Run rCfg -> 
+        | InitRun rCfg -> 
             {
                 duType = "Run"
                 cereal = rCfg |> ShcInitRunCfgDto.toJson
@@ -312,7 +184,7 @@ module ShcRunCfgDto =
     let fromDto (dto:shcCfgDto) =
         match dto.duType with
         | "Run" ->
-            dto.cereal |> ShcInitRunCfgDto.fromJson |> Result.map(shcRunCfg.Run)
+            dto.cereal |> ShcInitRunCfgDto.fromJson |> Result.map(shcRunCfg.InitRun)
         | "Continue" -> 
             dto.cereal |> ShcContinueRunCfgDto.fromJson |> Result.map(shcRunCfg.Continue)
         | "Report" -> 
@@ -358,38 +230,3 @@ module ShcRunCfgSetDto =
             let! dto = Json.deserialize<shcRunCfgSetDto> cereal
             return! fromDto dto
         }
-
-
-
-
-//type shcRunCfgSetDto = {setName:string; runs:string[]}
-
-//module ShcRunCfgSetDto =
-//    let toDto (runSet:shcRunCfgSet) =
-//        {
-//            shcRunCfgSetDto.setName = runSet.setName;
-//            runs = runSet.runCfgs |> Array.map(ShcRunCfgDto.toJson)
-//        }
-
-//    let toJson (cfg:shcRunCfgSet) =
-//        cfg |> toDto |> Json.serialize
-
-
-//    let fromDto (dto:shcRunCfgSetDto) =
-//        result {
-//            let! runs = dto.runs 
-//                       |> Array.map(ShcRunCfgDto.fromJson)
-//                       |> Array.toList 
-//                       |> Result.sequence
-//            return
-//                {
-//                    shcRunCfgSet.setName = dto.setName;
-//                    runCfgs = runs |> List.toArray
-//                }
-//        }
-
-//    let fromJson (cereal:string) =
-//        result {
-//            let! dto = Json.deserialize<shcRunCfgSetDto> cereal
-//            return! fromDto dto
-//        }

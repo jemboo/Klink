@@ -2,47 +2,8 @@
 open System
 
 
+
 module Exp1Run =
-
-    let scriptFolder = "scripts"
-    let toDoFolder = "toDo"
-    let runningFolder = "running"
-    let completedFolder = "completed"
-
-    let scriptToDoPath (root:string) =
-        IO.Path.Combine(root, scriptFolder, toDoFolder)
-
-    let scriptRunningPath (root:string) =
-        IO.Path.Combine(root, scriptFolder, runningFolder)
-
-    let scriptCompletedPath (root:string) =
-        IO.Path.Combine(root, scriptFolder, completedFolder)
-
-    let getNextScript (root:string) =
-        try
-            let nextScriptSourcePath = 
-                IO.Directory.EnumerateFiles (scriptToDoPath root)
-                    |> Seq.head
-            let scriptName = IO.Path.GetFileName(nextScriptSourcePath)
-            let runFolder = (scriptRunningPath root)
-            IO.Directory.CreateDirectory(runFolder)
-            let nextScriptWorkingPath = IO.Path.Combine(runFolder, scriptName)
-            IO.File.Move(nextScriptSourcePath, nextScriptWorkingPath)
-            nextScriptWorkingPath |> Ok
-        with ex ->
-            ("error in getNextScript: " + ex.Message) |> Result.Error
-
-
-    let runNextScript (root:string) =
-        result {
-            let! script = 
-                getNextScript root
-            
-            let! cfgSet = script |> ShcRunCfgSetDto.fromJson
-
-            return cfgSet
-        }
-
 
     let wnSortableSet = "sortableSet" |> WsComponentName.create
     let wnSorterSetParent = "sorterSetParent" |> WsComponentName.create
@@ -76,6 +37,7 @@ module Exp1Run =
                                 fs
                                 (fun s-> Console.WriteLine(s))
 
+
                 let mutable curGen = 0
                 let mutable curCfg = wsCfg_params |> fst
                 let mutable curParams = wsCfg_params |> snd
@@ -105,55 +67,113 @@ module Exp1Run =
         }
 
 
+
     let doRunRun
-            (projectDir:string)
-            (wsParamsS: workspaceParams seq)
-            (maxGen:generation)
+            (projectFolderPath:string)
+            (wsParams: workspaceParams)
         = 
         result {
-            for wsParams in wsParamsS do
 
-                let! runId = wsParams |> WorkspaceParams.getRunId "runId"
-                let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
-                let fs = new WorkspaceFileStore(runDir)
+            let! runId = wsParams |> WorkspaceParams.getRunId "runId"
+            let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
+            let fs = new WorkspaceFileStore(runDir)
 
-                let! wsCfg_params, ws = 
-                        Exp1WsOps.setupWorkspace
-                                wnSortableSet
-                                wnSorterSetParent
-                                wnSorterSetEvalParent
-                                wsParams
-                                fs
-                                (fun s-> Console.WriteLine(s))
-                let! cg = wsParams |> WorkspaceParams.getGeneration "generation"
-                                   |> Result.map(Generation.value)
-                let mutable curGen = cg
-                let mutable curParams = wsCfg_params |> snd
-                let mutable curWorkspace = ws
-
-                while curGen < (maxGen |> Generation.value) do
-                    let! wsN, wsPramsN =
-                        Exp1WsOps.doGenOnWorkspace
+            let! wsCfg_params, ws = 
+                    Exp1WsOps.setupWorkspace
                             wnSortableSet
                             wnSorterSetParent
-                            wnSorterSetMutator
-                            wnSorterSetMutated
-                            wnSorterSetPruned
-                            wnParentMap
                             wnSorterSetEvalParent
-                            wnSorterSetEvalMutated
-                            wnSorterSetEvalPruned
+                            wsParams
                             fs
                             (fun s-> Console.WriteLine(s))
-                            curParams
-                            curWorkspace
+            let! maxGen = 
+                    wsParams |> WorkspaceParams.getGeneration "generation_max"
+                                |> Result.map(Generation.value)
 
-                    curWorkspace <- wsN
-                    curParams <- wsPramsN
-                    curGen <- curGen + 1
 
-            return "success"
+            let! cg = wsCfg_params |> snd |> WorkspaceParams.getGeneration "generation_current"
+                    
+            let mutable curGen = cg |> Generation.value
+            let mutable curParams = wsCfg_params |> snd
+            let mutable curWorkspace = ws
+
+            while curGen < maxGen do
+                let! wsN, wsPramsN =
+                    Exp1WsOps.doGenOnWorkspace
+                        wnSortableSet
+                        wnSorterSetParent
+                        wnSorterSetMutator
+                        wnSorterSetMutated
+                        wnSorterSetPruned
+                        wnParentMap
+                        wnSorterSetEvalParent
+                        wnSorterSetEvalMutated
+                        wnSorterSetEvalPruned
+                        fs
+                        (fun s-> Console.WriteLine(s))
+                        curParams
+                        curWorkspace
+
+                curWorkspace <- wsN
+                curParams <- wsPramsN
+                curGen <- curGen + 1
+
+            return ()
         }
+
+
+
+    //let doRunRun
+    //        (projectFolderPath:string)
+    //        (wsParamsS: workspaceParams seq)
+    //    = 
+    //    result {
+    //        for wsParams in wsParamsS do
+
+    //            let! runId = wsParams |> WorkspaceParams.getRunId "runId"
+    //            let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
+    //            let fs = new WorkspaceFileStore(runDir)
+
+    //            let! wsCfg_params, ws = 
+    //                    Exp1WsOps.setupWorkspace
+    //                            wnSortableSet
+    //                            wnSorterSetParent
+    //                            wnSorterSetEvalParent
+    //                            wsParams
+    //                            fs
+    //                            (fun s-> Console.WriteLine(s))
+    //            let! maxGen = 
+    //                    wsParams |> WorkspaceParams.getGeneration "generation"
+    //                             |> Result.map(Generation.value)
+
+
+    //            let mutable curGen = 0
+    //            let mutable curParams = wsCfg_params |> snd
+    //            let mutable curWorkspace = ws
+
+    //            while curGen < maxGen do
+    //                let! wsN, wsPramsN =
+    //                    Exp1WsOps.doGenOnWorkspace
+    //                        wnSortableSet
+    //                        wnSorterSetParent
+    //                        wnSorterSetMutator
+    //                        wnSorterSetMutated
+    //                        wnSorterSetPruned
+    //                        wnParentMap
+    //                        wnSorterSetEvalParent
+    //                        wnSorterSetEvalMutated
+    //                        wnSorterSetEvalPruned
+    //                        fs
+    //                        (fun s-> Console.WriteLine(s))
+    //                        curParams
+    //                        curWorkspace
+
+    //                curWorkspace <- wsN
+    //                curParams <- wsPramsN
+    //                curGen <- curGen + 1
+
+    //        return "success"
+    //    }
 
 
     let continueUpdating
@@ -181,7 +201,7 @@ module Exp1Run =
                 let! paramsLoaded = wsLoaded 
                                     |> Workspace.getComponent ("workspaceParams" |> WsComponentName.create)
                                     |> Result.bind(WorkspaceComponent.asWorkspaceParams)
-                let! genLoaded = paramsLoaded |> WorkspaceParams.getGeneration "generation"
+                let! genLoaded = paramsLoaded |> WorkspaceParams.getGeneration "generation_current"
                                  |> Result.map(Generation.value)
 
                 let mutable curGen = genLoaded
@@ -212,4 +232,32 @@ module Exp1Run =
                     curGen <- curGen + 1
 
             return "success"
+        }
+
+
+    let procShcRunCfg 
+            (projectFolderPath:string)
+            (up:useParallel)
+            (runCfg:shcRunCfg)
+        =
+            match runCfg with
+            | InitRun irc -> 
+                irc |> ShcInitRunCfgs.toWorkspaceParams up
+                    |> doRunRun projectFolderPath
+            | Continue crc -> () |> Ok
+            | Report rrc -> () |> Ok
+
+
+
+    let procRunCfgSet 
+            (projectFolderPath:string)
+            (up:useParallel)
+            (rcs:shcRunCfgSet)
+        =
+        result {
+            let! yab = rcs.runCfgs
+                      |> Array.map(procShcRunCfg projectFolderPath up)
+                      |> Array.toList
+                      |> Result.sequence
+            return ()
         }
