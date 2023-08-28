@@ -160,7 +160,7 @@ module Exp1WsOps =
                                 (nextGenCfg.history) 
 
                 let! nextGenNumber = 
-                            wsParams 
+                            wsParamsNextGen 
                                 |> WorkspaceParams.getGeneration "generation_current" 
                                 |> Result.map(Generation.value)
 

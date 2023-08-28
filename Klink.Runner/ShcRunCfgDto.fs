@@ -116,8 +116,8 @@ type shcReportCfgDto =
         genMin:int
         genMax:int
         evalCompName:string
-        reportFreqFunc:string
-        reportFreqParams:string array
+        reportFileName:string
+        reportGenFilter:generationFilterDto
     }
 
 
@@ -129,8 +129,8 @@ module ShcReportCfgDto =
             genMin = cfg.genMin |> Generation.value
             genMax = cfg.genMax |> Generation.value
             evalCompName = cfg.evalCompName |> WsComponentName.value
-            reportFreqFunc = cfg.reportFreqFunc
-            reportFreqParams = cfg.reportFreqParams
+            reportGenFilter = cfg.reportFilter |> GenerationFilterDto.toDto
+            reportFileName = cfg.reportFileName
         }
 
     let toJson (cfg:shcReportCfg) =
@@ -138,19 +138,23 @@ module ShcReportCfgDto =
 
 
     let fromDto (dto:shcReportCfgDto) =
-        {
-            shcReportCfg.runIds = dto.runIds |> Array.map(fun sid -> Guid.Parse(sid) |> RunId.create)
-            genMin = dto.genMin |> Generation.create
-            genMax = dto.genMax |> Generation.create
-            evalCompName = dto.evalCompName |> WsComponentName.create
-            reportFreqFunc = dto.reportFreqFunc
-            reportFreqParams = dto.reportFreqParams
+        result {
+            let! reportFilter = dto.reportGenFilter |> GenerationFilterDto.fromDto
+            return
+                {
+                    shcReportCfg.runIds = dto.runIds |> Array.map(fun sid -> Guid.Parse(sid) |> RunId.create)
+                    genMin = dto.genMin |> Generation.create
+                    genMax = dto.genMax |> Generation.create
+                    evalCompName = dto.evalCompName |> WsComponentName.create
+                    reportFilter = reportFilter
+                    reportFileName = dto.reportFileName
+                }
         }
 
     let fromJson (cereal:string) =
         result {
             let! dto = Json.deserialize<shcReportCfgDto> cereal
-            return fromDto dto
+            return! fromDto dto
         }
 
 

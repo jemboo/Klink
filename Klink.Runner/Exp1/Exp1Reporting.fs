@@ -1,5 +1,6 @@
 ﻿namespace global
 open System
+open System.IO
 
 
 module Exp1Reporting =
@@ -98,68 +99,82 @@ module Exp1Reporting =
         lineAppender lines
 
 
-    let reportEm (projectDir:string) 
-                 (runId:runId) 
+    let reportEm (fsReporter:WorkspaceFileStore) 
+                 (reportFileName:string) 
                  (sorterSetEvalWsName:wsComponentName)
                  (minGen:generation)
+                 (runFolderPath:string) 
         =
-        let runDir = System.IO.Path.Combine(projectDir, runId |> RunId.value |> string)
-        let reportFileName = "SorterEvalReport"
-        let fs = new WorkspaceFileStore(runDir)
-
         let _lineWriter (lines:string seq) =
-            fs.writeLinesEnsureHeader None reportFileName [reportHeaderStandard ()] lines
+            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderStandard ()] lines
 
-        let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
         result {
+            let fsRunReader = new WorkspaceFileStore(runFolderPath)
             let! compTupes = 
-                fs.getAllSorterSetEvalsWithParams 
+                fsRunReader.getAllSorterSetEvalsWithParams 
                     sorterSetEvalWsName 
                     (WorkspaceParams.generationGte minGen)
-            let yab = compTupes 
-                        |> List.map (fun (ssEval, wsPram) -> 
-                            reportLines ssEval wsPram _lineWriter)
-            return "success"
+            return!
+                compTupes 
+                |> List.map (fun (ssEval, wsPram) -> 
+                    reportLines ssEval wsPram _lineWriter)
+                |> Result.sequence
         }
 
 
     let reportEmAll
-            (projectDir:string)
-            (reportFileName:string)
-            (sorterSetEvalWsName:wsComponentName)
-            (firstFolderIndex:int)
-            (folderNum:int)
+        (projectFolderPath:string)
+        (reportCfg:shcReportCfg)
         =
-        let fsReporter = new WorkspaceFileStore(projectDir)
+        let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
 
-        let _lineWriter (lines:string seq) =
-            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderStandard ()] lines
-
-
-        let runDirs = IO.Directory.EnumerateDirectories(projectDir)
+        let runDirs = reportCfg.runIds
+                        |> Array.map(RunId.value >> string)
+                        |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
+                        |> Array.toList
 
         result {
-        
-            for runDir in (runDirs |> Seq.skip firstFolderIndex |> Seq.take folderNum) do
-                let fs = new WorkspaceFileStore(runDir)
-                let! ssEvalnPrams = 
-                    fs.getAllSorterSetEvalsWithParams 
-                        sorterSetEvalWsName
-                        (fun _ -> true)
-
-                let! yab = ssEvalnPrams 
-                                |> List.map (fun (ssEval, wsPram) -> 
-                                    reportLines 
-                                            ssEval 
-                                            wsPram 
-                                            _lineWriter)
-                            |> Result.sequence
-                return ()
-
-            return "success"
+            return! 
+                runDirs 
+                |> List.map(reportEm fsReporter reportCfg.reportFileName reportCfg.evalCompName reportCfg.genMin)
+                |> Result.sequence
+                |> Result.map(ignore)
         }
+
+
+
+    //let reportEmAll
+    //        (projectFolderPath:string)
+    //        (reportCfg:shcReportCfg)
+    //    =
+    //    let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
+
+    //    let _lineWriter (lines:string seq) =
+    //        fsReporter.writeLinesEnsureHeader None reportCfg.reportFileName [reportHeaderStandard ()] lines
+
+    //    let runDirs = reportCfg.runIds
+    //                    |> Array.map(RunId.value >> string)
+    //                    |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
+
+    //    result {
+    //        for runDir in runDirs do
+    //            let fs = new WorkspaceFileStore(runDir)
+    //            let! ssEvalnPrams = 
+    //                fs.getAllSorterSetEvalsWithParams 
+    //                    reportCfg.evalCompName
+    //                    (fun _ -> true)
+
+    //            let! yab = ssEvalnPrams 
+    //                            |> List.map (fun (ssEval, wsPram) -> 
+    //                                reportLines 
+    //                                        ssEval 
+    //                                        wsPram 
+    //                                        _lineWriter)
+    //                        |> Result.sequence
+    //            return ()
+
+    //        return ()
+    //    }
 
 
     let paramGroup (genBinSz:generation) 

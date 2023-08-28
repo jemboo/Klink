@@ -186,8 +186,14 @@ module Exp1Run =
                 irc |> ShcInitRunCfgs.toWorkspaceParams up
                     |> doRunRun projectFolderPath
             | Continue crc -> 
-                 continueUpdating projectFolderPath crc.runId crc.newGenerations
-            | Report rrc -> () |> Ok
+                 continueUpdating 
+                        projectFolderPath 
+                        crc.runId 
+                        crc.newGenerations
+            | Report rrc -> 
+                    Exp1Reporting.reportEmAll 
+                            projectFolderPath 
+                            rrc
 
 
 

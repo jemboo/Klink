@@ -7,15 +7,14 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 type TestClass () =
 
     [<TestMethod>]
-    member this.shcCfgInitRunDto () =
-        let order = 16 |> Order.createNr
-        let newGens = 50 |> Generation.create
+    member this.shcInitRunCfgDtos () =
+        let newGens = 2 |> Generation.create
         let genFilter = { modGenerationFilter.modulus = 1}
                             |> generationFilter.ModF
         let runSetName = "initRun"
         let yab = 
             Exp1Cfg.testShcInitRunCfgPlex 
-               |> ShcRunCfgSet.initRunFromPlex order newGens genFilter runSetName
+               |> ShcRunCfgSet.initRunFromPlex newGens genFilter runSetName
 
         let cereal = yab |> ShcRunCfgSetDto.toJson
 
@@ -30,15 +29,14 @@ type TestClass () =
 
 
     [<TestMethod>]
-    member this.shcCfgContinueRunDto () =
-        let order = 16 |> Order.createNr
+    member this.shcContinueRunCfgDtos () =
         let newGens = 50 |> Generation.create
         let genFilter = { modGenerationFilter.modulus = 1}
                             |> generationFilter.ModF
         let runSetName = "continueRun"
         let yab = 
             Exp1Cfg.testShcInitRunCfgPlex 
-               |> ShcRunCfgSet.continueRunFromPlex order newGens genFilter runSetName
+               |> ShcRunCfgSet.continueRunFromPlex newGens genFilter runSetName
 
         let cereal = yab |> ShcRunCfgSetDto.toJson
 
@@ -53,16 +51,48 @@ type TestClass () =
 
 
     [<TestMethod>]
-    member this.shcRunCfgSetDto () =
+    member this.shcReportCfgDtos () =
+        let genMin = 50 |> Generation.create
+        let genMax = 150 |> Generation.create
+        let wsCompName = "sorterSetEvalParent" |> WsComponentName.create
+        let genFilter = { modGenerationFilter.modulus = 1}
+                            |> generationFilter.ModF
+        let reportFileName = "reportAllReport"
+        let scriptFileName = "reportAllScript"
+        let runSetName = "reportAllRunset"
 
-        let runSetName = "testRun"
+        let yab = 
+            Exp1Cfg.testShcInitRunCfgPlex 
+               |> ShcRunCfgSet.reportAllFromPlex 
+                            genMin 
+                            genMax wsCompName 
+                            genFilter runSetName 
+                            reportFileName
 
-        let cereal =
-            TextIO.readAllText "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName
-            |> Result.ExtractOrThrow
+        let cereal = yab |> ShcRunCfgSetDto.toJson
+
+        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" scriptFileName cereal
+        |> ignore
 
         let yabba = cereal |> ShcRunCfgSetDto.fromJson
                            |> Result.ExtractOrThrow
 
-
         Assert.AreEqual (1, 1);
+
+
+
+
+    //[<TestMethod>]
+    //member this.shcRunCfgSetDto () =
+
+    //    let runSetName = "testRun"
+
+    //    let cereal =
+    //        TextIO.readAllText "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName
+    //        |> Result.ExtractOrThrow
+
+    //    let yabba = cereal |> ShcRunCfgSetDto.fromJson
+    //                       |> Result.ExtractOrThrow
+
+
+    //    Assert.AreEqual (1, 1);
