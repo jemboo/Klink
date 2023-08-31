@@ -253,3 +253,100 @@ module SorterSetEvalDto =
         sorterSetEvl |> toDto |> Json.serialize
 
 
+type sorterSpeedBinKeyDto = {
+        sorterSpeedDto:sorterSpeedDto;
+        sorterSpeedBinType : sorterSpeedBinType
+        successful: bool option
+    }
+
+module SorterSpeedBinKeyDto =
+
+    let fromDto (dto:sorterSpeedBinKeyDto) =
+        result {
+            let! sorterSpeed = 
+                    dto.sorterSpeedDto 
+                    |> SorterSpeedDto.fromDto
+            return SorterSpeedBinKey.make 
+                        dto.successful 
+                        dto.sorterSpeedBinType
+                        sorterSpeed
+        }
+
+    let fromJson (jstr: string) =
+        result {
+            let! dto = Json.deserialize<sorterSpeedBinKeyDto> jstr
+            return! fromDto dto
+        }
+
+
+    let toDto (ssBk:sorterSpeedBinKey) =
+        {
+            sorterSpeedBinKeyDto.sorterSpeedDto = 
+                ssBk 
+                |> SorterSpeedBinKey.getSorterSpeed
+                |> SorterSpeedDto.toDto;
+            sorterSpeedBinType =  
+                ssBk 
+                |> SorterSpeedBinKey.getSorterSpeedBinType
+            successful = ssBk 
+                |> SorterSpeedBinKey.getSuccessful
+        }
+
+    let toJson (sorterSpeedBin: sorterSpeedBinKey) =
+        sorterSpeedBin |> toDto |> Json.serialize
+
+
+type sorterSpeedBinSetDto =
+    {
+        binMap:(sorterSpeedBinKeyDto*Map<Guid,int>) array;
+    }
+
+module SorterSpeedBinSetDto =
+
+    let fromDto (dto:sorterSpeedBinSetDto) =
+        let _fromKvp (bkDto, (m:Map<Guid,int>)) =
+            result {
+               let! bk = bkDto |> SorterSpeedBinKeyDto.fromDto
+               let mp = m |> Map.toSeq
+                          |> Seq.map(fun (gu,ctv)->(gu |> SorterPhenotypeId.create, ctv|>SorterCount.create))
+                          |> Map.ofSeq
+               return (bk, mp)
+            }
+            
+        result {
+            let! kvps = 
+                dto.binMap
+                     |> Seq.map(_fromKvp)
+                     |> Seq.toList
+                     |> Result.sequence
+
+            return SorterSpeedBinSet.create(kvps |> Map.ofList)
+        }
+
+    let fromJson (jstr: string) =
+        result {
+            let! dto = Json.deserialize<sorterSpeedBinSetDto> jstr
+            return! fromDto dto
+        }
+
+
+    let toDto (sorterSpeedBinSet:sorterSpeedBinSet) =
+        let _fromKvp (ssbk, (m:Map<sorterPhenotypeId,sorterCount>)) =
+            let bk = ssbk |> SorterSpeedBinKeyDto.toDto
+            let mp = m |> Map.toSeq
+                        |> Seq.map(fun (pid, ctv)->(pid |> SorterPhenotypeId.value, ctv |> SorterCount.value))
+                        |> Map.ofSeq
+            (bk, mp)
+
+        let binMap = sorterSpeedBinSet 
+                        |> SorterSpeedBinSet.getBinMap 
+                        |> Map.toSeq 
+                        |> Seq.map(_fromKvp)
+                        |> Seq.toArray
+        {
+            binMap = binMap
+        }
+
+    let toJson (sorterSpeedBinSet: sorterSpeedBinSet) =
+        sorterSpeedBinSet |> toDto |> Json.serialize
+

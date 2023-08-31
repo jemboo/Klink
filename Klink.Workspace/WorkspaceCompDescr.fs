@@ -48,6 +48,7 @@ type workspaceComponent =
     | SorterSetParentMap of sorterSetParentMap
     | SorterSetConcatMap of sorterSetConcatMap
     | SorterSetEval of sorterSetEval
+    | SorterSpeedBinSet of sorterSpeedBinSet
     | SorterSetPruner of sorterSetPruner
     | WorkspaceDescription of workspaceDescription
     | WorkspaceParams of workspaceParams

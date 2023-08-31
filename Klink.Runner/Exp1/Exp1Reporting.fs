@@ -142,41 +142,6 @@ module Exp1Reporting =
         }
 
 
-
-    //let reportEmAll
-    //        (projectFolderPath:string)
-    //        (reportCfg:shcReportCfg)
-    //    =
-    //    let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
-
-    //    let _lineWriter (lines:string seq) =
-    //        fsReporter.writeLinesEnsureHeader None reportCfg.reportFileName [reportHeaderStandard ()] lines
-
-    //    let runDirs = reportCfg.runIds
-    //                    |> Array.map(RunId.value >> string)
-    //                    |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
-
-    //    result {
-    //        for runDir in runDirs do
-    //            let fs = new WorkspaceFileStore(runDir)
-    //            let! ssEvalnPrams = 
-    //                fs.getAllSorterSetEvalsWithParams 
-    //                    reportCfg.evalCompName
-    //                    (fun _ -> true)
-
-    //            let! yab = ssEvalnPrams 
-    //                            |> List.map (fun (ssEval, wsPram) -> 
-    //                                reportLines 
-    //                                        ssEval 
-    //                                        wsPram 
-    //                                        _lineWriter)
-    //                        |> Result.sequence
-    //            return ()
-
-    //        return ()
-    //    }
-
-
     let paramGroup (genBinSz:generation) 
                    (wsPram:workspaceParams)  =
         result {

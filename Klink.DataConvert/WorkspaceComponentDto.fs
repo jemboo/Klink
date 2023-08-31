@@ -24,6 +24,9 @@ module WorkspaceComponentDto =
         | SorterSetEval sorterSetEval -> 
             (sorterSetEval |> SorterSetEvalDto.toJson, 
              workspaceComponentType.SorterSetEval)
+        | SorterSpeedBinSet sorterSpeedBinSet ->
+            (sorterSpeedBinSet |> SorterSpeedBinSetDto.toJson, 
+             workspaceComponentType.SorterSpeedBinSet)
         | SorterSetPruner sorterSetPruner ->
             (sorterSetPruner |> SorterSetPrunerWholeDto.toJson, 
              workspaceComponentType.SorterSetPruner)
@@ -50,6 +53,8 @@ module WorkspaceComponentDto =
             c |> SorterSetConcatMapDto.fromJson |> Result.map(workspaceComponent.SorterSetConcatMap)
         | (c, workspaceComponentType.SorterSetEval) ->
             c |> SorterSetEvalDto.fromJson |> Result.map(workspaceComponent.SorterSetEval)
+        | (c, workspaceComponentType.SorterSpeedBinSet) ->
+            c |> SorterSpeedBinSetDto.fromJson |> Result.map(workspaceComponent.SorterSpeedBinSet)
         | (c, workspaceComponentType.SorterSetPruner) ->
             c |> SorterSetPrunerWholeDto.fromJson |> Result.map(workspaceComponent.SorterSetPruner)
         | (c, workspaceComponentType.WorkspaceParams) ->

@@ -37,6 +37,7 @@ type workspaceComponentType =
     | SorterSetParentMap = 22
     | SorterSetConcatMap = 23
     | SorterSetEval = 30
+    | SorterSpeedBinSet = 31
     | SorterSetPruner = 40
     | WorkspaceParams = 50
 

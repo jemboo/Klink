@@ -135,7 +135,7 @@ type sorterPerf =
     | SortedSetSize of sortableCount
 
 module SorterPerf =
-    let isSuccessful (sorterPrf:sorterPerf) (ordr:order) =
+    let isSuccessful (ordr:order) (sorterPrf:sorterPerf) =
         match sorterPrf with
         | IsSuccessful bv -> bv
         | SortedSetSize ssz -> (SortableCount.value ssz) < (Order.value ordr) + 1
