@@ -88,13 +88,16 @@ type causeMutateSorterSet
 
 
 type causeMakeSorterSetEval
-            (wsnSortableSet:wsComponentName,
-             wsnSorterSet:wsComponentName,
-             sorterEvalMode:sorterEvalMode,
-             wsnSorterSetEval:wsComponentName,
-             useParallel:useParallel) 
+        (
+            wsnSortableSet:wsComponentName,
+            wsnSorterSet:wsComponentName,
+            sorterEvalMode:sorterEvalMode,
+            wsnSorterSetEval:wsComponentName,
+            useParallel:useParallel
+        ) 
     =
     member this.causeName = "causeMakeSorterSetEval"
+    member this.wsParamsName = WsConstants.workSpaceComponentNameForParams
     member this.sortableSetName = wsnSortableSet
     member this.sorterSetName = wsnSorterSet
     member this.sorterEvalMode = sorterEvalMode
@@ -107,15 +110,17 @@ type causeMakeSorterSetEval
                                      |> Result.bind(WorkspaceComponent.asSortableSet)
                 let! sorterSet = w |> Workspace.getComponent this.sorterSetName
                                    |> Result.bind(WorkspaceComponent.asSorterSet)
+                let! wsParams  = w |> Workspace.getComponent this.wsParamsName
+                                   |> Result.bind(WorkspaceComponent.asWorkspaceParams)
 
                 let order = sorterSet |> SorterSet.getOrder
-                let stageByPassAdj = 1 |> StageCount.create
+                let! stagesSkipped = wsParams |> WorkspaceParams.getStageCount "stagesSkipped"
 
                 let! wsSorterSetEval = SorterSetEval.make
                                         this.sorterEvalMode
                                         sorterSet
                                         sortableSet
-                                        (fun sev -> sev |> SorterEval.modifyForPrefix order stageByPassAdj)
+                                        (fun sev -> sev |> SorterEval.modifyForPrefix order stagesSkipped)
                                         this.useParallel
                                      |> Result.map(workspaceComponent.SorterSetEval)
                 return w |> 

@@ -14,6 +14,7 @@ type shcInitRunCfgDto =
         sorterCount:int
         sorterCountMutated:int
         sorterSetPruneMethod:sorterSetPruneMethod
+        stagesSkipped:int
         stageWeight:float
         switchCount:int
         switchGenMode:switchGenMode
@@ -34,6 +35,7 @@ module ShcInitRunCfgDto =
             sorterCount = cfg.sorterCount |> SorterCount.value
             sorterCountMutated = cfg.sorterCountMutated |> SorterCount.value
             sorterSetPruneMethod = cfg.sorterSetPruneMethod
+            stagesSkipped = cfg.stagesSkipped |> StageCount.value
             stageWeight = cfg.stageWeight |> StageWeight.value
             switchCount = cfg.switchCount |> SwitchCount.value
             switchGenMode = cfg.switchGenMode
@@ -60,6 +62,7 @@ module ShcInitRunCfgDto =
                     sorterCount = cfg.sorterCount |> SorterCount.create
                     sorterCountMutated = cfg.sorterCountMutated |> SorterCount.create
                     sorterSetPruneMethod = cfg.sorterSetPruneMethod
+                    stagesSkipped = cfg.stagesSkipped |> StageCount.create
                     stageWeight = cfg.stageWeight |> StageWeight.create
                     switchCount = cfg.switchCount |> SwitchCount.create
                     switchGenMode = cfg.switchGenMode

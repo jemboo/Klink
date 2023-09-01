@@ -12,6 +12,7 @@ type shcInitRunCfg =
         sorterCount:sorterCount
         sorterCountMutated:sorterCount
         sorterSetPruneMethod:sorterSetPruneMethod
+        stagesSkipped:stageCount
         stageWeight:stageWeight
         switchCount:switchCount
         switchGenMode:switchGenMode
@@ -90,6 +91,7 @@ module ShcInitRunCfgs =
         let _toIr order newGenerations reportFilter rngGen 
                   tupSorterSetSize switchGenMode stageWeight 
                   noiseFraction mutationRate sorterSetPruneMethod =
+
                 { 
                     shcInitRunCfg.mutationRate = mutationRate;
                     newGenerations = newGenerations
@@ -100,6 +102,7 @@ module ShcInitRunCfgs =
                     sorterCount = fst tupSorterSetSize
                     sorterCountMutated = snd tupSorterSetSize
                     sorterSetPruneMethod = sorterSetPruneMethod;
+                    stagesSkipped = 1 |> StageCount.create
                     stageWeight = stageWeight
                     switchCount = (SwitchCount.orderTo999SwitchCount order)
                     switchGenMode = switchGenMode
@@ -136,6 +139,7 @@ module ShcInitRunCfgs =
         |> WorkspaceParams.setSorterCount "sorterCount" gaCfg.sorterCount
         |> WorkspaceParams.setSorterCount "sorterCountMutated" gaCfg.sorterCountMutated
         |> WorkspaceParams.setSorterEvalMode "sorterEvalMode" gaCfg.sorterEvalMode
+        |> WorkspaceParams.setStageCount "stagesSkipped" gaCfg.stagesSkipped
         |> WorkspaceParams.setStageWeight "stageWeight" gaCfg.stageWeight
         |> WorkspaceParams.setSwitchCount "sorterLength" gaCfg.switchCount
         |> WorkspaceParams.setSwitchGenMode "switchGenMode" gaCfg.switchGenMode

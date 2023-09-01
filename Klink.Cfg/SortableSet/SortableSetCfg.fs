@@ -112,8 +112,11 @@ module SortableSetCertainCfg =
 
 
     let makeAllBitsReducedOneStage 
+            (stagesReduced:stageCount)
             (order:order) 
         =
+        if (stagesReduced |> StageCount.value) > 1 then
+            failwith "StageReduction gt 1"
         let sws = TwoCycle.evenMode order 
                     |> Switch.fromTwoCycle
                     |> Seq.toArray

@@ -265,6 +265,22 @@ module WorkspaceParams =
         workspaceParams |> addItem key (Json.serialize(value))
 
 
+    let getStageCount
+            (key:string) 
+            (workspaceParams:workspaceParams) 
+        =
+        result {
+          let! cereal = getItem key workspaceParams
+          return Convert.ToInt32(cereal) |> StageCount.create
+        }
+    let setStageCount
+            (key:string) 
+            (value:stageCount)
+            (workspaceParams:workspaceParams) 
+        =
+        workspaceParams |> addItem key (value |> StageCount.value |> string)
+
+
     let getStageWeight
             (key:string) 
             (workspaceParams:workspaceParams) 

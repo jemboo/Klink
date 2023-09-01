@@ -19,9 +19,10 @@ module Exp1Causes =
                 let! switchCount = wsParams |> WorkspaceParams.getSwitchCount "sorterLength"
                 let! sorterEvalMode =wsParams |> WorkspaceParams.getSorterEvalMode "sorterEvalMode"
                 let! useParallel = wsParams |> WorkspaceParams.getUseParallel "useParallel"
+                let! stagesSkipped = wsParams |> WorkspaceParams.getStageCount "stagesSkipped"
 
                 let sortableSetCfg = 
-                    SortableSetCertainCfg.makeAllBitsReducedOneStage order
+                    SortableSetCertainCfg.makeAllBitsReducedOneStage stagesSkipped order
                            |> sortableSetCfg.Certain
 
                 let wsParamsWithSortableSet = 
