@@ -87,22 +87,40 @@ module WorkspaceParams =
             workspaceParams |> addItem key (nextGen |> string)
         }
 
-    let filterGeneration
-            (key:string) 
-            (fF: generation -> bool)
-            (workspaceParams:workspaceParams) 
-        =
-        workspaceParams |> getGeneration key |> Result.filterF fF
-
-    let generationGte
+    let generationIsGte
             (genVal:generation)
             (workspaceParams:workspaceParams) 
         =
+
+        let _fg
+                (key:string) 
+                (fF: generation -> bool)
+                (workspaceParams:workspaceParams) 
+            =
+            workspaceParams |> getGeneration key |> Result.filterF fF
+
         workspaceParams 
-            |> filterGeneration
+            |> _fg
                     "generation_current"
                     (fun gen -> 
                             (gen |> Generation.value) >= (genVal |> Generation.value))
+
+
+    //let getGenerationFilter
+    //        (key:string) 
+    //        (workspaceParams:workspaceParams) 
+    //    =
+    //    result {
+    //      let! cereal = getItem key workspaceParams
+    //      return! cereal |> GenerationFilterDto.fromDto
+    //    }
+    //let setGenerationFilter
+    //        (key:string) 
+    //        (gf:generationFilter)
+    //        (workspaceParams:workspaceParams) 
+    //    =
+    //    workspaceParams |> addItem key (gf |> GenerationFilterDto.toJson)
+
 
 
     let getMutationRate

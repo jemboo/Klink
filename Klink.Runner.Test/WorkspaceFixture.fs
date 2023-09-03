@@ -42,14 +42,15 @@ type WorkspaceFixture () =
         let wsCompName2 = "test2" |> WsComponentName.create
         let wsCompName3 = "test3" |> WsComponentName.create
         let wsCompName4 = "test4" |> WsComponentName.create
+        let stageReduction = 1 |> StageCount.create
 
         let ssCfg1 = sortableSetCertainCfg.All_Bits order
                     |> sortableSetCfg.Certain
-        let ssCfg2 = SortableSetCertainCfg.makeAllBitsReducedOneStage orderN
+        let ssCfg2 = SortableSetCertainCfg.makeAllBitsReducedOneStage stageReduction orderN
                     |> sortableSetCfg.Certain
         let ssCfg3 = sortableSetCertainCfg.All_Bits order
                     |> sortableSetCfg.Certain
-        let ssCfg4 = SortableSetCertainCfg.makeAllBitsReducedOneStage orderN
+        let ssCfg4 = SortableSetCertainCfg.makeAllBitsReducedOneStage stageReduction orderN
                     |> sortableSetCfg.Certain
 
         let cause1 =  new causeAddSortableSet(wsCompName1, ssCfg1)

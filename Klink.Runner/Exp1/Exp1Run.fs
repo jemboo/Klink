@@ -14,7 +14,8 @@ module Exp1Run =
     let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
     let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
     let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
-
+    let wnSorterSpeedBinSet = "sorterSpeedBinSet" |> WsComponentName.create
+       
 
     let doRun
             (projectDir:string)
@@ -33,6 +34,7 @@ module Exp1Run =
                                 wnSortableSet
                                 wnSorterSetParent
                                 wnSorterSetEvalParent
+                                wnSorterSpeedBinSet
                                 wsParams
                                 fs
                                 (fun s-> Console.WriteLine(s))
@@ -54,6 +56,7 @@ module Exp1Run =
                             wnSorterSetEvalParent
                             wnSorterSetEvalMutated
                             wnSorterSetEvalPruned
+                            wnSorterSpeedBinSet
                             fs
                             (fun s-> Console.WriteLine(s))
                             curParams
@@ -83,6 +86,7 @@ module Exp1Run =
                             wnSortableSet
                             wnSorterSetParent
                             wnSorterSetEvalParent
+                            wnSorterSpeedBinSet
                             wsParams
                             fs
                             (fun s-> Console.WriteLine(s))
@@ -109,6 +113,7 @@ module Exp1Run =
                         wnSorterSetEvalParent
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
+                        wnSorterSpeedBinSet
                         fs
                         (fun s-> Console.WriteLine(s))
                         curParams
@@ -162,6 +167,7 @@ module Exp1Run =
                         wnSorterSetEvalParent
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
+                        wnSorterSpeedBinSet
                         fs
                         (fun s-> Console.WriteLine(s))
                         curParams

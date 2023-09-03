@@ -92,6 +92,10 @@ type WorkspaceFileStore (wsRootDir:string) =
                     this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetEvalDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSetEval)
+                | workspaceComponentType.SorterSpeedBinSet ->
+                    this.readAllText (Some wsCompType) fileName
+                    |> Result.bind(SorterSpeedBinSetDto.fromJson)
+                    |> Result.map(workspaceComponent.SorterSpeedBinSet)
                 | workspaceComponentType.SorterSetPruner ->
                     this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetPrunerWholeDto.fromJson)

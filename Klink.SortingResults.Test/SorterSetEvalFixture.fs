@@ -41,7 +41,7 @@ type SorterSetEvalFixture() =
                             (1 |> SwitchCount.create)
                             (1 |> StageCount.create)
 
-        let ssBt = sorterSpeedBinType.Mutants
+        let ssBt = "Mutants" |> SorterSpeedBinType.create
 
         let ssfl = true |> Some
 
@@ -86,9 +86,15 @@ type SorterSetEvalFixture() =
             |> Seq.take 70
             |> Seq.toArray
 
-        let binType = sorterSpeedBinType.Parents
+
+        let binType = "Mutants" |> SorterSpeedBinType.create
         let ssBins = sorterEvls |> Array.map(SorterSpeedBin.fromSorterEval ordr binType)
-        let binSet = ssBins |> SorterSpeedBinSet.addBins (SorterSpeedBinSet.create(Map.empty))
+        let binSet = 
+            ssBins 
+            |> SorterSpeedBinSet.addBins
+                (SorterSpeedBinSet.create (Map.empty)  (0 |> Generation.create) (Guid.NewGuid()))
+                (0 |> Generation.create)
+
         Assert.IsTrue(ssBins.Length > 1)
 
         let cereal = binSet |> SorterSpeedBinSetDto.toJson

@@ -29,9 +29,10 @@ type causeAddWorkspaceParams
         member this.ResetId = None
         member this.Name = this.wsnParams |> WsComponentName.value
         member this.Updater = this.updater
+        member this.UseInWorkspaceId = true
 
 
-type causeAddSortableSet 
+type causeAddSortableSet
             (wsnSortableSet:wsComponentName,
              ssCfg:sortableSetCfg) 
     = 
@@ -61,6 +62,7 @@ type causeAddSortableSet
         member this.ResetId = None
         member this.Name = wsnSortableSet |> WsComponentName.value
         member this.Updater = this.updater
+        member this.UseInWorkspaceId = true
 
 
 
@@ -100,7 +102,7 @@ type causeAddSorterSetRnd
         member this.ResetId = None
         member this.Name = this.causeName
         member this.Updater = this.updater
-
+        member this.UseInWorkspaceId = true
 
 
 type causeAddSorterSetMutator 
@@ -173,82 +175,41 @@ type causeAddSorterSetMutator
         member this.ResetId = None
         member this.Name = wsnSorterSetMutator |> WsComponentName.value
         member this.Updater = this.updater
-
-        
-//type causeAddSorterSetPruneWhole
-//            (wsnSorterSetPrune:wsComponentName,
-//             wsnRndGenName:wsComponentName,
-//             prunedCount:sorterCount,
-//             noiseFraction:float option,
-//             stageWeight:stageWeight) 
-//    = 
-//    member this.wsnSorterSetPrune = wsnSorterSetPrune
-//    member this.prunedCount = prunedCount
-//    member this.noiseFraction = noiseFraction
-//    member this.stageWeight = stageWeight
-//    member this.updater = 
-//            fun (w: workspace) (newWorkspaceId: workspaceId) ->
-//            result {
-//                let ssph = SorterSetPrunerWhole.make 
-//                                this.prunedCount
-//                                this.noiseFraction
-//                                this.stageWeight
-//                            |> sorterSetPruner.Whole
-//                            |> workspaceComponent.SorterSetPruner
-//                return w |> Workspace.addComponents 
-//                                newWorkspaceId 
-//                                [(this.wsnSorterSetPrune, ssph)]
-//            }
-//    member this.id =
-//        [
-//            this.wsnSorterSetPrune |> WsComponentName.value :> obj
-//            this.prunedCount |> SorterCount.value :> obj
-//            this.noiseFraction :> obj
-//            this.stageWeight |> StageWeight.value :> obj
-//        ]
-//             |> GuidUtils.guidFromObjs
-//             |> CauseId.create
-//    interface ICause with
-//        member this.Id = this.id
-//        member this.Name = wsnSorterSetPrune |> WsComponentName.value
-//        member this.Updater = this.updater
+        member this.UseInWorkspaceId = true
 
 
-        
-//type causeAddSorterSetPruneShc
-//            (wsnSorterSetShc:wsComponentName,
-//             prunedCount:sorterCount,
-//             noiseFraction:float option,
-//             stageWeight:stageWeight
-//             )
-//    = 
-//    member this.wsnSorterSetShc = wsnSorterSetShc
-//    member this.prunedCount = prunedCount
-//    member this.noiseFraction = noiseFraction
-//    member this.stageWeight = stageWeight
-//    member this.updater = 
-//            fun (w: workspace) (newWorkspaceId: workspaceId) ->
-//            result {
-//                let ssph = SorterSetPrunerShc.make 
-//                                this.prunedCount
-//                                this.noiseFraction
-//                                this.stageWeight
-//                            |> sorterSetPruner.Shc
-//                            |> workspaceComponent.SorterSetPruner
-//                return w |> Workspace.addComponents 
-//                                newWorkspaceId 
-//                                [(this.wsnSorterSetShc, ssph)]
-//            }
-//    member this.id =
-//        [
-//            this.wsnSorterSetShc |> WsComponentName.value :> obj
-//            this.prunedCount |> SorterCount.value :> obj
-//            this.noiseFraction :> obj
-//            this.stageWeight |> StageWeight.value :> obj
-//        ]
-//             |> GuidUtils.guidFromObjs
-//             |> CauseId.create
-//    interface ICause with
-//        member this.Id = this.id
-//        member this.Name = wsnSorterSetShc |> WsComponentName.value
-//        member this.Updater = this.updater
+
+type causeAddSorterSpeedBinSet
+            (workspaceParams:workspaceParams,
+             wsnSorterSpeedBinSet:wsComponentName)
+    = 
+    member this.causeName = "causeAddSorterSpeedBinSet"
+    member this.wsnSorterSpeedBinSet = wsnSorterSpeedBinSet
+    member this.updater = 
+            fun (w :workspace) (newWorkspaceId :workspaceId) ->
+            result {
+                let wsSorterSpeedBinSet = 
+                      SorterSpeedBinSet.create 
+                            Map.empty
+                            (0 |> Generation.create)
+                            (workspaceParams |> WorkspaceParams.getId |> WorkspaceParamsId.value)
+                            |> workspaceComponent.SorterSpeedBinSet
+                return w |> Workspace.addComponents 
+                                newWorkspaceId
+                                this.causeName
+                                [
+                                    (this.wsnSorterSpeedBinSet, wsSorterSpeedBinSet);
+                                ]
+            }
+    member this.id =
+        [
+            this.wsnSorterSpeedBinSet :> obj
+        ]
+             |> GuidUtils.guidFromObjs
+             |> CauseId.create
+    interface ICause with
+        member this.Id = this.id
+        member this.ResetId = None
+        member this.Name = this.causeName
+        member this.Updater = this.updater
+        member this.UseInWorkspaceId = false

@@ -117,6 +117,9 @@ module WorkspaceComponent =
         | SorterSetEval sorterSetEval -> 
             sorterSetEval 
                 |> SorterSetEval.getSorterSetEvalId |> SorterSetEvalId.value
+        | SorterSpeedBinSet sorterSpeedBinSet ->
+            sorterSpeedBinSet 
+                |> SorterSpeedBinSet.getId |> SorterSpeedBinSetId.value
         | SorterSetPruner sorterSetPruner ->
             sorterSetPruner 
                 |> SorterSetPruner.getId |> SorterSetPrunerId.value
@@ -142,6 +145,8 @@ module WorkspaceComponent =
              workspaceComponentType.SorterSetConcatMap
         | SorterSetEval _ -> 
              workspaceComponentType.SorterSetEval
+        | SorterSpeedBinSet _ -> 
+             workspaceComponentType.SorterSpeedBinSet
         | SorterSetPruner _ ->
             workspaceComponentType.SorterSetPruner
         | WorkspaceDescription _ ->
@@ -176,6 +181,10 @@ module WorkspaceComponent =
             WorkspaceComponentDescr.create
                  (comp |> getId)
                  workspaceComponentType.SorterSetEval
+        | SorterSpeedBinSet _ -> 
+            WorkspaceComponentDescr.create
+                 (comp |> getId)
+                 workspaceComponentType.SorterSpeedBinSet
         | SorterSetPruner _ ->
             WorkspaceComponentDescr.create
                  (comp |> getId)
@@ -236,6 +245,14 @@ module WorkspaceComponent =
              sorterSetEval |> Ok
         | _  -> 
              $"Workspace component type is {comp}, not SorterSetEval" |> Error
+
+
+    let asSorterSpeedBinSet (comp:workspaceComponent) =
+        match comp with
+        | SorterSpeedBinSet sorterSpeedBinSet -> 
+             sorterSpeedBinSet |> Ok
+        | _  -> 
+             $"Workspace component type is {comp}, not SorterSpeedBinSet" |> Error
 
 
     let asSorterSetPruner (comp:workspaceComponent) =

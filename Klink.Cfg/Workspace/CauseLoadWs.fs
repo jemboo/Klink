@@ -31,3 +31,4 @@ type causeLoadWorkspace
         member this.ResetId = Some this.workspaceId
         member this.Name = $"causeLoadWorkspace"
         member this.Updater = this.updater
+        member this.UseInWorkspaceId = true

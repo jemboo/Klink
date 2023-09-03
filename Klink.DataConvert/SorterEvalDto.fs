@@ -255,7 +255,7 @@ module SorterSetEvalDto =
 
 type sorterSpeedBinKeyDto = {
         sorterSpeedDto:sorterSpeedDto;
-        sorterSpeedBinType : sorterSpeedBinType
+        sorterSpeedBinType : string
         successful: bool option
     }
 
@@ -268,7 +268,7 @@ module SorterSpeedBinKeyDto =
                     |> SorterSpeedDto.fromDto
             return SorterSpeedBinKey.make 
                         dto.successful 
-                        dto.sorterSpeedBinType
+                        (dto.sorterSpeedBinType |> SorterSpeedBinType.create)
                         sorterSpeed
         }
 
@@ -287,7 +287,7 @@ module SorterSpeedBinKeyDto =
                 |> SorterSpeedDto.toDto;
             sorterSpeedBinType =  
                 ssBk 
-                |> SorterSpeedBinKey.getSorterSpeedBinType
+                |> SorterSpeedBinKey.getSorterSpeedBinType |> SorterSpeedBinType.value
             successful = ssBk 
                 |> SorterSpeedBinKey.getSuccessful
         }
@@ -298,7 +298,9 @@ module SorterSpeedBinKeyDto =
 
 type sorterSpeedBinSetDto =
     {
+        id: Guid
         binMap:(sorterSpeedBinKeyDto*Map<Guid,int>) array;
+        tag:Guid
     }
 
 module SorterSpeedBinSetDto =
@@ -320,7 +322,10 @@ module SorterSpeedBinSetDto =
                      |> Seq.toList
                      |> Result.sequence
 
-            return SorterSpeedBinSet.create(kvps |> Map.ofList)
+            return SorterSpeedBinSet.load 
+                        (kvps |> Map.ofList)
+                        (dto.id |> SorterSpeedBinSetId.create)
+                        dto.tag
         }
 
     let fromJson (jstr: string) =
@@ -345,6 +350,11 @@ module SorterSpeedBinSetDto =
                         |> Seq.toArray
         {
             binMap = binMap
+            id = sorterSpeedBinSet 
+                    |> SorterSpeedBinSet.getId
+                    |> SorterSpeedBinSetId.value
+            tag = sorterSpeedBinSet
+                    |> SorterSpeedBinSet.getTag
         }
 
     let toJson (sorterSpeedBinSet: sorterSpeedBinSet) =

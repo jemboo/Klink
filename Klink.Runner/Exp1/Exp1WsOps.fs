@@ -7,7 +7,8 @@ module Exp1WsOps =
     let setupWorkspace
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
-            (wnSorterSetEvalParent:wsComponentName)           
+            (wnSorterSetEvalParent:wsComponentName)
+            (wnSorterSpeedBinSet:wsComponentName)       
             (wsParams:workspaceParams)
             (fs:WorkspaceFileStore)
             (logger: string -> unit)
@@ -19,6 +20,7 @@ module Exp1WsOps =
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetEvalParent
+                        wnSorterSpeedBinSet
                         wsParams
                         emptyWsCfg
 
@@ -46,7 +48,8 @@ module Exp1WsOps =
             (wnParentMap:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalMutated:wsComponentName)
-            (wnSorterSetEvalPruned:wsComponentName)
+            (wnSorterSpeedBinSet:wsComponentName) 
+            (wnSorterSetEvalPruned:wsComponentName) 
             (fs:WorkspaceFileStore)
             (logger: string -> unit)            
             (wsParams:workspaceParams)
@@ -64,6 +67,7 @@ module Exp1WsOps =
                         wnSorterSetEvalParent
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
+                        wnSorterSpeedBinSet
                         wsParams
                         workspaceCfg
 
@@ -80,6 +84,7 @@ module Exp1WsOps =
                         wnSorterSetEvalParent
                         wnSorterSetEvalPruned
                         wnParentMap
+                        wnSorterSpeedBinSet
                         wsParamsNextGen
                         workspaceCfgPrune
 
@@ -114,6 +119,7 @@ module Exp1WsOps =
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalMutated:wsComponentName)
             (wnSorterSetEvalPruned:wsComponentName)
+            (wnSorterSpeedBinSet:wsComponentName)      
             (fs:WorkspaceFileStore)
             (logger: string -> unit)            
             (wsParams:workspaceParams)
@@ -134,6 +140,7 @@ module Exp1WsOps =
                         wnSorterSetEvalParent
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
+                        wnSorterSpeedBinSet
                         wsParams
                         baseWsCfg
 
@@ -150,6 +157,7 @@ module Exp1WsOps =
                         wnSorterSetEvalParent
                         wnSorterSetEvalPruned
                         wnParentMap
+                        wnSorterSpeedBinSet
                         wsParamsNextGen
                         workspaceCfgPrune
 
@@ -167,6 +175,16 @@ module Exp1WsOps =
                 if (IntSeries.expoB 10.0 nextGenNumber) then
                     let! res = fs.saveWorkSpace wsNextGen
                     logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
+                    let causeAddSorterSpeedBinSet =
+                        new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
+                    let! resetWs =
+                        wsNextGen
+                        |> WorkspaceCfg.runWorkspaceCfgOnWorkspace
+                                logger
+                                [causeAddSorterSpeedBinSet]
 
-                return wsNextGen, wsParamsNextGen
+                    return resetWs, wsParamsNextGen
+
+                else
+                    return wsNextGen, wsParamsNextGen
              }

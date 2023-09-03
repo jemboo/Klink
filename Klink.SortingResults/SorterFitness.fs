@@ -1,5 +1,7 @@
 ﻿namespace global
 
+open System
+
 // 1.0 is neutral, higher numbers emphasize stageCount
 type stageWeight = private StageWeight of float
 module StageWeight =
@@ -33,9 +35,10 @@ module SelectionFraction =
 
 
 
-type sorterSpeedBinType =
-     | Parents
-     | Mutants
+type sorterSpeedBinType = SorterSpeedBinType of string
+module SorterSpeedBinType =
+    let value (SorterSpeedBinType v) = v
+    let create vl = SorterSpeedBinType vl
 
 
 type sorterSpeedBin = 
@@ -118,23 +121,59 @@ module SorterSpeedBinKey =
         make spBin.successful spBin.sorterSpeedBinType spBin.sorterSpeed
 
 
+
+type sorterSpeedBinSetId = private SorterSpeedBinSetId of Guid
+
+module SorterSpeedBinSetId =
+    let value (SorterSpeedBinSetId v) = v
+    let create (id: Guid) =
+        id |> SorterSpeedBinSetId
+
 type sorterSpeedBinSet = 
     private
         {
+            id: sorterSpeedBinSetId;
             binMap : Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>
+            tag:Guid
         }
 
 module SorterSpeedBinSet 
     = 
-    let create (binMap : Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>) =
+    let load (binMap : Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>) 
+             (id:sorterSpeedBinSetId)
+             (tag:Guid) 
+        =
         {
+            id = id
             binMap = binMap
+            tag = tag
         }
+
+    let create (binMap : Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>)
+               (generation:generation)
+               (tag:Guid)    =
+        let sorterSpeedBinSetId  = 
+                [|
+                  tag:> obj;
+                  generation |> Generation.value :> obj;
+                  "sorterSpeedBinSet" :> obj;
+                |] |> GuidUtils.guidFromObjs  
+                   |> SorterSpeedBinSetId.create
+
+        load binMap sorterSpeedBinSetId tag
+
 
     let getBinMap (ssbss:sorterSpeedBinSet) =
         ssbss.binMap
 
-    let addBin 
+    let getId (ssbss:sorterSpeedBinSet) =
+        ssbss.id
+
+    let getTag (ssbss:sorterSpeedBinSet) =
+        ssbss.tag
+
+
+    let addBin
             (bin:sorterSpeedBin) 
             (binMap:Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>)
         =
@@ -155,7 +194,8 @@ module SorterSpeedBinSet
 
 
     let addBins
-            (binSet:sorterSpeedBinSet)
+            (sorterSpeedBinSet:sorterSpeedBinSet)
+            (generation:generation)
             (bins:sorterSpeedBin option seq)
         =
         let _folder 
@@ -167,7 +207,7 @@ module SorterSpeedBinSet
             | None -> bMap
 
 
-        let updatedMap =
-            bins |> Seq.fold _folder binSet.binMap
+        let updatedBinMap =
+            bins |> Seq.fold _folder sorterSpeedBinSet.binMap
 
-        {binMap = updatedMap}
+        create updatedBinMap generation sorterSpeedBinSet.tag

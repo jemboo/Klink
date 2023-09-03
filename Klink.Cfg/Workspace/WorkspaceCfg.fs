@@ -9,6 +9,7 @@ and ICause =
     abstract member ResetId:workspaceId option
     abstract member Name:string
     abstract member Updater:(workspace->workspaceId->Result<workspace, string>)
+    abstract member UseInWorkspaceId:bool
 
 
 module WorkspaceCfg = 
@@ -28,13 +29,16 @@ module WorkspaceCfg =
                 | Some id -> 
                     _makeWorkspaceId id t
                 | None ->
-                    let nextId = 
-                         [
-                            curId |> WorkspaceId.value :> obj;
-                            h.Id |> CauseId.value :> obj
-                         ]
-                         |> GuidUtils.guidFromObjs 
-                         |> WorkspaceId.create
+                    let nextId =
+                        if h.UseInWorkspaceId then
+                             [
+                                curId |> WorkspaceId.value :> obj;
+                                h.Id |> CauseId.value :> obj
+                             ]
+                             |> GuidUtils.guidFromObjs 
+                             |> WorkspaceId.create
+                        else
+                            curId
                     _makeWorkspaceId nextId t
 
         _makeWorkspaceId curId future

@@ -8,6 +8,7 @@ module Exp1Causes =
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
+            (wnSorterSpeedBinSet:wsComponentName)
             (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
             =
@@ -62,8 +63,11 @@ module Exp1Causes =
                             wnSorterSetParent,
                             sorterEvalMode,
                             wnSorterSetEvalParent,
+                            wnSorterSpeedBinSet,
                             useParallel)
 
+                let causeAddSorterSpeedBinSet =
+                    new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
 
                 return
                    ( workspaceCfg 
@@ -72,10 +76,32 @@ module Exp1Causes =
                                 causeAddWorkspaceParams;
                                 causeAddSortableSet; 
                                 causeAddSorterSetRnd;
+                                causeAddSorterSpeedBinSet;
                                 causeMakeSorterSetEvalParent;
                             ],
                      wsParamsWithSortableSet )
             }
+
+
+    let resetSpeedBins
+            (wnSorterSpeedBinSet:wsComponentName)
+            (wsParams:workspaceParams)
+            (workspaceCfg:workspaceCfg)
+            =
+            result {
+
+                let causeAddSorterSpeedBinSet =
+                    new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
+
+                return
+                   workspaceCfg 
+                        |> WorkspaceCfg.addCauses 
+                            [
+                                causeAddSorterSpeedBinSet;
+                            ]
+            }
+
+
 
 
     let makeMutantsAndPrune
@@ -87,7 +113,8 @@ module Exp1Causes =
             (wnParentMap:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalMutated:wsComponentName)
-            (wnSorterSetEvalPruned:wsComponentName)        
+            (wnSorterSetEvalPruned:wsComponentName)
+            (wnSorterSpeedBinSet:wsComponentName)       
             (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
          =
@@ -128,6 +155,7 @@ module Exp1Causes =
                             wnSorterSetMutated,
                             sorterEvalMode,
                             wnSorterSetEvalMutated,
+                            wnSorterSpeedBinSet,
                             useParallel) :> ICause |> Ok
 
                 let causePruneSorterSets = 
@@ -188,6 +216,7 @@ module Exp1Causes =
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalPruned:wsComponentName)
             (wnParentMap:wsComponentName)
+            (wnSorterSpeedBinSet:wsComponentName)
             (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
             =
@@ -201,6 +230,7 @@ module Exp1Causes =
                             wnSorterSetEvalParent,
                             wnSorterSetEvalPruned,
                             wnParentMap,
+                            wnSorterSpeedBinSet,
                             wsParams
                             )
 

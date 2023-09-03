@@ -113,7 +113,7 @@ module Exp1Reporting =
             let! compTupes = 
                 fsRunReader.getAllSorterSetEvalsWithParams 
                     sorterSetEvalWsName 
-                    (WorkspaceParams.generationGte minGen)
+                    (WorkspaceParams.generationIsGte minGen)
             return!
                 compTupes 
                 |> List.map (fun (ssEval, wsPram) -> 

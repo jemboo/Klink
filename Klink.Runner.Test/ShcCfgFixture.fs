@@ -8,15 +8,15 @@ type TestClass () =
 
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let newGens = 2 |> Generation.create
+        let newGens = 5 |> Generation.create
         let genFilter = { modGenerationFilter.modulus = 1}
                             |> generationFilter.ModF
         let runSetName = "initRun"
-        let yab = 
+        let shcRunCfgSet = 
             Exp1Cfg.testShcInitRunCfgPlex 
                |> ShcRunCfgSet.initRunFromPlex newGens genFilter runSetName
 
-        let cereal = yab |> ShcRunCfgSetDto.toJson
+        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
 
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
         |> ignore
@@ -34,11 +34,11 @@ type TestClass () =
         let genFilter = { modGenerationFilter.modulus = 1}
                             |> generationFilter.ModF
         let runSetName = "continueRun"
-        let yab = 
+        let shcRunCfgSet = 
             Exp1Cfg.testShcInitRunCfgPlex 
                |> ShcRunCfgSet.continueRunFromPlex newGens genFilter runSetName
 
-        let cereal = yab |> ShcRunCfgSetDto.toJson
+        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
 
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
         |> ignore
@@ -61,7 +61,7 @@ type TestClass () =
         let scriptFileName = "reportAllScript"
         let runSetName = "reportAllRunset"
 
-        let yab = 
+        let shcRunCfgSet = 
             Exp1Cfg.testShcInitRunCfgPlex 
                |> ShcRunCfgSet.reportAllFromPlex 
                             genMin 
@@ -69,7 +69,7 @@ type TestClass () =
                             genFilter runSetName 
                             reportFileName
 
-        let cereal = yab |> ShcRunCfgSetDto.toJson
+        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
 
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" scriptFileName cereal
         |> ignore

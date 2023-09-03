@@ -84,6 +84,7 @@ type causeMutateSorterSet
         member this.ResetId = None
         member this.Name = this.causeName
         member this.Updater = this.updater
+        member this.UseInWorkspaceId = true
 
 
 
@@ -93,6 +94,7 @@ type causeMakeSorterSetEval
             wsnSorterSet:wsComponentName,
             sorterEvalMode:sorterEvalMode,
             wsnSorterSetEval:wsComponentName,
+            wnSorterSpeedBinSet:wsComponentName,
             useParallel:useParallel
         ) 
     =
@@ -102,32 +104,54 @@ type causeMakeSorterSetEval
     member this.sorterSetName = wsnSorterSet
     member this.sorterEvalMode = sorterEvalMode
     member this.sorterSetEvalName = wsnSorterSetEval
+    member this.sorterSpeedBinsName = wnSorterSpeedBinSet
     member this.useParallel = useParallel
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
             result {
                 let! sortableSet = w |> Workspace.getComponent this.sortableSetName
                                      |> Result.bind(WorkspaceComponent.asSortableSet)
-                let! sorterSet = w |> Workspace.getComponent this.sorterSetName
-                                   |> Result.bind(WorkspaceComponent.asSorterSet)
-                let! wsParams  = w |> Workspace.getComponent this.wsParamsName
-                                   |> Result.bind(WorkspaceComponent.asWorkspaceParams)
+                let! sorterSet   = w |> Workspace.getComponent this.sorterSetName
+                                     |> Result.bind(WorkspaceComponent.asSorterSet)
+                let! wsParams    = w |> Workspace.getComponent this.wsParamsName
+                                     |> Result.bind(WorkspaceComponent.asWorkspaceParams)
+                let! wsSpeedBins = w |> Workspace.getComponent this.sorterSpeedBinsName
+                                     |> Result.bind(WorkspaceComponent.asSorterSpeedBinSet)
 
                 let order = sorterSet |> SorterSet.getOrder
                 let! stagesSkipped = wsParams |> WorkspaceParams.getStageCount "stagesSkipped"
 
-                let! wsSorterSetEval = SorterSetEval.make
-                                        this.sorterEvalMode
-                                        sorterSet
-                                        sortableSet
-                                        (fun sev -> sev |> SorterEval.modifyForPrefix order stagesSkipped)
-                                        this.useParallel
-                                     |> Result.map(workspaceComponent.SorterSetEval)
+                let! sorterSetEval = 
+                    SorterSetEval.make
+                        this.sorterEvalMode
+                        sorterSet
+                        sortableSet
+                        (fun sev -> sev |> SorterEval.modifyForPrefix order stagesSkipped)
+                        this.useParallel
+
+
+                let wsSorterSetEval = 
+                        sorterSetEval |>
+                                workspaceComponent.SorterSetEval
+
+
+                let order = sortableSet |> SortableSet.getOrder
+                let binType = this.sorterSetName |> WsComponentName.value |> SorterSpeedBinType.create
+                let ssBins = sorterSetEval |> SorterSetEval.getSorterEvals |> Array.map(SorterSpeedBin.fromSorterEval order binType)
+                let! gen = wsParams |> WorkspaceParams.getGeneration "generation_current"
+                let wsSpeedBinsUpdated = ssBins 
+                                            |> SorterSpeedBinSet.addBins wsSpeedBins gen
+                                            |> workspaceComponent.SorterSpeedBinSet
+
+
                 return w |> 
                         Workspace.addComponents 
                             newWorkspaceId
                             this.causeName
-                            [(this.sorterSetEvalName, wsSorterSetEval)]
+                            [
+                                (this.sorterSetEvalName, wsSorterSetEval)
+                                (this.sorterSpeedBinsName, wsSpeedBinsUpdated)
+                            ]
             }
     member this.id =
         [
@@ -144,6 +168,7 @@ type causeMakeSorterSetEval
         member this.ResetId = None
         member this.Name = $"causeMakeSorterSetEval { this.sorterSetEvalName |> WsComponentName.value }"
         member this.Updater = this.updater
+        member this.UseInWorkspaceId = true
 
 
 
@@ -288,6 +313,7 @@ type causePruneSorterSetsWhole
         member this.ResetId = None
         member this.Name = this.causeName
         member this.Updater = this.updater
+        member this.UseInWorkspaceId = true
 
 
 
@@ -442,8 +468,7 @@ type causePruneSorterSetsShc
         member this.ResetId = None
         member this.Name = this.causeName
         member this.Updater = this.updater
-
-
+        member this.UseInWorkspaceId = true
 
 
 
@@ -455,6 +480,7 @@ type setupForNextGen
              wnSorterSetEvalParent:wsComponentName,
              wnSorterSetEvalPruned:wsComponentName,
              wnParentMap:wsComponentName,
+             wnSorterSpeedBinSet:wsComponentName,
              workspaceParams:workspaceParams) 
     = 
     member this.causeName = "setupForNextGen"
@@ -463,6 +489,7 @@ type setupForNextGen
     member this.wnSorterSetPruned = wnSorterSetPruned
     member this.wnSorterSetEvalParent = wnSorterSetEvalParent
     member this.wnSorterSetEvalPruned = wnSorterSetEvalPruned
+    member this.wnSorterSpeedBinSet = wnSorterSpeedBinSet
     member this.wsnParams = WsConstants.workSpaceComponentNameForParams
     member this.workspaceParams = workspaceParams
     member this.wnParentMap = wnParentMap
@@ -481,6 +508,9 @@ type setupForNextGen
                 let! sorterSetEvalParentNew = 
                         w |> Workspace.getComponent this.wnSorterSetEvalPruned
 
+                let! sorterSpeedBinSet = 
+                        w |> Workspace.getComponent this.wnSorterSpeedBinSet
+
                 let! sorterSetParentMap = 
                         w |> Workspace.getComponent this.wnParentMap
 
@@ -498,6 +528,7 @@ type setupForNextGen
                                 (this.wnSorterSetParent, sorterSetNewParent)
                                 (this.wnSorterSetEvalParent, sorterSetEvalParentNew)
                                 (this.wnParentMap, sorterSetParentMap)
+                                (this.wnSorterSpeedBinSet, sorterSpeedBinSet)
                                 (this.wsnParams, wsParams)
                             ]
             }
@@ -520,4 +551,5 @@ type setupForNextGen
         member this.ResetId = None
         member this.Name = this.causeName
         member this.Updater = this.updater
+        member this.UseInWorkspaceId = true
 
