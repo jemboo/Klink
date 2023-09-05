@@ -1,10 +1,11 @@
 ﻿namespace global
 open System
 
+
 type shcInitRunCfg =
     {
         mutationRate:mutationRate
-        newGenerations:generation
+        newGenerations:generation option
         noiseFraction:noiseFraction
         order:order
         rngGen:rngGen
@@ -16,7 +17,7 @@ type shcInitRunCfg =
         stageWeight:stageWeight
         switchCount:switchCount
         switchGenMode:switchGenMode
-        reportFilter:generationFilter
+        reportFilter:generationFilter option
     }
 
 type shcInitRunCfgPlex =
@@ -35,10 +36,10 @@ type shcInitRunCfgPlex =
 module ShcInitRunCfgPlex =
 
     let fromFunc<'a>
-            (newGenerations:generation)
-            (reportFilter:generationFilter)
+            (newGenerations:generation option)
+            (reportFilter:generationFilter option)
             (plex:shcInitRunCfgPlex)
-            (daFunc: order -> generation -> generationFilter -> 
+            (daFunc: order -> generation option -> generationFilter option -> 
                      rngGen -> (sorterCount*sorterCount) -> 
                      switchGenMode -> stageWeight -> 
                      noiseFraction -> mutationRate -> sorterSetPruneMethod -> 'a)
@@ -83,8 +84,8 @@ module ShcInitRunCfgs =
 
 
     let fromPlex
-            (newGenerations:generation)
-            (reportFilter:generationFilter)
+            (newGenerations:generation option)
+            (reportFilter:generationFilter option)
             (plex:shcInitRunCfgPlex)
         =
 
@@ -127,24 +128,25 @@ module ShcInitRunCfgs =
         let rngGenPrune = (_nextRngGen rngGenMutate)
 
         WorkspaceParams.make Map.empty
-        |> WorkspaceParams.setRunId "runId" (gaCfg |> getRunId)
-        |> WorkspaceParams.setGeneration "generation_current" (0 |> Generation.create)
-        |> WorkspaceParams.setGeneration "generation_max" gaCfg.newGenerations
-        |> WorkspaceParams.setRngGen "rngGenCreate" rngGenCreate
-        |> WorkspaceParams.setRngGen "rngGenMutate" rngGenMutate
-        |> WorkspaceParams.setRngGen "rngGenPrune" rngGenPrune
-        |> WorkspaceParams.setMutationRate "mutationRate" gaCfg.mutationRate
-        |> WorkspaceParams.setNoiseFraction "noiseFraction" (Some gaCfg.noiseFraction)
-        |> WorkspaceParams.setOrder "order" gaCfg.order
-        |> WorkspaceParams.setSorterCount "sorterCount" gaCfg.sorterCount
-        |> WorkspaceParams.setSorterCount "sorterCountMutated" gaCfg.sorterCountMutated
-        |> WorkspaceParams.setSorterEvalMode "sorterEvalMode" gaCfg.sorterEvalMode
-        |> WorkspaceParams.setStageCount "stagesSkipped" gaCfg.stagesSkipped
-        |> WorkspaceParams.setStageWeight "stageWeight" gaCfg.stageWeight
-        |> WorkspaceParams.setSwitchCount "sorterLength" gaCfg.switchCount
-        |> WorkspaceParams.setSwitchGenMode "switchGenMode" gaCfg.switchGenMode
-        |> WorkspaceParams.setSorterSetPruneMethod "sorterSetPruneMethod" gaCfg.sorterSetPruneMethod
-        |> WorkspaceParams.setUseParallel "useParallel" useParallel
+        |> WorkspaceParamsAttrs.setRunId "runId" (gaCfg |> getRunId)
+        |> WorkspaceParamsAttrs.setGeneration "generation_current" (0 |> Generation.create)
+        |> WorkspaceParamsAttrs.setGeneration "generation_max" (gaCfg.newGenerations |> Option.get )
+        |> WorkspaceParamsAttrs.setRngGen "rngGenCreate" rngGenCreate
+        |> WorkspaceParamsAttrs.setRngGen "rngGenMutate" rngGenMutate
+        |> WorkspaceParamsAttrs.setRngGen "rngGenPrune" rngGenPrune
+        |> WorkspaceParamsAttrs.setMutationRate "mutationRate" gaCfg.mutationRate
+        |> WorkspaceParamsAttrs.setNoiseFraction "noiseFraction" (Some gaCfg.noiseFraction)
+        |> WorkspaceParamsAttrs.setOrder "order" gaCfg.order
+        |> WorkspaceParamsAttrs.setSorterCount "sorterCount" gaCfg.sorterCount
+        |> WorkspaceParamsAttrs.setSorterCount "sorterCountMutated" gaCfg.sorterCountMutated
+        |> WorkspaceParamsAttrs.setSorterEvalMode "sorterEvalMode" gaCfg.sorterEvalMode
+        |> WorkspaceParamsAttrs.setStageCount "stagesSkipped" gaCfg.stagesSkipped
+        |> WorkspaceParamsAttrs.setStageWeight "stageWeight" gaCfg.stageWeight
+        |> WorkspaceParamsAttrs.setSwitchCount "sorterLength" gaCfg.switchCount
+        |> WorkspaceParamsAttrs.setSwitchGenMode "switchGenMode" gaCfg.switchGenMode
+        |> WorkspaceParamsAttrs.setSorterSetPruneMethod "sorterSetPruneMethod" gaCfg.sorterSetPruneMethod
+        |> WorkspaceParamsAttrs.setGenerationFilter "generation_filter" (gaCfg.reportFilter |> Option.get )
+        |> WorkspaceParamsAttrs.setUseParallel "useParallel" useParallel
 
 
 
@@ -159,7 +161,6 @@ module ShcContinueRunCfgs =
 
     let fromPlex
             (newGenerations:generation)
-            (reportFilter:generationFilter)
             (plex:shcInitRunCfgPlex)
         =
 
@@ -168,12 +169,12 @@ module ShcContinueRunCfgs =
                     shcContinueRunCfgs.runId = (gaCfg |> ShcInitRunCfgs.getRunId);
                     newGenerations = newGenerations
                 }
-        ShcInitRunCfgs.fromPlex newGenerations reportFilter plex
+        ShcInitRunCfgs.fromPlex None None plex
         |> Seq.map(_toCrc newGenerations)
 
 
 
-type shcReportCfg =
+type shcReportEvalsCfg =
     {
         reportFileName:string
         runIds:runId array
@@ -183,7 +184,7 @@ type shcReportCfg =
         reportFilter:generationFilter
     }
 
-module ShcReportRunCfgs =
+module ShcReportEvalsCfgs =
 
     let fromPlex
             (genMin:generation)
@@ -194,11 +195,11 @@ module ShcReportRunCfgs =
             (plex:shcInitRunCfgPlex)
         =
         let runIds =
-             ShcInitRunCfgs.fromPlex genMin reportFilter plex
+             ShcInitRunCfgs.fromPlex None None plex
              |> Seq.map(ShcInitRunCfgs.getRunId)
              |> Seq.toArray
         {
-            shcReportCfg.reportFileName = reportFileName
+            shcReportEvalsCfg.reportFileName = reportFileName
             runIds = runIds
             genMin = genMin
             genMax = genMax
@@ -206,6 +207,41 @@ module ShcReportRunCfgs =
             reportFilter = reportFilter
         }
 
+
+
+
+type shcReportBinsCfg =
+    {
+        reportFileName:string
+        runIds:runId array
+        genMin:generation
+        genMax:generation
+    }
+
+module ShcReportBinsCfgs =
+
+    let fromPlex
+            (genMin:generation)
+            (genMax:generation)
+            (reportFileName:string)
+            (plex:shcInitRunCfgPlex)
+        =
+        let runIds =
+             ShcInitRunCfgs.fromPlex None None plex
+             |> Seq.map(ShcInitRunCfgs.getRunId)
+             |> Seq.toArray
+        {
+            shcReportBinsCfg.reportFileName = reportFileName
+            runIds = runIds
+            genMin = genMin
+            genMax = genMax
+        }
+
+
+
+type shcReportCfg =
+    | Evals of shcReportEvalsCfg
+    | Bins of shcReportBinsCfg
 
 
 
@@ -229,7 +265,7 @@ module ShcRunCfgSet =
         =
         let runCfgs = 
             plex |>
-            ShcInitRunCfgs.fromPlex newGenerations reportFilter
+            ShcInitRunCfgs.fromPlex (Some newGenerations) (Some reportFilter)
                   |> Seq.map(shcRunCfg.InitRun)
                   |> Seq.toArray
 
@@ -244,7 +280,7 @@ module ShcRunCfgSet =
         =
         let runCfgs = 
             plex |>
-            ShcContinueRunCfgs.fromPlex newGenerations reportFilter
+            ShcContinueRunCfgs.fromPlex newGenerations
                   |> Seq.map(shcRunCfg.Continue)
                   |> Seq.toArray
 
@@ -262,10 +298,35 @@ module ShcRunCfgSet =
         =
         let runCfg = 
             plex |>
-            ShcReportRunCfgs.fromPlex 
+            ShcReportEvalsCfgs.fromPlex 
                     genMin
-                    genMax evalCompName 
-                    reportFilter reportFileName
+                    genMax 
+                    evalCompName 
+                    reportFilter 
+                    reportFileName
+                  |> shcReportCfg.Evals
+                  |> shcRunCfg.Report
+
+        {setName = runSetName; runCfgs = [|runCfg|]}
+
+
+
+
+    let reportBinsFromPlex 
+            (genMin:generation)
+            (genMax:generation)
+            (reportFilter:generationFilter)
+            (runSetName:string)
+            (reportFileName:string)
+            (plex:shcInitRunCfgPlex)
+        =
+        let runCfg = 
+            plex |>
+            ShcReportBinsCfgs.fromPlex 
+                    genMin
+                    genMax
+                    reportFileName
+                  |> shcReportCfg.Bins
                   |> shcRunCfg.Report
 
         {setName = runSetName; runCfgs = [|runCfg|]}

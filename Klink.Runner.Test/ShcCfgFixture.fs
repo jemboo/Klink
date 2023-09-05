@@ -4,12 +4,12 @@ open System
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
 [<TestClass>]
-type TestClass () =
+type RunCfgDtos () =
 
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let newGens = 5 |> Generation.create
-        let genFilter = { modGenerationFilter.modulus = 1}
+        let newGens = 50 |> Generation.create
+        let genFilter = { modGenerationFilter.modulus = 5}
                             |> generationFilter.ModF
         let runSetName = "initRun"
         let shcRunCfgSet = 
@@ -65,8 +65,10 @@ type TestClass () =
             Exp1Cfg.testShcInitRunCfgPlex 
                |> ShcRunCfgSet.reportAllFromPlex 
                             genMin 
-                            genMax wsCompName 
-                            genFilter runSetName 
+                            genMax 
+                            wsCompName 
+                            genFilter 
+                            runSetName 
                             reportFileName
 
         let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
@@ -81,6 +83,34 @@ type TestClass () =
 
 
 
+    [<TestMethod>]
+    member this.shcReportBinCfgDtos () =
+        let genMin = 50 |> Generation.create
+        let genMax = 150 |> Generation.create
+        let genFilter = { modGenerationFilter.modulus = 1}
+                            |> generationFilter.ModF
+        let reportFileName = "reportBinsReport"
+        let scriptFileName = "reportBinsScript"
+        let runSetName = "reportBinsRunset"
+
+        let shcRunCfgSet = 
+            Exp1Cfg.testShcInitRunCfgPlex 
+               |> ShcRunCfgSet.reportBinsFromPlex 
+                            genMin 
+                            genMax 
+                            genFilter 
+                            runSetName 
+                            reportFileName
+
+        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
+
+        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" scriptFileName cereal
+        |> ignore
+
+        let yabba = cereal |> ShcRunCfgSetDto.fromJson
+                           |> Result.ExtractOrThrow
+
+        Assert.AreEqual (1, 1);
 
     //[<TestMethod>]
     //member this.shcRunCfgSetDto () =

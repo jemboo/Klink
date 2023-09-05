@@ -26,7 +26,7 @@ module ShcInitRunCfgDto =
 
     let toDto (cfg:shcInitRunCfg) =
         {
-            newGenerations = cfg.newGenerations |> Generation.value
+            newGenerations = cfg.newGenerations |> Option.get |> Generation.value
             mutationRate = cfg.mutationRate |> MutationRate.value
             noiseFraction = cfg.noiseFraction |> NoiseFraction.value
             order = cfg.order |> Order.value
@@ -39,7 +39,7 @@ module ShcInitRunCfgDto =
             stageWeight = cfg.stageWeight |> StageWeight.value
             switchCount = cfg.switchCount |> SwitchCount.value
             switchGenMode = cfg.switchGenMode
-            reportGenFilter = cfg.reportFilter |> GenerationFilterDto.toDto
+            reportGenFilter = cfg.reportFilter  |> Option.get |> GenerationFilterDto.toDto
         }
 
 
@@ -53,7 +53,7 @@ module ShcInitRunCfgDto =
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
             return
                 {
-                    shcInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create
+                    shcInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create |> Some
                     mutationRate = cfg.mutationRate |> MutationRate.create
                     noiseFraction = cfg.noiseFraction |> NoiseFraction.create
                     order = cfg.order |> Order.createNr
@@ -66,7 +66,7 @@ module ShcInitRunCfgDto =
                     stageWeight = cfg.stageWeight |> StageWeight.create
                     switchCount = cfg.switchCount |> SwitchCount.create
                     switchGenMode = cfg.switchGenMode
-                    reportFilter = reportFilter
+                    reportFilter = reportFilter |> Some
                 }
         }
 
@@ -113,7 +113,7 @@ module ShcContinueRunCfgDto =
 
 
 
-type shcReportCfgDto =
+type shcReportAllCfgDto =
     {
         runIds:string array
         genMin:int
@@ -124,11 +124,11 @@ type shcReportCfgDto =
     }
 
 
-module ShcReportCfgDto =
+module ShcReportAllCfgDto =
 
-    let toDto (cfg:shcReportCfg) =
+    let toDto (cfg:shcReportEvalsCfg) =
         {
-            shcReportCfgDto.runIds = cfg.runIds |> Array.map(RunId.value >> string)
+            shcReportAllCfgDto.runIds = cfg.runIds |> Array.map(RunId.value >> string)
             genMin = cfg.genMin |> Generation.value
             genMax = cfg.genMax |> Generation.value
             evalCompName = cfg.evalCompName |> WsComponentName.value
@@ -136,16 +136,16 @@ module ShcReportCfgDto =
             reportFileName = cfg.reportFileName
         }
 
-    let toJson (cfg:shcReportCfg) =
+    let toJson (cfg:shcReportEvalsCfg) =
         cfg |> toDto |> Json.serialize
 
 
-    let fromDto (dto:shcReportCfgDto) =
+    let fromDto (dto:shcReportAllCfgDto) =
         result {
             let! reportFilter = dto.reportGenFilter |> GenerationFilterDto.fromDto
             return
                 {
-                    shcReportCfg.runIds = dto.runIds |> Array.map(fun sid -> Guid.Parse(sid) |> RunId.create)
+                    shcReportEvalsCfg.runIds = dto.runIds |> Array.map(fun sid -> Guid.Parse(sid) |> RunId.create)
                     genMin = dto.genMin |> Generation.create
                     genMax = dto.genMax |> Generation.create
                     evalCompName = dto.evalCompName |> WsComponentName.create
@@ -156,9 +156,52 @@ module ShcReportCfgDto =
 
     let fromJson (cereal:string) =
         result {
-            let! dto = Json.deserialize<shcReportCfgDto> cereal
+            let! dto = Json.deserialize<shcReportAllCfgDto> cereal
             return! fromDto dto
         }
+
+
+
+type shcReportBinsCfgDto =
+    {
+        runIds:string array
+        genMin:int
+        genMax:int
+        reportFileName:string
+    }
+
+
+module ShcReportBinsCfgDto =
+
+    let toDto (cfg:shcReportBinsCfg) =
+        {
+            shcReportBinsCfgDto.runIds = cfg.runIds |> Array.map(RunId.value >> string)
+            genMin = cfg.genMin |> Generation.value
+            genMax = cfg.genMax |> Generation.value
+            reportFileName = cfg.reportFileName
+        }
+
+    let toJson (cfg:shcReportBinsCfg) =
+        cfg |> toDto |> Json.serialize
+
+
+    let fromDto (dto:shcReportBinsCfgDto) =
+        result {
+            return
+                {
+                    shcReportBinsCfg.runIds = dto.runIds |> Array.map(fun sid -> Guid.Parse(sid) |> RunId.create)
+                    genMin = dto.genMin |> Generation.create
+                    genMax = dto.genMax |> Generation.create
+                    reportFileName = dto.reportFileName
+                }
+        }
+
+    let fromJson (cereal:string) =
+        result {
+            let! dto = Json.deserialize<shcReportBinsCfgDto> cereal
+            return! fromDto dto
+        }
+
 
 
 type shcCfgDto = {duType:string; cereal:string}
@@ -179,10 +222,19 @@ module ShcRunCfgDto =
             }
 
         | Report cRpt ->
-            {
-                duType = "Report"
-                cereal = cRpt |> ShcReportCfgDto.toJson
-            }
+            match cRpt with
+            | Evals arc ->
+                {
+                    duType = "Report_All"
+                    cereal = arc |> ShcReportAllCfgDto.toJson
+                }
+            | Bins brc ->
+                {
+                    duType = "Report_Bins"
+                    cereal = brc |> ShcReportBinsCfgDto.toJson
+                }
+
+
 
     let toJson (cfg:shcRunCfg) =
         cfg |> toDto |> Json.serialize
@@ -194,8 +246,11 @@ module ShcRunCfgDto =
             dto.cereal |> ShcInitRunCfgDto.fromJson |> Result.map(shcRunCfg.InitRun)
         | "Continue" -> 
             dto.cereal |> ShcContinueRunCfgDto.fromJson |> Result.map(shcRunCfg.Continue)
-        | "Report" -> 
-            dto.cereal |> ShcReportCfgDto.fromJson |> Result.map(shcRunCfg.Report)
+        | "Report_All" -> 
+            dto.cereal |> ShcReportAllCfgDto.fromJson |> Result.map(shcReportCfg.Evals >> shcRunCfg.Report)
+        | "Report_Bins" -> 
+            dto.cereal |> ShcReportBinsCfgDto.fromJson |> Result.map(shcReportCfg.Bins >> shcRunCfg.Report)
+
         | _ -> $"{dto.duType} not handled in ShcCfgDto.fromDto" |> Error
 
 

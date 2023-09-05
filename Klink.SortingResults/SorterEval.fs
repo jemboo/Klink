@@ -298,7 +298,6 @@ module SorterEval =
            |> Option.map(SorterSpeed.modifyForPrefix ordr tc)}
 
 
-
     let getSorterEvalProps 
             (sev:sorterEval) =
         let stageCt, switchCt = (sev.sorterSpeed |> SorterSpeed.getProps)

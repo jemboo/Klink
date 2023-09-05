@@ -5,7 +5,7 @@ open System.IO
 
 module Exp1Reporting =
 
-    let standardSorterEvalProps =
+    let selectedSorterEvalProps =
         [
             sorterEvalProps.ErrorMsg;
             sorterEvalProps.Phenotype;
@@ -17,17 +17,51 @@ module Exp1Reporting =
         ]
 
     let standardSorterEvalHeaders () = 
-        standardSorterEvalProps
+        selectedSorterEvalProps
             |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
 
 
     let standardSorterEvalValues (sev:sorterEval) =
         let yab = sev |> SorterEval.getSorterEvalProps
-        standardSorterEvalProps
+        selectedSorterEvalProps
             |> List.fold(fun st t -> sprintf "%s\t%s" st yab.[t]) ""
 
 
-    let standardParamProps =
+    let speedBinProps =
+        [
+            sorterEvalProps.ErrorMsg;
+            sorterEvalProps.Phenotype;
+            sorterEvalProps.SortedSetSize;
+            sorterEvalProps.SorterId;
+            sorterEvalProps.StageCount;
+            sorterEvalProps.Success;
+            sorterEvalProps.SwitchCount;
+        ]
+
+    let standardSpeedBinHeaders () = 
+        speedBinProps
+            |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
+
+
+
+
+    let paramPropsSorterEval =
+        [
+            "generation_current";
+            "runId";
+            "mutationRate";
+            "noiseFraction";
+            "order";
+            "sortableSet";
+            "sorterCount";
+            "sorterCountMutated";
+            "sorterSetPruneMethod";
+            "stageWeight";
+            "sorterLength";
+            "switchGenMode";
+        ]
+        
+    let paramPropsSpeedBins =
         [
             "generation_current";
             "runId";
@@ -44,9 +78,12 @@ module Exp1Reporting =
         ]
         
 
+
+
+
     let standardParamValues (wsps:workspaceParams) =
         let paramMap t = (wsps |> WorkspaceParams.getMap).[t]
-        standardParamProps |> StringUtil.toCsvLine paramMap
+        paramPropsSorterEval |> StringUtil.toCsvLine paramMap
 
     let binParamProps =
         [
@@ -65,15 +102,21 @@ module Exp1Reporting =
     let binnedParamValues (wsps:workspaceParams) (genBinSz:int) =
         let paramMap t = (wsps |> WorkspaceParams.getMap).[t]
         result {
-            let! genBin = wsps |> WorkspaceParams.getGeneration "generation_current"
+            let! genBin = wsps |> WorkspaceParamsAttrs.getGeneration "generation_current"
                                |> Result.map(Generation.binnedValue genBinSz)
             return $"{ genBin }\t{ binParamProps |> StringUtil.toCsvLine paramMap }"
         }
 
 
-    let reportHeaderStandard () =
+    let reportHeaderSorterEvals () =
         sprintf "%s%s" 
-            (standardParamProps |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
+            (paramPropsSorterEval |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
+            (standardSorterEvalHeaders ())
+
+
+    let reportHeaderSpeedBins () =
+        sprintf "%s%s" 
+            (paramPropsSpeedBins |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
             (standardSorterEvalHeaders ())
 
 
@@ -84,7 +127,7 @@ module Exp1Reporting =
             "\tSwitchCt\tStageCt\tRecordCt"
 
 
-    let reportLines
+    let reportSorterSetEvalLines
             (sorterSetEval:sorterSetEval) 
             (wsps:workspaceParams)
             (lineAppender:seq<string> -> Result<bool,string>)
@@ -99,32 +142,51 @@ module Exp1Reporting =
         lineAppender lines
 
 
-    let reportEm (fsReporter:WorkspaceFileStore) 
+
+    let reportSpeedBinLines
+            (sorterSpeedBinSet:sorterSpeedBinSet) 
+            (wsps:workspaceParams)
+            (lineAppender:seq<string> -> Result<bool,string>)
+        =
+        let lines = [||]
+            //sorterSetEval 
+            //    |> SorterSetEval.getSorterEvals 
+            //    |> Array.map(fun sev ->
+            //                        sprintf "%s%s" 
+            //                            (standardParamValues wsps)
+            //                            (standardSorterEvalValues sev))
+        lineAppender lines
+
+
+
+
+
+    let reportEvals (fsReporter:WorkspaceFileStore) 
                  (reportFileName:string) 
-                 (sorterSetEvalWsName:wsComponentName)
+                 (evalCompName:wsComponentName)
                  (minGen:generation)
                  (runFolderPath:string) 
         =
         let _lineWriter (lines:string seq) =
-            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderStandard ()] lines
+            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderSorterEvals ()] lines
 
         result {
             let fsRunReader = new WorkspaceFileStore(runFolderPath)
             let! compTupes = 
-                fsRunReader.getAllSorterSetEvalsWithParams 
-                    sorterSetEvalWsName 
-                    (WorkspaceParams.generationIsGte minGen)
+                fsRunReader.getAllSorterSetEvalsWithParams
+                    evalCompName 
+                    (WorkspaceParamsAttrs.generationIsGte minGen)
             return!
                 compTupes 
                 |> List.map (fun (ssEval, wsPram) -> 
-                    reportLines ssEval wsPram _lineWriter)
+                    reportSorterSetEvalLines ssEval wsPram _lineWriter)
                 |> Result.sequence
         }
 
 
-    let reportEmAll
+    let reportAllEvals
         (projectFolderPath:string)
-        (reportCfg:shcReportCfg)
+        (reportCfg:shcReportEvalsCfg)
         =
         let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
 
@@ -136,26 +198,75 @@ module Exp1Reporting =
         result {
             return! 
                 runDirs 
-                |> List.map(reportEm fsReporter reportCfg.reportFileName reportCfg.evalCompName reportCfg.genMin)
+                |> List.map(reportEvals fsReporter reportCfg.reportFileName reportCfg.evalCompName reportCfg.genMin)
                 |> Result.sequence
                 |> Result.map(ignore)
         }
 
 
+    let reportBins 
+            (fsReporter:WorkspaceFileStore) 
+            (reportFileName:string)
+            (minGen:generation)
+            (runFolderPath:string) 
+        =
+        let _lineWriter (lines:string seq) =
+            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderSpeedBins ()] lines
+
+        result {
+            let fsRunReader = new WorkspaceFileStore(runFolderPath)
+            let perfBinCompName = "sorterSpeedBinSet" |> WsComponentName.create
+            let! compTupes = 
+                fsRunReader.getAllSpeedSetBinsWithParams 
+                    perfBinCompName
+                    (WorkspaceParamsAttrs.generationIsGte minGen)
+            return!
+                compTupes 
+                |> List.map (fun (ssBins, wsPram) -> 
+                    reportSpeedBinLines ssBins wsPram _lineWriter)
+                |> Result.sequence
+        }
+
+
+
+    let reportAllBins
+        (projectFolderPath:string)
+        (reportCfg:shcReportBinsCfg)
+        =
+        let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
+
+        let runDirs = reportCfg.runIds
+                        |> Array.map(RunId.value >> string)
+                        |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
+                        |> Array.toList
+
+        result {
+            return! 
+                runDirs 
+                |> List.map(reportBins fsReporter reportCfg.reportFileName reportCfg.genMin)
+                |> Result.sequence
+                |> Result.map(ignore)
+        }
+
+
+
+
+
+
     let paramGroup (genBinSz:generation) 
                    (wsPram:workspaceParams)  =
         result {
-            let! gen = wsPram |> WorkspaceParams.getGeneration "generation_current"
+            let! gen = wsPram |> WorkspaceParamsAttrs.getGeneration "generation_current"
                               |> Result.map(Generation.binnedValue (genBinSz |> Generation.value))
-            let! mr = wsPram |> WorkspaceParams.getMutationRate "mutationRate"
-            let! nf = wsPram |> WorkspaceParams.getNoiseFraction "noiseFraction"
-            let! order = wsPram |> WorkspaceParams.getOrder "order"
-            let! runId = wsPram |> WorkspaceParams.getRunId "runId"
-            let! sct = wsPram |> WorkspaceParams.getSorterCount "sorterCount"
-            let! scM = wsPram |> WorkspaceParams.getSorterCount "sorterCountMutated"
-            let! sLen = wsPram |> WorkspaceParams.getSorterCount "sorterLength"
-            let! stw = wsPram |> WorkspaceParams.getStageWeight "stageWeight"
-            let! sgm = wsPram |> WorkspaceParams.getSwitchGenMode "switchGenMode"
+            let! mr = wsPram |> WorkspaceParamsAttrs.getMutationRate "mutationRate"
+            let! nf = wsPram |> WorkspaceParamsAttrs.getNoiseFraction "noiseFraction"
+            let! order = wsPram |> WorkspaceParamsAttrs.getOrder "order"
+            let! runId = wsPram |> WorkspaceParamsAttrs.getRunId "runId"
+            let! sct = wsPram |> WorkspaceParamsAttrs.getSorterCount "sorterCount"
+            let! scM = wsPram |> WorkspaceParamsAttrs.getSorterCount "sorterCountMutated"
+            let! sLen = wsPram |> WorkspaceParamsAttrs.getSorterCount "sorterLength"
+            let! stw = wsPram |> WorkspaceParamsAttrs.getStageWeight "stageWeight"
+            let! sgm = wsPram |> WorkspaceParamsAttrs.getSwitchGenMode "switchGenMode"
             return [
                         gen :> obj; 
                         mr :> obj; 

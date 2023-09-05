@@ -25,7 +25,7 @@ type generationFilter =
     | ExpF of expGenerationFilter
 
 module GenerationFilter =
-    let passing (filt:generationFilter) (gen:generation) =
+    let passing (gen:generation) (filt:generationFilter) =
         match filt with
         | ModF mgf -> ((gen |> Generation.value) % mgf.modulus) = 0
         | ExpF egf -> IntSeries.expoB egf.exp (gen |> Generation.value)

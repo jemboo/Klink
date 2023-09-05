@@ -221,7 +221,7 @@ type WorkspaceFileStore (wsRootDir:string) =
 
 
     member this.getAllComponentsWithParams
-                     (wscn:wsComponentName)
+                     (evalCompName:wsComponentName)
         = 
         result {
             let! wsDescrs = 
@@ -231,12 +231,43 @@ type WorkspaceFileStore (wsRootDir:string) =
                       |> Result.sequence
 
             return! wsDescrs 
-                        |> List.map(this.getComponentWithParams wscn)
+                        |> List.map(this.getComponentWithParams evalCompName)
                         |> Result.sequence
 
         }
 
     member this.getAllSorterSetEvalsWithParams
+                     (evalCompName:wsComponentName)
+                     (fF:workspaceParams -> bool)
+        = 
+        result {
+            let! wsDescrs = 
+                    this.getAllComponents workspaceComponentType.WorkspaceDescription
+                      |> Array.map(Result.bind(WorkspaceComponent.asWorkspaceDescription))
+                      |> Array.toList
+                      |> Result.sequence
+
+            let! tupOpts = 
+                    wsDescrs
+                      |> List.map(this.getComponentWithParams evalCompName)
+                      |> Result.sequence
+                            
+            let foundComps = tupOpts 
+                             |> List.filter(Option.isSome) 
+                             |> List.map(Option.get)
+                             |> List.filter(fun (cp, wsps) -> wsps |> fF)
+
+
+            return! foundComps 
+                       |> List.map(fun (wsC, wsP) -> (wsC |> WorkspaceComponent.asSorterSetEval, wsP))
+                       |> List.map(Result.tupLeft)
+                       |> Result.sequence
+
+        }
+
+
+
+    member this.getAllSpeedSetBinsWithParams
                      (wscn:wsComponentName)
                      (fF:workspaceParams -> bool)
         = 
@@ -259,11 +290,13 @@ type WorkspaceFileStore (wsRootDir:string) =
 
 
             return! foundComps 
-                       |> List.map(fun (wsC, wsP) -> (wsC |> WorkspaceComponent.asSorterSetEval, wsP))
+                       |> List.map(fun (wsC, wsP) -> (wsC |> WorkspaceComponent.asSorterSpeedBinSet, wsP))
                        |> List.map(Result.tupLeft)
                        |> Result.sequence
 
         }
+
+
 
 
     member this.workSpaceExists (id:workspaceId) =

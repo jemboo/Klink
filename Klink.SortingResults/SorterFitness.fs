@@ -121,6 +121,15 @@ module SorterSpeedBinKey =
         make spBin.successful spBin.sorterSpeedBinType spBin.sorterSpeed
 
 
+type sorterSpeedBinProps =
+     | ErrorMsg 
+     | Phenotype
+     | SortableSetId
+     | SortedSetSize
+     | SorterId
+     | StageCount
+     | Success
+     | SwitchCount
 
 type sorterSpeedBinSetId = private SorterSpeedBinSetId of Guid
 

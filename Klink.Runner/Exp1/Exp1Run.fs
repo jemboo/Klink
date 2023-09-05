@@ -24,7 +24,7 @@ module Exp1Run =
         = 
         result {
             for wsParams in wsParamsS do
-                let! runId = wsParams |> WorkspaceParams.getRunId "runId"
+                let! runId = wsParams |> WorkspaceParamsAttrs.getRunId "runId"
 
                 let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
                 let fs = new WorkspaceFileStore(runDir)
@@ -77,7 +77,7 @@ module Exp1Run =
         = 
         result {
 
-            let! runId = wsParams |> WorkspaceParams.getRunId "runId"
+            let! runId = wsParams |> WorkspaceParamsAttrs.getRunId "runId"
             let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
             let fs = new WorkspaceFileStore(runDir)
 
@@ -91,11 +91,11 @@ module Exp1Run =
                             fs
                             (fun s-> Console.WriteLine(s))
             let! maxGen = 
-                    wsParams |> WorkspaceParams.getGeneration "generation_max"
+                    wsParams |> WorkspaceParamsAttrs.getGeneration "generation_max"
                                 |> Result.map(Generation.value)
 
 
-            let! cg = wsCfg_params |> snd |> WorkspaceParams.getGeneration "generation_current"
+            let! cg = wsCfg_params |> snd |> WorkspaceParamsAttrs.getGeneration "generation_current"
                     
             let mutable curGen = cg |> Generation.value
             let mutable curParams = wsCfg_params |> snd
@@ -146,7 +146,7 @@ module Exp1Run =
             let! paramsLoaded = wsLoaded 
                                 |> Workspace.getComponent ("workspaceParams" |> WsComponentName.create)
                                 |> Result.bind(WorkspaceComponent.asWorkspaceParams)
-            let! genLoaded = paramsLoaded |> WorkspaceParams.getGeneration "generation_current"
+            let! genLoaded = paramsLoaded |> WorkspaceParamsAttrs.getGeneration "generation_current"
                                 |> Result.map(Generation.value)
 
             let mutable curGen = genLoaded
@@ -197,10 +197,15 @@ module Exp1Run =
                         crc.runId 
                         crc.newGenerations
             | Report rrc -> 
-                    Exp1Reporting.reportEmAll 
+                match rrc with
+                | Evals rac ->
+                    Exp1Reporting.reportAllEvals 
                             projectFolderPath 
-                            rrc
-
+                            rac
+                | Bins rbc ->
+                    Exp1Reporting.reportAllBins
+                            projectFolderPath 
+                            rbc
 
 
     let procRunCfgSet 

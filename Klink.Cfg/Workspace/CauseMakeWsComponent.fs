@@ -119,7 +119,7 @@ type causeMakeSorterSetEval
                                      |> Result.bind(WorkspaceComponent.asSorterSpeedBinSet)
 
                 let order = sorterSet |> SorterSet.getOrder
-                let! stagesSkipped = wsParams |> WorkspaceParams.getStageCount "stagesSkipped"
+                let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount "stagesSkipped"
 
                 let! sorterSetEval = 
                     SorterSetEval.make
@@ -138,7 +138,7 @@ type causeMakeSorterSetEval
                 let order = sortableSet |> SortableSet.getOrder
                 let binType = this.sorterSetName |> WsComponentName.value |> SorterSpeedBinType.create
                 let ssBins = sorterSetEval |> SorterSetEval.getSorterEvals |> Array.map(SorterSpeedBin.fromSorterEval order binType)
-                let! gen = wsParams |> WorkspaceParams.getGeneration "generation_current"
+                let! gen = wsParams |> WorkspaceParamsAttrs.getGeneration "generation_current"
                 let wsSpeedBinsUpdated = ssBins 
                                             |> SorterSpeedBinSet.addBins wsSpeedBins gen
                                             |> workspaceComponent.SorterSpeedBinSet
