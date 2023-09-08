@@ -207,3 +207,40 @@ type CollectionOpsFixture() =
         let dtp = [| 1; 0; 11; 22; 0; 0; 1; 2; 3; 0; 4 |]
         let chunks = CollectionOps.chunkByDelimiter dtp (fun v -> v = 0) |> Seq.toArray
         Assert.AreEqual(chunks.Length, 4)
+
+
+
+    [<TestMethod>]
+    member this.weightedCount() =
+        let valArray = [|1.0; 2.0; 3.0; 4.0; 5.0; 10.0|]
+        let countArray = [|4;3;2;0;1;5|]
+        let weightedArray = countArray |> Array.zip valArray
+
+        let res = CollectionProps.weightedCount weightedArray
+        Assert.AreEqual(res, 15)
+
+
+
+    [<TestMethod>]
+    member this.weightedAverage() =
+        let valArray = [|1.0; 2.0; 3.0; 4.0; 5.0; 10.0|]
+        let countArray = [|4;3;2;0;1;5|]
+        let weightedArray = countArray |> Array.zip valArray
+
+        let res = CollectionProps.weightedAverage weightedArray
+
+        Assert.IsTrue(Math.Abs( res - 4.7333) < 0.00001)
+
+
+
+
+
+    [<TestMethod>]
+    member this.weightedStdDeviation() =
+        let valArray = [|1.0; 2.0; 3.0; 4.0; 5.0; 10.0|]
+        let countArray = [|4;3;2;0;1;5|]
+        let weightedArray = countArray |> Array.zip valArray
+
+        let res = CollectionProps.weightedStdDeviationS weightedArray
+
+        Assert.IsTrue(Math.Abs( res - 3.990465) < 0.00001)

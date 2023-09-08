@@ -333,8 +333,6 @@ module Exp1Reporting =
         =
 
         let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
-        let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
         let wnToQuery = wnSorterSetEvalParent
 
 

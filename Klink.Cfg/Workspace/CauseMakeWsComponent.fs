@@ -236,7 +236,6 @@ type causePruneSorterSetsWhole
                         |> SorterSetPruner.runWholePrune 
                                 sorterSetPruner 
                                 _rngGen
-                        |> Array.map(fun ((s,_), _) -> s)
 
                 let mergedSorterMap = 
                         (sorterSetParent |> SorterSet.getSorters)
@@ -390,7 +389,6 @@ type causePruneSorterSetsShc
                                 sorterSetPruner 
                                 _rngGen
                                 sorterSetParentMap
-                        |> Array.map(fun ((s,_), _) -> s)
 
                 let mergedSorterMap = 
                         (sorterSetParent |> SorterSet.getSorters)

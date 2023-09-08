@@ -78,7 +78,32 @@ module CollectionProps =
     let stdDeviation (vals:float[]) =
         let avg = vals |> Array.average
         let cumo = vals |> Array.sumBy(fun v -> (v - avg) * (v - avg))
-        Math.Sqrt(cumo/(float vals.Length))
+        Math.Sqrt(cumo)/(float vals.Length)
+
+
+    let inline weightedCount<^a when ^a:(static member op_Explicit:^a->float)> 
+        (wvs: array<^a*int>) =
+         wvs |> Array.sumBy(snd) |> float
+
+
+    let inline weightedAverage<^a when ^a:(static member op_Explicit:^a->float)> 
+        (wvs: array<^a*int>) =
+        let totalSum = wvs |> Array.sumBy(fun (v, ct) -> (float v) * (float ct))
+        totalSum / (weightedCount wvs)
+
+
+
+    let inline weightedStdDeviationS<^a when ^a:(static member op_Explicit:^a->float)> 
+        (wvs: array<^a*int>) =
+        let wc = weightedCount wvs
+        if (wc < 2) then
+            0.0
+        else
+            let avg = weightedAverage wvs
+            let cumo = wvs |> Array.map(fun (v, ct) -> (float v, float ct))
+                           |> Array.sumBy(fun (vf, ctf)  -> ctf * (vf - avg) * (vf - avg))
+            Math.Sqrt(cumo / (wc - 1.0))
+
 
 
     let inline distanceSquared  (a: ^a[]) (b: ^a[]) =

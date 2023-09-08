@@ -2,6 +2,7 @@
 
 open SysExt
 open Microsoft.FSharp.Core
+open Microsoft.FSharp.Math
 
 
 module Combinatorics =
@@ -68,3 +69,8 @@ module Combinatorics =
                 proceed <- (curTup |> Option.isSome)
         }
 
+
+    let entropyOfInts (weights: int seq) =
+        let fltArray = weights |> Seq.map(float) |> Seq.toArray
+        let aSum = fltArray |> Array.sum
+        fltArray |> Array.map(fun fv -> fv/aSum) |> Array.sumBy(fun nv -> nv * log(nv))

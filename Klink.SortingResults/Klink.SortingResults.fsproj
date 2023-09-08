@@ -8,7 +8,9 @@
   <ItemGroup>
     <Compile Include="SorterEval.fs" />
     <Compile Include="SorterSetEval.fs" />
+    <Compile Include="SorterSpeedBin.fs" />
     <Compile Include="SorterFitness.fs" />
+    <Compile Include="SpeedBinProps.fs" />
     <Compile Include="SorterSetPruner.fs" />
   </ItemGroup>
 

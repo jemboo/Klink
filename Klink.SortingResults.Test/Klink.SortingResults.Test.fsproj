@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <Compile Include="SorterEvalFixture.fs" />
+    <Compile Include="SorterSpeedBinFixture.fs" />
     <Compile Include="SorterSetPrunerFixture.fs" />
-    <Compile Include="SorterSetEvalFixture.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
