@@ -8,7 +8,7 @@ type RunCfgDtos () =
 
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let newGens = 50 |> Generation.create
+        let newGens = 5000 |> Generation.create
         let genFilter = { modGenerationFilter.modulus = 5}
                             |> generationFilter.ModF
         let runSetName = "initRun"
@@ -20,6 +20,22 @@ type RunCfgDtos () =
 
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
         |> ignore
+
+
+        let newGens = 5000 |> Generation.create
+        let genFilter = { modGenerationFilter.modulus = 5}
+                            |> generationFilter.ModF
+        let runSetName = "initRun2"
+        let shcRunCfgSet = 
+            Exp1Cfg.testShcInitRunCfgPlex2
+               |> ShcRunCfgSet.initRunFromPlex newGens genFilter runSetName
+
+        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
+
+        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
+        |> ignore
+
+
 
         let yabba = cereal |> ShcRunCfgSetDto.fromJson
                            |> Result.ExtractOrThrow
@@ -62,8 +78,8 @@ type RunCfgDtos () =
         let runSetName = "reportAllRunset"
 
         let shcRunCfgSet = 
-            Exp1Cfg.testShcInitRunCfgPlex 
-               |> ShcRunCfgSet.reportAllFromPlex 
+            [Exp1Cfg.testShcInitRunCfgPlex; Exp1Cfg.testShcInitRunCfgPlex2]
+               |> ShcRunCfgSet.reportAllFromPlexSeq
                             genMin 
                             genMax 
                             wsCompName 
@@ -85,10 +101,8 @@ type RunCfgDtos () =
 
     [<TestMethod>]
     member this.shcReportBinCfgDtos () =
-        let genMin = 50 |> Generation.create
-        let genMax = 150 |> Generation.create
-        let genFilter = { modGenerationFilter.modulus = 1}
-                            |> generationFilter.ModF
+        let genMin = 1 |> Generation.create
+        let genMax = 5000 |> Generation.create
         let reportFileName = "reportBinsReport"
         let scriptFileName = "reportBinsScript"
         let runSetName = "reportBinsRunset"
@@ -98,7 +112,6 @@ type RunCfgDtos () =
                |> ShcRunCfgSet.reportBinsFromPlex 
                             genMin 
                             genMax 
-                            genFilter 
                             runSetName 
                             reportFileName
 

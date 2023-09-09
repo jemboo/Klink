@@ -17,6 +17,7 @@
     <Compile Include="Workspace\CauseLoadWs.fs" />
     <Compile Include="Workspace\CauseAddWsComponent.fs" />
     <Compile Include="Workspace\CauseMakeWsComponent.fs" />
+    <Compile Include="Workspace\CauseReporting.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

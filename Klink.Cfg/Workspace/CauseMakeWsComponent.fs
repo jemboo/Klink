@@ -94,7 +94,7 @@ type causeMakeSorterSetEval
             wsnSorterSet:wsComponentName,
             sorterEvalMode:sorterEvalMode,
             wsnSorterSetEval:wsComponentName,
-            wnSorterSpeedBinSet:wsComponentName,
+           // wnSorterSpeedBinSet:wsComponentName,
             useParallel:useParallel
         ) 
     =
@@ -104,7 +104,7 @@ type causeMakeSorterSetEval
     member this.sorterSetName = wsnSorterSet
     member this.sorterEvalMode = sorterEvalMode
     member this.sorterSetEvalName = wsnSorterSetEval
-    member this.sorterSpeedBinsName = wnSorterSpeedBinSet
+  //  member this.sorterSpeedBinsName = wnSorterSpeedBinSet
     member this.useParallel = useParallel
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
@@ -115,8 +115,6 @@ type causeMakeSorterSetEval
                                      |> Result.bind(WorkspaceComponent.asSorterSet)
                 let! wsParams    = w |> Workspace.getComponent this.wsParamsName
                                      |> Result.bind(WorkspaceComponent.asWorkspaceParams)
-                let! wsSpeedBins = w |> Workspace.getComponent this.sorterSpeedBinsName
-                                     |> Result.bind(WorkspaceComponent.asSorterSpeedBinSet)
 
                 let order = sorterSet |> SorterSet.getOrder
                 let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount "stagesSkipped"
@@ -129,19 +127,8 @@ type causeMakeSorterSetEval
                         (fun sev -> sev |> SorterEval.modifyForPrefix order stagesSkipped)
                         this.useParallel
 
-
                 let wsSorterSetEval = 
-                        sorterSetEval |>
-                                workspaceComponent.SorterSetEval
-
-
-                let order = sortableSet |> SortableSet.getOrder
-                let binType = this.sorterSetName |> WsComponentName.value |> SorterSpeedBinType.create
-                let ssBins = sorterSetEval |> SorterSetEval.getSorterEvals |> Array.map(SorterSpeedBin.fromSorterEval order binType)
-                let! gen = wsParams |> WorkspaceParamsAttrs.getGeneration "generation_current"
-                let wsSpeedBinsUpdated = ssBins 
-                                            |> SorterSpeedBinSet.addBins wsSpeedBins gen
-                                            |> workspaceComponent.SorterSpeedBinSet
+                        sorterSetEval |> workspaceComponent.SorterSetEval
 
 
                 return w |> 
@@ -150,7 +137,6 @@ type causeMakeSorterSetEval
                             this.causeName
                             [
                                 (this.sorterSetEvalName, wsSorterSetEval)
-                                (this.sorterSpeedBinsName, wsSpeedBinsUpdated)
                             ]
             }
     member this.id =

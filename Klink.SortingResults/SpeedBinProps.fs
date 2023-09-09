@@ -73,35 +73,48 @@ module SpeedBinProps
             (stageWeight:stageWeight)
             (binMap:Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>)
         =
-        orderByFitnessDesc stageWeight binMap  
-        |> Seq.head |> snd |> SorterFitness.value
+        let yab = orderByFitnessDesc stageWeight binMap
+        if yab.Length = 0 then
+            0.0
+        else
+            yab |> Seq.head |> snd |> SorterFitness.value
 
 
     let getBestStageCount
             (stageWeight:stageWeight)
             (binMap:Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>)
         =
-        orderByFitnessDesc stageWeight binMap  
-        |> Seq.head |> fst |> fst |> SorterSpeedBinKey.getSorterSpeed 
-        |> SorterSpeed.getStageCount |> StageCount.value
+        let yab = orderByFitnessDesc stageWeight binMap
+        if yab.Length = 0 then
+            0
+        else
+            yab |> Seq.head |> fst |> fst |> SorterSpeedBinKey.getSorterSpeed 
+                |> SorterSpeed.getStageCount |> StageCount.value
 
 
     let getBestSwitchCount
             (stageWeight:stageWeight)
             (binMap:Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>)
         =
-        orderByFitnessDesc stageWeight binMap  
-        |> Seq.head |> fst |> fst |> SorterSpeedBinKey.getSorterSpeed 
-        |> SorterSpeed.getSwitchCount |> SwitchCount.value
+        let yab = orderByFitnessDesc stageWeight binMap
+        if yab.Length = 0 then
+            0
+        else
+            yab |> Seq.head |> fst |> fst |> SorterSpeedBinKey.getSorterSpeed 
+                |> SorterSpeed.getSwitchCount |> SwitchCount.value
+
 
 
     let getBestSpeedBinEntropy
             (stageWeight:stageWeight)
             (binMap:Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>)
         =
-        orderByFitnessDesc stageWeight binMap
-        |> Seq.head |> fst |> snd |> Map.toArray |> Array.map(snd >> SorterCount.value)
-        |> Combinatorics.entropyOfInts
+        let yab = orderByFitnessDesc stageWeight binMap
+        if yab.Length = 0 then
+            0.0
+        else
+            yab |> Seq.head |> fst |> snd |> Map.toArray |> Array.map(snd >> SorterCount.value)
+                |> Combinatorics.entropyOfInts
 
 
 
@@ -230,8 +243,8 @@ module SpeedBinProps
             (stageWeight:stageWeight)
             (ssbs:sorterSpeedBinSet) 
         =
-        let parentType = "sorterSetEvalParent" |> SorterSpeedBinType.create
-        let mutantType = "sorterSetEvalMutated" |> SorterSpeedBinType.create
+        let parentType = "sorterSetParent" |> SorterSpeedBinType.create
+        let mutantType = "sorterSetMutated" |> SorterSpeedBinType.create
         let parentBins = getMapForSpeedBinType ssbs parentType
         let mutantBins = getMapForSpeedBinType ssbs mutantType
 
@@ -258,31 +271,27 @@ module SpeedBinProps
         let devSwitchCtM = getStDevSwitchCount mutantBins
         let phenotypeEntropyM = getPhenotypeEntropy stageWeight mutantBins
 
-
-        ()
-
-
-    //let getMapForSpeedBinType 
-    //        (ssbs:sorterSpeedBinSet) 
-    //        (ssbt:sorterSpeedBinType) = 
-    //    ssbs |> SorterSpeedBinSet.getBinMap
-    //         |> Map.toSeq
-    //         |> Seq.filter(fun (k, v) -> k.sorterSpeedBinType = ssbt)
-    //         |> Map.ofSeq
-        //let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
-        //let wnSorterSetEvalPruned = "sorterSetEvalParent" |> WsComponentName.create
-        
-               // let binType = this.sorterSetName |> WsComponentName.value |> SorterSpeedBinType.create
-     //   type sorterSpeedBinProps =
-     //| ErrorMsg 
-     //| SwitchCtF
-     //| StageCtF
-     //| BestFitness
-     //| BestEntropy
-     //| AveSwitchCt
-     //| AveStageCt
-     //| AveFitness
-     //| DevSwitchCt
-     //| DevStageCt
-     //| DevFitness
-     //| PhenotypeEntropy
+        [
+         aveFitness;
+         aveStageCt;
+         aveSwitchCt;
+         bestEntropy;
+         bestFitness;
+         bestStageCt;
+         bestSwitchCt;
+         devFitness;
+         devStageCt;
+         devSwitchCt;
+         phenotypeEntropy;
+         aveFitnessM;
+         aveStageCtM;
+         aveSwitchCtM;
+         bestEntropyM;
+         bestFitnessM;
+         bestStageCtM;
+         bestSwitchCtM;
+         devFitnessM;
+         devStageCtM;
+         devSwitchCtM;
+         phenotypeEntropyM;
+        ] |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""

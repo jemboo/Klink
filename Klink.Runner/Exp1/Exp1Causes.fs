@@ -63,7 +63,6 @@ module Exp1Causes =
                             wnSorterSetParent,
                             sorterEvalMode,
                             wnSorterSetEvalParent,
-                            wnSorterSpeedBinSet,
                             useParallel)
 
                 let causeAddSorterSpeedBinSet =
@@ -155,8 +154,24 @@ module Exp1Causes =
                             wnSorterSetMutated,
                             sorterEvalMode,
                             wnSorterSetEvalMutated,
-                            wnSorterSpeedBinSet,
                             useParallel) :> ICause |> Ok
+
+
+                let causeUpdateSorterSpeedBinSetParent = 
+                    new causeUpdateSorterSpeedBinSet(
+                        wnSorterSpeedBinSet,
+                        wnSorterSetEvalMutated,
+                        wnSorterSetParent |> WsComponentName.value |> SorterSpeedBinType.create
+                    ) :> ICause |> Ok
+
+
+                let causeUpdateSorterSpeedBinSetMutant = 
+                    new causeUpdateSorterSpeedBinSet(
+                        wnSorterSpeedBinSet,
+                        wnSorterSetEvalMutated,
+                        wnSorterSetMutated |> WsComponentName.value |> SorterSpeedBinType.create
+                    ) :> ICause |> Ok
+
 
                 let causePruneSorterSets = 
                     match sorterSetPruneMethod with
@@ -192,11 +207,14 @@ module Exp1Causes =
                         $"sorterSetPruneMethod:{sorterSetPruneMethod} 
                             not handled in makeMutantsAndPrune" |> Error
 
+
                 let! causeList = 
                             [
                                 causeAddSorterSetMutator;
                                 causeMutateSorterSet;
                                 causeMakeSorterSetEvalMutated;
+                                causeUpdateSorterSpeedBinSetParent;
+                                causeUpdateSorterSpeedBinSetMutant;
                                 causePruneSorterSets;
                             ] |> Result.sequence
 

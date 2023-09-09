@@ -73,4 +73,4 @@ module Combinatorics =
     let entropyOfInts (weights: int seq) =
         let fltArray = weights |> Seq.map(float) |> Seq.toArray
         let aSum = fltArray |> Array.sum
-        fltArray |> Array.map(fun fv -> fv/aSum) |> Array.sumBy(fun nv -> nv * log(nv))
+        fltArray |> Array.map(fun fv -> fv/aSum) |> Array.sumBy(fun nv -> - nv * log(nv))

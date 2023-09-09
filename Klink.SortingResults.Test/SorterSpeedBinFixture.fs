@@ -73,3 +73,11 @@ type SorterSpeedBinFixture() =
                             |> Result.ExtractOrThrow
 
         Assert.AreEqual(binSet, bsBack)
+
+
+
+    [<TestMethod>]
+    member this.getHeader() =
+        let ss = SpeedBinProps.getHeader()
+
+        Assert.IsTrue(true)

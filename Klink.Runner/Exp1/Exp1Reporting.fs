@@ -117,7 +117,7 @@ module Exp1Reporting =
     let reportHeaderSpeedBins () =
         sprintf "%s%s" 
             (paramPropsSpeedBins |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
-            (standardSorterEvalHeaders ())
+            (SpeedBinProps.getHeader())
 
 
     let reportHeaderBinned () =
@@ -148,13 +148,22 @@ module Exp1Reporting =
             (wsps:workspaceParams)
             (lineAppender:seq<string> -> Result<bool,string>)
         =
-        let lines = [||]
-            //sorterSetEval 
-            //    |> SorterSetEval.getSorterEvals 
-            //    |> Array.map(fun sev ->
-            //                        sprintf "%s%s" 
-            //                            (standardParamValues wsps)
-            //                            (standardSorterEvalValues sev))
+        let stageW1 = (wsps |> WorkspaceParams.getMap).["stageWeight"]
+
+        let stageW2 = stageW1
+                     |> Double.Parse
+
+        let stageW3 = stageW2 |> StageWeight.create
+
+        let yab = SpeedBinProps.getAllProperties stageW3 sorterSpeedBinSet
+        let lines = 
+            [|
+                sprintf "%s%s" 
+                    (standardParamValues wsps)
+                    yab
+        
+            |]
+
         lineAppender lines
 
 

@@ -140,7 +140,7 @@ module SorterSpeedBinSet
         ssbss.tag
 
 
-    let addBin
+    let private _addBin
             (bin:sorterSpeedBin) 
             (binMap:Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>)
         =
@@ -170,7 +170,7 @@ module SorterSpeedBinSet
             (bin:sorterSpeedBin option)
             =
             match bin with
-            | Some b -> (addBin b bMap)
+            | Some b -> (_addBin b bMap)
             | None -> bMap
 
 

@@ -310,12 +310,32 @@ module ShcRunCfgSet =
         {setName = runSetName; runCfgs = [|runCfg|]}
 
 
+    let reportAllFromPlexSeq 
+            (genMin:generation)
+            (genMax:generation)
+            (evalCompName:wsComponentName)
+            (reportFilter:generationFilter)
+            (runSetName:string)
+            (reportFileName:string)
+            (plexes:shcInitRunCfgPlex seq)
+        =
+        let runCfgs = 
+            plexes |> Seq.map(
+            ShcReportEvalsCfgs.fromPlex 
+                    genMin
+                    genMax 
+                    evalCompName 
+                    reportFilter 
+                    reportFileName)
+            |> Seq.map(shcReportCfg.Evals >> shcRunCfg.Report)
+            |> Seq.toArray
+
+        {setName = runSetName; runCfgs = runCfgs}
 
 
     let reportBinsFromPlex 
             (genMin:generation)
             (genMax:generation)
-            (reportFilter:generationFilter)
             (runSetName:string)
             (reportFileName:string)
             (plex:shcInitRunCfgPlex)
