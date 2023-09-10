@@ -108,8 +108,8 @@ type RunCfgDtos () =
         let runSetName = "reportBinsRunset"
 
         let shcRunCfgSet = 
-            Exp1Cfg.testShcInitRunCfgPlex 
-               |> ShcRunCfgSet.reportBinsFromPlex 
+            [Exp1Cfg.testShcInitRunCfgPlex; Exp1Cfg.testShcInitRunCfgPlex2]
+               |> ShcRunCfgSet.reportBinsFromPlexSeq
                             genMin 
                             genMax 
                             runSetName 
