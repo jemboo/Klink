@@ -3,7 +3,7 @@ open System
 open System.IO
 open System.Threading
 
-module ShcRun =
+module ScriptRun =
 
     let scriptFolder = "scripts"
     let toDoFolder = "toDo"

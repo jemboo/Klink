@@ -44,14 +44,14 @@ module Program =
 
 
         let (scriptFileName, shcRunCfgSet) =
-                ShcRun.getNextRunCfgSet projectFolderPath
+                ScriptRun.getNextRunCfgSet projectFolderPath
                 |> Result.ExtractOrThrow
 
         let yab =
                 Exp1Run.procRunCfgSet projectFolderPath useParallel shcRunCfgSet
                 |> Result.ExtractOrThrow
 
-        let boink = ShcRun.finishScript scriptFileName projectFolderPath
+        let boink = ScriptRun.finishScript scriptFileName projectFolderPath
                     |> Result.ExtractOrThrow
 
 
