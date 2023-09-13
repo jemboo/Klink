@@ -81,7 +81,7 @@ module Exp1Run =
             let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
             let fs = new WorkspaceFileStore(runDir)
 
-            let! wsCfg_params, ws = 
+            let! wsParamsGen1, ws = 
                     Exp1WsOps.setupWorkspace
                             wnSortableSet
                             wnSorterSetParent
@@ -95,10 +95,10 @@ module Exp1Run =
                                 |> Result.map(Generation.value)
 
 
-            let! cg = wsCfg_params |> snd |> WorkspaceParamsAttrs.getGeneration "generation_current"
+            let! cg = wsParamsGen1 |> snd |> WorkspaceParamsAttrs.getGeneration "generation_current"
                     
             let mutable curGen = cg |> Generation.value
-            let mutable curParams = wsCfg_params |> snd
+            let mutable curParams = wsParamsGen1 |> snd
             let mutable curWorkspace = ws
 
             while curGen < maxGen do

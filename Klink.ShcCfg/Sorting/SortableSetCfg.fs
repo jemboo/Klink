@@ -19,8 +19,7 @@ module SortableSetCertainCfg =
         | Orbit p -> p |> Permutation.getOrder
 
 
-    let getId 
-                (cfg:sortableSetCertainCfg) 
+    let getId (cfg:sortableSetCertainCfg) 
         = 
         [| "sortableSetCertainCfg" :> obj;
             cfg :> obj|] |> GuidUtils.guidFromObjs

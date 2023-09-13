@@ -4,7 +4,7 @@ open System
 
 module Exp1Causes = 
 
-    let initParentMapAndEval
+    let makeInitShcCfg
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
@@ -18,7 +18,7 @@ module Exp1Causes =
                 let! sorterCount = wsParams |> WorkspaceParamsAttrs.getSorterCount "sorterCount"
                 let! switchGenMode = wsParams |> WorkspaceParamsAttrs.getSwitchGenMode "switchGenMode"
                 let! switchCount = wsParams |> WorkspaceParamsAttrs.getSwitchCount "sorterLength"
-                let! sorterEvalMode =wsParams |> WorkspaceParamsAttrs.getSorterEvalMode "sorterEvalMode"
+                let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode "sorterEvalMode"
                 let! useParallel = wsParams |> WorkspaceParamsAttrs.getUseParallel "useParallel"
                 let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount "stagesSkipped"
 
@@ -82,7 +82,7 @@ module Exp1Causes =
             }
 
 
-    let resetSpeedBins
+    let makeResetSpeedBinsCfg
             (wnSorterSpeedBinSet:wsComponentName)
             (wsParams:workspaceParams)
             (workspaceCfg:workspaceCfg)
@@ -103,7 +103,7 @@ module Exp1Causes =
 
 
 
-    let makeMutantsAndPrune
+    let makeMutantsAndPruneCfg
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetMutator:wsComponentName)
@@ -129,6 +129,8 @@ module Exp1Causes =
                 let! stageWeight = wsParams |> WorkspaceParamsAttrs.getStageWeight "stageWeight" 
                 let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode "sorterEvalMode" 
                 let! switchGenMode = wsParams |> WorkspaceParamsAttrs.getSwitchGenMode "switchGenMode" 
+                let! generation = wsParams |> WorkspaceParamsAttrs.getGeneration "generation_current"
+
                 let! useParallel = wsParams |> WorkspaceParamsAttrs.getUseParallel "useParallel" 
 
                 let causeAddSorterSetMutator = 
@@ -160,8 +162,10 @@ module Exp1Causes =
                 let causeUpdateSorterSpeedBinSetParent = 
                     new causeUpdateSorterSpeedBinSet(
                         wnSorterSpeedBinSet,
-                        wnSorterSetEvalMutated,
-                        wnSorterSetParent |> WsComponentName.value |> SorterSpeedBinType.create
+                        wnSorterSetEvalParent,
+                        order,
+                        wnSorterSetParent |> WsComponentName.value |> SorterSpeedBinType.create,
+                        generation
                     ) :> ICause |> Ok
 
 
@@ -169,7 +173,9 @@ module Exp1Causes =
                     new causeUpdateSorterSpeedBinSet(
                         wnSorterSpeedBinSet,
                         wnSorterSetEvalMutated,
-                        wnSorterSetMutated |> WsComponentName.value |> SorterSpeedBinType.create
+                        order,
+                        wnSorterSetMutated |> WsComponentName.value |> SorterSpeedBinType.create,
+                        generation
                     ) :> ICause |> Ok
 
 
@@ -219,15 +225,14 @@ module Exp1Causes =
                             ] |> Result.sequence
 
                 return
-                        workspaceCfg
-                        |> WorkspaceCfg.addCauses 
-                            causeList
+                    workspaceCfg
+                    |> WorkspaceCfg.addCauses causeList
 
             }
 
 
 
-    let assignToNextGen
+    let getNextGenCfg
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetPruned:wsComponentName)
@@ -241,7 +246,7 @@ module Exp1Causes =
 
             result {
                 let causeSetupForNextGen = 
-                    new setupForNextGen(
+                    new causeSetupForNextGen(
                             wnSortableSet,
                             wnSorterSetParent,
                             wnSorterSetPruned,

@@ -16,7 +16,7 @@ module Exp1WsOps =
             result {
                 let emptyWsCfg = WorkspaceCfg.Empty
                 let! (wsCfg, wsParams) = 
-                    Exp1Causes.initParentMapAndEval
+                    Exp1Causes.makeInitShcCfg
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetEvalParent
@@ -57,7 +57,7 @@ module Exp1WsOps =
          =
             result {
                 let! workspaceCfgPrune = 
-                     Exp1Causes.makeMutantsAndPrune
+                     Exp1Causes.makeMutantsAndPruneCfg
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetMutator
@@ -77,7 +77,7 @@ module Exp1WsOps =
                                  |> Result.bind(WorkspaceParamsAttrs.updateRngGen "rngGenPrune")
 
                 let! workspaceCfgNextGen = 
-                     Exp1Causes.assignToNextGen
+                     Exp1Causes.getNextGenCfg
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetPruned
@@ -130,7 +130,7 @@ module Exp1WsOps =
                 let baseWsCfg = WorkspaceCfg.Empty
 
                 let! workspaceCfgPrune = 
-                     Exp1Causes.makeMutantsAndPrune
+                     Exp1Causes.makeMutantsAndPruneCfg
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetMutator
@@ -150,7 +150,7 @@ module Exp1WsOps =
                                  |> Result.bind(WorkspaceParamsAttrs.updateRngGen "rngGenPrune")
 
                 let! nextGenCfg = 
-                     Exp1Causes.assignToNextGen
+                     Exp1Causes.getNextGenCfg
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetPruned
@@ -168,8 +168,8 @@ module Exp1WsOps =
                                 (nextGenCfg.history) 
 
                 let! nextGen = 
-                            wsParamsNextGen 
-                                |> WorkspaceParamsAttrs.getGeneration "generation_current"
+                        wsParamsNextGen 
+                        |> WorkspaceParamsAttrs.getGeneration "generation_current"
 
                 let! gf = wsParamsNextGen |> WorkspaceParamsAttrs.getGenerationFilter "generation_filter" 
                 if (gf |> GenerationFilter.passing nextGen) then

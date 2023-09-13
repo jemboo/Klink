@@ -94,7 +94,6 @@ type causeMakeSorterSetEval
             wsnSorterSet:wsComponentName,
             sorterEvalMode:sorterEvalMode,
             wsnSorterSetEval:wsComponentName,
-           // wnSorterSpeedBinSet:wsComponentName,
             useParallel:useParallel
         ) 
     =
@@ -104,7 +103,6 @@ type causeMakeSorterSetEval
     member this.sorterSetName = wsnSorterSet
     member this.sorterEvalMode = sorterEvalMode
     member this.sorterSetEvalName = wsnSorterSetEval
-  //  member this.sorterSpeedBinsName = wnSorterSpeedBinSet
     member this.useParallel = useParallel
     member this.updater = 
             fun (w: workspace) (newWorkspaceId: workspaceId) ->
@@ -335,33 +333,30 @@ type causePruneSorterSetsShc
 
             result {
 
-                let! sorterSetParent = 
+                let! _sorterSetParent = 
                         w |> Workspace.getComponent this.sorterSetParentName
                           |> Result.bind(WorkspaceComponent.asSorterSet)
-                let! sorterSetChild = 
+                let! _sorterSetChild = 
                         w |> Workspace.getComponent this.sorterSetChildName
                           |> Result.bind(WorkspaceComponent.asSorterSet)
-                let! sorterSetEvalParent = 
+                let! _sorterSetEvalParent = 
                         w |> Workspace.getComponent this.sorterSetEvalParentName
                           |> Result.bind(WorkspaceComponent.asSorterSetEval)
-                let! sorterSetEvalChild = 
+                let! _sorterSetEvalChild = 
                         w |> Workspace.getComponent this.sorterSetEvalChildName
                           |> Result.bind(WorkspaceComponent.asSorterSetEval)
-                let! sorterSetParentMap = 
+                let! _sorterSetParentMap = 
                         w |> Workspace.getComponent this.sorterSetParentMapName
                           |> Result.bind(WorkspaceComponent.asSorterSetParentMap)
 
 
-
-
-                let rngGenProvider = 
-                        RngGenProvider.make this.rngGen
-                let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
+                let _rngGen = RngGenProvider.make 
+                                this.rngGen |> RngGenProvider.nextRngGen
 
                 let sorterSetEvalsAll = 
-                        (sorterSetEvalParent |> SorterSetEval.getSorterEvals)
+                        (_sorterSetEvalParent |> SorterSetEval.getSorterEvals)
                                 |> Array.append
-                                    (sorterSetEvalChild |> SorterSetEval.getSorterEvals)
+                                    (_sorterSetEvalChild |> SorterSetEval.getSorterEvals)
 
                 let sorterSetPruner = 
                     SorterSetPruner.make 
@@ -374,12 +369,11 @@ type causePruneSorterSetsShc
                         |> SorterSetPruner.runShcPrune 
                                 sorterSetPruner 
                                 _rngGen
-                                sorterSetParentMap
+                                _sorterSetParentMap
 
                 let mergedSorterMap = 
-                        (sorterSetParent |> SorterSet.getSorters)
-                            |> Array.append
-                                (sorterSetChild |> SorterSet.getSorters)
+                        (_sorterSetParent |> SorterSet.getSorters)
+                        |> Array.append (_sorterSetChild |> SorterSet.getSorters)
                         |> Array.map(fun s -> ((s |> Sorter.getSorterId), s))
                         |> Map.ofArray
 
@@ -391,24 +385,24 @@ type causePruneSorterSetsShc
                 let prunedSorterSetId = 
                     SorterSetPruner.makePrunedSorterSetId
                         (sorterSetPruner |> SorterSetPruner.getId)
-                        (sorterSetParent |> SorterSet.getId)
-                        (sorterSetChild |> SorterSet.getId)
+                        (_sorterSetParent |> SorterSet.getId)
+                        (_sorterSetChild |> SorterSet.getId)
                         (this.stageWeight)
                         (this.noiseFraction)
                         _rngGen
 
                 let prunedSorterSet = 
                      SorterSet.load 
-                            prunedSorterSetId
-                            (sorterSetParent |> SorterSet.getOrder)
-                            prunedSorters
+                        prunedSorterSetId
+                        (_sorterSetParent |> SorterSet.getOrder)
+                        prunedSorters
 
 
                 let prunedSorterSetEvalId = 
                     SorterSetPruner.makePrunedSorterSetEvalId
                         (sorterSetPruner |> SorterSetPruner.getId)
-                        (sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
-                        (sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
+                        (_sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
+                        (_sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
                         _rngGen
 
 
@@ -416,7 +410,7 @@ type causePruneSorterSetsShc
                     SorterSetEval.load
                         prunedSorterSetEvalId
                         prunedSorterSetId
-                        (sorterSetEvalChild |> SorterSetEval.getSortableSetId)
+                        (_sorterSetEvalChild |> SorterSetEval.getSortableSetId)
                         sorterEvalsPruned
 
 
@@ -425,7 +419,6 @@ type causePruneSorterSetsShc
                             newWorkspaceId
                             this.causeName
                             [
-                                (this.sorterSetParentMapName , sorterSetParentMap |> workspaceComponent.SorterSetParentMap)
                                 (this.sorterSetPrunedName, prunedSorterSet |> workspaceComponent.SorterSet)
                                 (this.sorterSetEvalPrunedName, sorterSetEvalsPruned |> workspaceComponent.SorterSetEval )
                             ]
@@ -456,7 +449,7 @@ type causePruneSorterSetsShc
 
 
 
-type setupForNextGen
+type causeSetupForNextGen
             (
              wnSortableSet:wsComponentName,
              wnSorterSetParent:wsComponentName,
@@ -467,7 +460,7 @@ type setupForNextGen
              wnSorterSpeedBinSet:wsComponentName,
              workspaceParams:workspaceParams) 
     = 
-    member this.causeName = "setupForNextGen"
+    member this.causeName = "causeSetupForNextGen"
     member this.wnSortableSet = wnSortableSet
     member this.wnSorterSetParent = wnSorterSetParent
     member this.wnSorterSetPruned = wnSorterSetPruned
@@ -483,22 +476,22 @@ type setupForNextGen
         fun (w: workspace) (newWorkspaceId: workspaceId) ->
 
             result {
-                let! sortableSet = 
+                let! wcSortableSet = 
                         w |> Workspace.getComponent this.wnSortableSet
 
-                let! sorterSetNewParent = 
+                let! wcSorterSetNewParent = 
                         w |> Workspace.getComponent this.wnSorterSetPruned
 
-                let! sorterSetEvalParentNew = 
+                let! wcSorterSetEvalParentNew = 
                         w |> Workspace.getComponent this.wnSorterSetEvalPruned
 
-                let! sorterSpeedBinSet = 
+                let! wcSorterSpeedBinSet = 
                         w |> Workspace.getComponent this.wnSorterSpeedBinSet
 
-                let! sorterSetParentMap = 
+                let! wcSorterSetParentMap = 
                         w |> Workspace.getComponent this.wnParentMap
 
-                let wsParams = 
+                let wcParams = 
                      this.workspaceParams
                             |> workspaceComponent.WorkspaceParams
 
@@ -508,12 +501,12 @@ type setupForNextGen
                             (w |> Workspace.getParentId)
                             this.causeName
                             [
-                                (this.wnSortableSet, sortableSet)
-                                (this.wnSorterSetParent, sorterSetNewParent)
-                                (this.wnSorterSetEvalParent, sorterSetEvalParentNew)
-                                (this.wnParentMap, sorterSetParentMap)
-                                (this.wnSorterSpeedBinSet, sorterSpeedBinSet)
-                                (this.wsnParams, wsParams)
+                                (this.wnSortableSet, wcSortableSet)
+                                (this.wnSorterSetParent, wcSorterSetNewParent)
+                                (this.wnSorterSetEvalParent, wcSorterSetEvalParentNew)
+                                (this.wnParentMap, wcSorterSetParentMap)
+                                (this.wnSorterSpeedBinSet, wcSorterSpeedBinSet)
+                                (this.wsnParams, wcParams)
                             ]
             }
 

@@ -8,31 +8,28 @@ type RunCfgDtos () =
 
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let newGens = 5000 |> Generation.create
-        let genFilter = { modGenerationFilter.modulus = 5}
+        let newGens = 80000 |> Generation.create
+        let genFilter = { modGenerationFilter.modulus = 80}
                             |> generationFilter.ModF
-        let runSetName = "initRun"
+        let runSetName = "initRunSevenEight"
         let shcRunCfgSet = 
-            Exp1Cfg.testShcInitRunCfgPlex 
+            Exp1Cfg.sevenEightShcInitRunCfgPlex 
                |> ShcRunCfgSet.initRunFromPlex newGens genFilter runSetName
 
         let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
 
-        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
+        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT2\scripts" |> Some) "toDo" runSetName cereal
         |> ignore
 
 
-        let newGens = 5000 |> Generation.create
-        let genFilter = { modGenerationFilter.modulus = 5}
-                            |> generationFilter.ModF
-        let runSetName = "initRun2"
+        let runSetName = "initRunSevenEight2"
         let shcRunCfgSet = 
-            Exp1Cfg.testShcInitRunCfgPlex2
+            Exp1Cfg.sevenEightShcInitRunCfgPlex1
                |> ShcRunCfgSet.initRunFromPlex newGens genFilter runSetName
 
         let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
 
-        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
+        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT2\scripts" |> Some) "toDo" runSetName cereal
         |> ignore
 
 
@@ -41,6 +38,8 @@ type RunCfgDtos () =
                            |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);
+
+
 
 
 
@@ -68,8 +67,8 @@ type RunCfgDtos () =
 
     [<TestMethod>]
     member this.shcReportCfgDtos () =
-        let genMin = 50 |> Generation.create
-        let genMax = 150 |> Generation.create
+        let genMin = 2 |> Generation.create
+        let genMax = 40000 |> Generation.create
         let wsCompName = "sorterSetEvalParent" |> WsComponentName.create
         let genFilter = { modGenerationFilter.modulus = 1}
                             |> generationFilter.ModF
@@ -102,7 +101,7 @@ type RunCfgDtos () =
     [<TestMethod>]
     member this.shcReportBinCfgDtos () =
         let genMin = 1 |> Generation.create
-        let genMax = 5000 |> Generation.create
+        let genMax = 80000 |> Generation.create
         let reportFileName = "reportBinsReport"
         let scriptFileName = "reportBinsScript"
         let runSetName = "reportBinsRunset"
@@ -117,7 +116,7 @@ type RunCfgDtos () =
 
         let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
 
-        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" scriptFileName cereal
+        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT2\scripts" |> Some) "toDo" scriptFileName cereal
         |> ignore
 
         let yabba = cereal |> ShcRunCfgSetDto.fromJson

@@ -43,11 +43,12 @@ type causeUpdateSorterSpeedBinSet
             (
              wsnSorterSpeedBinSet:wsComponentName,
              wsnSorterSetEval:wsComponentName,
-             sorterSpeedBinType:sorterSpeedBinType
-             )
+             order:order,
+             sorterSpeedBinType:sorterSpeedBinType,
+             generation:generation
+            )
     = 
     member this.causeName = "causeUpdateSorterSpeedBinSet"
-    member this.wsParamsName = WsConstants.workSpaceComponentNameForParams
     member this.wsnSorterSpeedBinSet = wsnSorterSpeedBinSet
     member this.wsnSorterSetEval = wsnSorterSetEval
     member this.sorterSpeedBinType = sorterSpeedBinType
@@ -63,24 +64,17 @@ type causeUpdateSorterSpeedBinSet
                     = w |> Workspace.getComponent this.wsnSorterSetEval
                         |> Result.bind(WorkspaceComponent.asSorterSetEval)
 
-                let! wsParams 
-                    = w |> Workspace.getComponent this.wsParamsName
-                        |> Result.bind(WorkspaceComponent.asWorkspaceParams)
-
-                let! order = wsParams |> WorkspaceParamsAttrs.getOrder "order"
 
                 let ssBins =
                         sorterSetEval 
                         |> SorterSetEval.getSorterEvals 
                         |> Array.map(SorterSpeedBin.fromSorterEval order sorterSpeedBinType)
 
-                let! gen = wsParams |> WorkspaceParamsAttrs.getGeneration "generation_current"
 
                 let wsSpeedBinsUpdated =
                         ssBins 
-                        |> SorterSpeedBinSet.addBins wcSorterSpeedBinSet gen
+                        |> SorterSpeedBinSet.addBins wcSorterSpeedBinSet generation
                         |> workspaceComponent.SorterSpeedBinSet
-
 
                 return w |> Workspace.addComponents 
                             newWorkspaceId
