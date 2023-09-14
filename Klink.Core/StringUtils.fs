@@ -21,13 +21,13 @@ module StringUtil =
         | None -> emptyVal
 
     let toCsvLine<'a> 
-            (strFetch:'a->string) 
+            (strFormat:'a->string) 
             (lineData:'a seq)
         =
         lineData 
         |> Seq.fold 
                 (fun st t ->
-                    let cv = strFetch t 
+                    let cv = strFormat t 
                     if (st = "") then cv else $"{st}\t{cv}" 
                 )
                 ""

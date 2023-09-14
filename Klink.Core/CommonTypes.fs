@@ -174,3 +174,25 @@ module ArrayLength =
             "arrayLength must not be negative" |> Error
 
     let createNr (value: int) = value |> ArrayLength
+
+
+
+type boundedFloat = private BoundedFloat of float
+module BoundedFloat =
+
+    let value (BoundedFloat v) = v
+
+    let create (value: float) =
+        if (value < -1.0) then
+            -1.0 |> BoundedFloat
+        elif (value > 1.0) then
+            1.0 |> BoundedFloat
+        else
+            value |> BoundedFloat
+
+    let addValue
+            (zto:boundedFloat) 
+            (delta:float)
+        =
+        create ((value zto) + delta)
+

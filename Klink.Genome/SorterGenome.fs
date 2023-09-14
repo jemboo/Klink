@@ -1,5 +1,58 @@
 ﻿namespace global
 
+
+type epiSite<'y> = private {payloadA:'y; payloadB:'y; activation:boundedFloat}
+
+module EpiSite =
+    
+    let create<'y> 
+            (payloadA:'y) 
+            (payloadB:'y) 
+            (activation:boundedFloat)
+        =
+        {payloadA=payloadA; payloadB = payloadB; activation = activation}
+
+    let getActivation (site: epiSite<'y>) =
+        site.activation
+
+
+    let applyDelta (site: epiSite<'y>)
+                   (selectDelta:float)
+        =
+        { site with activation = BoundedFloat.addValue site.activation selectDelta}
+
+
+
+    let _select<'y> 
+            (site: epiSite<'y>)
+            (selectVal:float)
+            (selectDelta:float)
+        =
+            if ((site.activation |> BoundedFloat.value) < selectVal) then
+                (site.payloadA, applyDelta site (- selectDelta) )
+            else
+                (site.payloadB, applyDelta site ( selectDelta) )
+
+    let epiSelect
+            (randy:IRando)
+            (dev:float)
+            (selectDelta:float)
+            (sites: epiSite<'y> array)
+        =
+        let mean = 0.0
+        let selectVals =  
+                RandVars.gaussianDistribution mean dev randy
+                |> Seq.take (sites.Length)
+                |> Seq.toArray
+        
+        let siteSelections = 
+                sites
+                |> Array.mapi(fun dex site -> _select site selectVals.[dex] selectDelta)
+
+        siteSelections
+
+
+
 type activated<'y,'r> = private {payload:'y; activationParam:'r}
 
 module Activated =

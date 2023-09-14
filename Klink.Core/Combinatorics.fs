@@ -14,8 +14,6 @@ module Combinatorics =
                     yield i.toBoolArray m }
 
 
-
-
     // generates all int[] of length m, made by drawing m
     // items out of [0 .. (n-1)] without replacement, with the m items
     // always being ordered from smallest to largest.
