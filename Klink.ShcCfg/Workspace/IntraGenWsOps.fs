@@ -14,9 +14,9 @@ module Exp1WsOps =
             (logger: string -> unit)
          =
             result {
-                let emptyWsCfg = WorkspaceCfg.Empty
+                let emptyWsCfg = History.Empty
                 let! (wsCfg, wsParams) = 
-                    Exp1Causes.makeInitShcCfg
+                    CauseSets.addInitShcCauses
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetEvalParent
@@ -25,7 +25,7 @@ module Exp1WsOps =
                         emptyWsCfg
 
                 let! wsGenZero =
-                        wsCfg |> WorkspaceCfg.runWorkspaceCfg fs logger
+                        wsCfg |> History.runWorkspaceCfg fs logger
 
                 let! curGenNumber = 
                             wsParams
@@ -48,76 +48,6 @@ module Exp1WsOps =
             (wnParentMap:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalMutated:wsComponentName)
-            (wnSorterSpeedBinSet:wsComponentName) 
-            (wnSorterSetEvalPruned:wsComponentName) 
-            (fs:WorkspaceFileStore)
-            (logger: string -> unit)            
-            (wsParams:workspaceParams)
-            (workspaceCfg:workspaceCfg)
-         =
-            result {
-                let! workspaceCfgPrune = 
-                     Exp1Causes.makeMutantsAndPruneCfg
-                        wnSortableSet
-                        wnSorterSetParent
-                        wnSorterSetMutator
-                        wnSorterSetMutated
-                        wnSorterSetPruned
-                        wnParentMap
-                        wnSorterSetEvalParent
-                        wnSorterSetEvalMutated
-                        wnSorterSetEvalPruned
-                        wnSorterSpeedBinSet
-                        wsParams
-                        workspaceCfg
-
-                let! wsParamsNextGen = 
-                        wsParams |> WorkspaceParamsAttrs.incrGeneration "generation_current"
-                                 |> Result.bind(WorkspaceParamsAttrs.updateRngGen "rngGenMutate")
-                                 |> Result.bind(WorkspaceParamsAttrs.updateRngGen "rngGenPrune")
-
-                let! workspaceCfgNextGen = 
-                     Exp1Causes.getNextGenCfg
-                        wnSortableSet
-                        wnSorterSetParent
-                        wnSorterSetPruned
-                        wnSorterSetEvalParent
-                        wnSorterSetEvalPruned
-                        wnParentMap
-                        wnSorterSpeedBinSet
-                        wsParamsNextGen
-                        workspaceCfgPrune
-
-                let! wsNextGen = 
-                        workspaceCfgNextGen
-                            |> WorkspaceCfg.runWorkspaceCfg fs logger
-
-                let! res = fs.saveWorkSpace wsNextGen
-
-                let! nextGenNumber = 
-                            wsParamsNextGen 
-                                |> WorkspaceParamsAttrs.getGeneration "generation_current" 
-                                |> Result.map(Generation.value)
-
-                logger ($"Saved Gen {nextGenNumber} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
-
-
-                let aggregatedCause = new causeLoadWorkspace (wsNextGen |> Workspace.getId)
-                let truncWsCfg = aggregatedCause.makeTruncatedWorkspaceCfg()
-
-                return truncWsCfg, wsParamsNextGen
-             }
-
-
-    let doGenOnWorkspace
-            (wnSortableSet:wsComponentName)
-            (wnSorterSetParent:wsComponentName)
-            (wnSorterSetMutator:wsComponentName)
-            (wnSorterSetMutated:wsComponentName)
-            (wnSorterSetPruned:wsComponentName)
-            (wnParentMap:wsComponentName)
-            (wnSorterSetEvalParent:wsComponentName)
-            (wnSorterSetEvalMutated:wsComponentName)
             (wnSorterSetEvalPruned:wsComponentName)
             (wnSorterSpeedBinSet:wsComponentName)      
             (fs:WorkspaceFileStore)
@@ -127,10 +57,10 @@ module Exp1WsOps =
          =
             result {
                 
-                let baseWsCfg = WorkspaceCfg.Empty
+                let baseWsCfg = History.Empty
 
                 let! workspaceCfgPrune = 
-                     Exp1Causes.makeMutantsAndPruneCfg
+                     CauseSets.addMutantsAndPruneCauses
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetMutator
@@ -150,7 +80,7 @@ module Exp1WsOps =
                                  |> Result.bind(WorkspaceParamsAttrs.updateRngGen "rngGenPrune")
 
                 let! nextGenCfg = 
-                     Exp1Causes.getNextGenCfg
+                     CauseSets.addNextGenCauses
                         wnSortableSet
                         wnSorterSetParent
                         wnSorterSetPruned
@@ -163,9 +93,9 @@ module Exp1WsOps =
 
                 let! wsNextGen =
                         ws
-                        |> WorkspaceCfg.runWorkspaceCfgOnWorkspace
+                        |> History.runWorkspaceCfgOnWorkspace
                                 logger
-                                (nextGenCfg.history) 
+                                (nextGenCfg.causes) 
 
                 let! nextGen = 
                         wsParamsNextGen 
@@ -179,7 +109,7 @@ module Exp1WsOps =
                         new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
                     let! resetWs =
                         wsNextGen
-                        |> WorkspaceCfg.runWorkspaceCfgOnWorkspace
+                        |> History.runWorkspaceCfgOnWorkspace
                                 logger
                                 [causeAddSorterSpeedBinSet]
 

@@ -1,7 +1,7 @@
 ﻿namespace global
 open System
 
-module ShcCfgParams =
+module Exp1Params =
 
     let rndGens (offset:int) (take:int) = 
         let rngGenSeed = 1234 |> RandomSeed.create |> RngGen.createLcg

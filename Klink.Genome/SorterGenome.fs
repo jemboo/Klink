@@ -23,7 +23,7 @@ module EpiSite =
 
 
 
-    let _select<'y> 
+    let _selectA<'y> 
             (site: epiSite<'y>)
             (selectVal:float)
             (selectDelta:float)
@@ -33,7 +33,22 @@ module EpiSite =
             else
                 (site.payloadB, applyDelta site ( selectDelta) )
 
-    let epiSelect
+
+
+    let _selectB<'y> 
+            (site: epiSite<'y>)
+            (selectVal:float)
+            (selectDelta:float)
+        =
+            if ((site.activation |> BoundedFloat.value) + selectVal < 0) then
+                (site.payloadA, applyDelta site (- selectDelta) )
+            else
+                (site.payloadB, applyDelta site ( selectDelta) )
+
+
+
+
+    let epiSelectA
             (randy:IRando)
             (dev:float)
             (selectDelta:float)
@@ -46,10 +61,32 @@ module EpiSite =
                 |> Seq.toArray
         
         let siteSelections = 
-                sites
-                |> Array.mapi(fun dex site -> _select site selectVals.[dex] selectDelta)
+               sites
+                |> Array.mapi(fun dex site -> _selectA site selectVals.[dex] selectDelta)
 
         siteSelections
+
+
+
+
+    let epiSelectB
+            (randy:IRando)
+            (dev:float)
+            (selectDelta:float)
+            (sites: epiSite<'y> array)
+        =
+        let mean = 0.0
+        let selectVals =  
+                RandVars.gaussianDistribution mean dev randy
+                |> Seq.take (sites.Length)
+                |> Seq.toArray
+        
+        let siteSelections = 
+               sites
+                |> Array.mapi(fun dex site -> _selectB site selectVals.[dex] selectDelta)
+
+        siteSelections
+
 
 
 

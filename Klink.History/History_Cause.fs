@@ -1,9 +1,9 @@
 ﻿namespace global
 open System
 
-type workspaceCfg =
+type history =
     { id:workspaceId;
-      history:ICause list }
+      causes:ICause list }
 and ICause =
     abstract member Id:causeId
     abstract member ResetId:workspaceId option
@@ -12,7 +12,7 @@ and ICause =
     abstract member UseInWorkspaceId:bool
 
 
-module WorkspaceCfg = 
+module History = 
 
     let makeWorkspaceId 
             (curId:workspaceId) 
@@ -44,10 +44,10 @@ module WorkspaceCfg =
         _makeWorkspaceId curId future
 
 
-    let makeWorkspaceCfg (history:ICause list) =
+    let makeWorkspaceCfg (causes:ICause list) =
         { 
-          id = makeWorkspaceId (Workspace.empty |> Workspace.getId) history;
-          history = history
+          id = makeWorkspaceId (Workspace.empty |> Workspace.getId) causes;
+          causes = causes
         }
 
 
@@ -56,19 +56,19 @@ module WorkspaceCfg =
 
     let addCause 
             (ccfg:ICause) 
-            (wscfg:workspaceCfg) =
-        makeWorkspaceCfg ([ccfg] |> List.append wscfg.history)
+            (wscfg:history) =
+        makeWorkspaceCfg ([ccfg] |> List.append wscfg.causes)
 
-    let addCauses (ccfgs:ICause list) (wscfg:workspaceCfg) =
-        makeWorkspaceCfg (ccfgs |> List.append wscfg.history)
+    let addCauses (ccfgs:ICause list) (wscfg:history) =
+        makeWorkspaceCfg (ccfgs |> List.append wscfg.causes)
 
-    let removeLastCause (wscfg:workspaceCfg) =
-        match wscfg.history with
+    let removeLastCause (wscfg:history) =
+        match wscfg.causes with
         | [] ->   (makeWorkspaceCfg [], [])
         | h::t -> (
                    makeWorkspaceCfg 
-                            (wscfg.history |> List.removeAt (wscfg.history.Length - 1)),
-                   [wscfg.history.[wscfg.history.Length - 1]])
+                            (wscfg.causes |> List.removeAt (wscfg.causes.Length - 1)),
+                   [wscfg.causes.[wscfg.causes.Length - 1]])
 
 
     let makeWorkspace 
@@ -97,10 +97,10 @@ module WorkspaceCfg =
     let getLastSavedWorspaceIdAndFuture 
                 (fileStore:IWorkspaceStore)
                 (logger: string->unit)
-                (workspaceCfg:workspaceCfg) 
+                (history:history) 
         =
-        let rec _lastWorkspaceCfg
-                (wksCfgCurrent:workspaceCfg) 
+        let rec _lastHistory
+                (wksCfgCurrent:history) 
                 (future:ICause list)
             =
             let chkLatest = fileStore.WorkSpaceExists(wksCfgCurrent.id)
@@ -110,24 +110,24 @@ module WorkspaceCfg =
                 if wasFound then
                     logger $"found {wksCfgCurrent.id |> WorkspaceId.value }"
                     (wksCfgCurrent.id, future) |> Ok
-                elif wksCfgCurrent.history.Length = 0 then
+                elif wksCfgCurrent.causes.Length = 0 then
                     logger $"no prior workspace found"
                     (Empty.id, future) |> Ok
                 else
                     let lastWksCfg, lastCause = removeLastCause wksCfgCurrent
-                    _lastWorkspaceCfg lastWksCfg (lastCause@future)
+                    _lastHistory lastWksCfg (lastCause@future)
 
-        _lastWorkspaceCfg workspaceCfg []
+        _lastHistory history []
 
 
     let runWorkspaceCfg 
             (fileStore:IWorkspaceStore)
             (logger: string->unit)
-            (workspaceCfg:workspaceCfg)
+            (history:history)
         =
         result {
             let! latestSavedId, future = 
-                    workspaceCfg |>
+                    history |>
                         getLastSavedWorspaceIdAndFuture fileStore logger
 
             let! restoredAncestorWs = 

@@ -1,10 +1,10 @@
-namespace Klink.Cfg.Test
+namespace Klink.History.Test
 
 open System
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
 [<TestClass>]
-type WorkspaceCfgFixture () =
+type HistoryFixture () =
 
     [<TestMethod>]
     member this.AddAndRemoveWorkspaceCfg () =
@@ -16,11 +16,11 @@ type WorkspaceCfgFixture () =
         let cause1 =  new causeAddSortableSet(wsCompName1, ssCfg)
         let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg)
 
-        let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCause cause1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCause cause2
-        let reFirstWsCfg, future = secondWsCfg |> WorkspaceCfg.removeLastCause
-        let emptied, futureNo = firstWsCfg |> WorkspaceCfg.removeLastCause
+        let emptyWsCfg = History.Empty
+        let firstWsCfg = emptyWsCfg |> History.addCause cause1
+        let secondWsCfg = firstWsCfg |> History.addCause cause2
+        let reFirstWsCfg, future = secondWsCfg |> History.removeLastCause
+        let emptied, futureNo = firstWsCfg |> History.removeLastCause
 
         Assert.AreEqual(firstWsCfg.id, reFirstWsCfg.id);
         Assert.AreEqual(emptyWsCfg.id, emptied.id);
@@ -37,12 +37,12 @@ type WorkspaceCfgFixture () =
         let cause1 =  new causeAddSortableSet(wsCompName1, ssCfg)
         let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg)
 
-        let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCause cause1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCause cause2
+        let emptyWsCfg = History.Empty
+        let firstWsCfg = emptyWsCfg |> History.addCause cause1
+        let secondWsCfg = firstWsCfg |> History.addCause cause2
 
         let ws = Workspace.empty 
-                    |> WorkspaceCfg.makeWorkspace secondWsCfg.history (fun s-> ())
+                    |> History.makeWorkspace secondWsCfg.causes (fun s-> ())
                     |> Result.ExtractOrThrow
 
         Assert.AreEqual(ws |> Workspace.getId, secondWsCfg.id);

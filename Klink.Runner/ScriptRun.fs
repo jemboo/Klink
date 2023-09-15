@@ -48,7 +48,7 @@ module ScriptRun =
             let! (filePath, contents) = 
                     getNextScript projectFolderPath
             
-            let! cfgSet = contents |> ShcRunCfgSetDto.fromJson
+            let! cfgSet = contents |> RunCfgSetDto.fromJson
 
             return (filePath, cfgSet)
         }

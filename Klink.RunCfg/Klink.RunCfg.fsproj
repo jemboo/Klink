@@ -6,13 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="SorterSetEval\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Workspace\WorkspaceParamAttrs.fs" />
-    <Compile Include="Workspace\WorkspaceCfg.fs" />
-    <Compile Include="Workspace\CauseLoadWs.fs" />
+    <Compile Include="RunCfgDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -20,6 +14,9 @@
     <ProjectReference Include="..\KIink.DataStore\KIink.DataStore.fsproj" />
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
+    <ProjectReference Include="..\Klink.FileDataStore\Klink.FileDataStore.fsproj" />
+    <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
+    <ProjectReference Include="..\Klink.ShcCfg\Klink.ShcCfg.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />

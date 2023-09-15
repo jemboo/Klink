@@ -16,12 +16,12 @@ type WorkspaceFixture () =
         let cause1 =  new causeAddSortableSet(wsCompName1, ssCfg)
         let cause2 =  new causeAddSortableSet(wsCompName2, ssCfg)
 
-        let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCause cause1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCause cause2
+        let emptyWsCfg = History.Empty
+        let firstWsCfg = emptyWsCfg |> History.addCause cause1
+        let secondWsCfg = firstWsCfg |> History.addCause cause2
 
         let ws = Workspace.empty 
-                    |> WorkspaceCfg.makeWorkspace secondWsCfg.history (fun s->())
+                    |> History.makeWorkspace secondWsCfg.causes (fun s->())
                     |> Result.ExtractOrThrow
 
         Assert.AreEqual(ws |> Workspace.getId, secondWsCfg.id);
@@ -59,15 +59,15 @@ type WorkspaceFixture () =
         let cause4 =  new causeAddSortableSet(wsCompName4, ssCfg4)
 
 
-        let emptyWsCfg = WorkspaceCfg.Empty
-        let firstWsCfg = emptyWsCfg |> WorkspaceCfg.addCause cause1
-        let secondWsCfg = firstWsCfg |> WorkspaceCfg.addCause cause2
-        let thirdWsCfg = secondWsCfg |> WorkspaceCfg.addCause cause3
-        let fourthWsCfg = thirdWsCfg |> WorkspaceCfg.addCause cause4
+        let emptyWsCfg = History.Empty
+        let firstWsCfg = emptyWsCfg |> History.addCause cause1
+        let secondWsCfg = firstWsCfg |> History.addCause cause2
+        let thirdWsCfg = secondWsCfg |> History.addCause cause3
+        let fourthWsCfg = thirdWsCfg |> History.addCause cause4
 
 
         let firstWs = Workspace.empty 
-                    |> WorkspaceCfg.makeWorkspace firstWsCfg.history (fun s->())
+                    |> History.makeWorkspace firstWsCfg.causes (fun s->())
                     |> Result.ExtractOrThrow
 
         Assert.AreEqual(firstWs |> Workspace.getId, firstWsCfg.id);
@@ -77,7 +77,7 @@ type WorkspaceFixture () =
 
 
         let res = fileStore.saveWorkSpace firstWs |> Result.ExtractOrThrow
-        let fourthWs = fourthWsCfg |> WorkspaceCfg.runWorkspaceCfg fileStore (fun s->())
+        let fourthWs = fourthWsCfg |> History.runWorkspaceCfg fileStore (fun s->())
                         |> Result.ExtractOrThrow
 
         let resR = fileStore.saveWorkSpace fourthWs

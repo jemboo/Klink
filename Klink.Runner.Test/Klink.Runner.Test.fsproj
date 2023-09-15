@@ -27,11 +27,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KIink.DataStore\KIink.DataStore.fsproj" />
-    <ProjectReference Include="..\Klink.Cfg\Klink.Cfg.fsproj" />
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
     <ProjectReference Include="..\Klink.FileDataStore\Klink.FileDataStore.fsproj" />
     <ProjectReference Include="..\Klink.GaCfg\Klink.GaCfg.fsproj" />
+    <ProjectReference Include="..\Klink.RunCfg\Klink.RunCfg.fsproj" />
     <ProjectReference Include="..\Klink.Runner\Klink.Runner.fsproj" />
     <ProjectReference Include="..\Klink.ShcCfg\Klink.ShcCfg.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />

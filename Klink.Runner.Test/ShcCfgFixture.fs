@@ -16,7 +16,7 @@ type RunCfgDtos () =
             Exp1Cfg.sevenEightShcInitRunCfgPlex 
                |> ShcRunCfgSet.initRunFromPlex newGens genFilter runSetName
 
-        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
+        let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT2\scripts" |> Some) "toDo" runSetName cereal
         |> ignore
@@ -27,14 +27,14 @@ type RunCfgDtos () =
             Exp1Cfg.sevenEightShcInitRunCfgPlex1
                |> ShcRunCfgSet.initRunFromPlex newGens genFilter runSetName
 
-        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
+        let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT2\scripts" |> Some) "toDo" runSetName cereal
         |> ignore
 
 
 
-        let yabba = cereal |> ShcRunCfgSetDto.fromJson
+        let yabba = cereal |> RunCfgSetDto.fromJson
                            |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);
@@ -53,12 +53,12 @@ type RunCfgDtos () =
             Exp1Cfg.testShcInitRunCfgPlex 
                |> ShcRunCfgSet.continueRunFromPlex newGens genFilter runSetName
 
-        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
+        let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
         |> ignore
 
-        let yabba = cereal |> ShcRunCfgSetDto.fromJson
+        let yabba = cereal |> RunCfgSetDto.fromJson
                            |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);
@@ -86,12 +86,12 @@ type RunCfgDtos () =
                             runSetName 
                             reportFileName
 
-        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
+        let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" scriptFileName cereal
         |> ignore
 
-        let yabba = cereal |> ShcRunCfgSetDto.fromJson
+        let yabba = cereal |> RunCfgSetDto.fromJson
                            |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);
@@ -114,12 +114,12 @@ type RunCfgDtos () =
                             runSetName 
                             reportFileName
 
-        let cereal = shcRunCfgSet |> ShcRunCfgSetDto.toJson
+        let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
         TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT2\scripts" |> Some) "toDo" scriptFileName cereal
         |> ignore
 
-        let yabba = cereal |> ShcRunCfgSetDto.fromJson
+        let yabba = cereal |> RunCfgSetDto.fromJson
                            |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);

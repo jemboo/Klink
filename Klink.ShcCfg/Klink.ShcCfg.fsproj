@@ -11,23 +11,24 @@
     <Compile Include="Workspace\CauseReporting.fs" />
     <Compile Include="Workspace\CauseMakeWsComponent.fs" />
     <Compile Include="Workspace\CauseAddWsComponent.fs" />
-    <Compile Include="Run\ShcCfgParams.fs" />
+    <Compile Include="Workspace\CauseSets.fs" />
+    <Compile Include="Workspace\IntraGenWsOps.fs" />
+    <Compile Include="Workspace\InterGenWsOps.fs" />
+    <Compile Include="Workspace\Reporting.fs" />
     <Compile Include="Run\ShcRunCfg.fs" />
     <Compile Include="Run\ShcRunCfgDto.fs" />
-    <Compile Include="Exp1\Exp1Causes.fs" />
+    <Compile Include="Exp1\Exp1Params.fs" />
     <Compile Include="Exp1\Exp1Cfg.fs" />
-    <Compile Include="Exp1\Exp1Reporting.fs" />
-    <Compile Include="Exp1\Exp1WsOps.fs" />
     <Compile Include="Exp1\Exp1Run.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\KIink.DataStore\KIink.DataStore.fsproj" />
-    <ProjectReference Include="..\Klink.Cfg\Klink.Cfg.fsproj" />
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
     <ProjectReference Include="..\Klink.FileDataStore\Klink.FileDataStore.fsproj" />
+    <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />

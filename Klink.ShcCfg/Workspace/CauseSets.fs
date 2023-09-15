@@ -2,15 +2,15 @@
 open System
 
 
-module Exp1Causes = 
+module CauseSets = 
 
-    let makeInitShcCfg
+    let addInitShcCauses
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSpeedBinSet:wsComponentName)
             (wsParams:workspaceParams)
-            (workspaceCfg:workspaceCfg)
+            (history:history)
             =
             result {
                 let! rngGenCreate = wsParams |> WorkspaceParamsAttrs.getRngGen "rngGenCreate" 
@@ -69,8 +69,8 @@ module Exp1Causes =
                     new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
 
                 return
-                   ( workspaceCfg 
-                        |> WorkspaceCfg.addCauses 
+                   ( history 
+                        |> History.addCauses 
                             [
                                 causeAddWorkspaceParams;
                                 causeAddSortableSet; 
@@ -82,10 +82,10 @@ module Exp1Causes =
             }
 
 
-    let makeResetSpeedBinsCfg
+    let addResetSpeedBinsCauses
             (wnSorterSpeedBinSet:wsComponentName)
             (wsParams:workspaceParams)
-            (workspaceCfg:workspaceCfg)
+            (history:history)
             =
             result {
 
@@ -93,8 +93,8 @@ module Exp1Causes =
                     new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
 
                 return
-                   workspaceCfg 
-                        |> WorkspaceCfg.addCauses 
+                   history 
+                        |> History.addCauses 
                             [
                                 causeAddSorterSpeedBinSet;
                             ]
@@ -103,7 +103,7 @@ module Exp1Causes =
 
 
 
-    let makeMutantsAndPruneCfg
+    let addMutantsAndPruneCauses
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetMutator:wsComponentName)
@@ -115,7 +115,7 @@ module Exp1Causes =
             (wnSorterSetEvalPruned:wsComponentName)
             (wnSorterSpeedBinSet:wsComponentName)       
             (wsParams:workspaceParams)
-            (workspaceCfg:workspaceCfg)
+            (history:history)
          =
             result {
                 let! mutationRate = wsParams |> WorkspaceParamsAttrs.getMutationRate "mutationRate" 
@@ -225,14 +225,14 @@ module Exp1Causes =
                             ] |> Result.sequence
 
                 return
-                    workspaceCfg
-                    |> WorkspaceCfg.addCauses causeList
+                    history
+                    |> History.addCauses causeList
 
             }
 
 
 
-    let getNextGenCfg
+    let addNextGenCauses
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetPruned:wsComponentName)
@@ -241,7 +241,7 @@ module Exp1Causes =
             (wnParentMap:wsComponentName)
             (wnSorterSpeedBinSet:wsComponentName)
             (wsParams:workspaceParams)
-            (workspaceCfg:workspaceCfg)
+            (history:history)
             =
 
             result {
@@ -258,8 +258,8 @@ module Exp1Causes =
                             )
 
                 return
-                    workspaceCfg 
-                    |> WorkspaceCfg.addCauses 
+                    history 
+                    |> History.addCauses 
                         [
                             causeSetupForNextGen;
                         ]

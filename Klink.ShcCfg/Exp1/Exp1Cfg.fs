@@ -3,7 +3,7 @@ open System
 
 module Exp1Cfg =
 
-    open ShcCfgParams
+    open Exp1Params
 
     let testShcInitRunCfgPlex =
         {

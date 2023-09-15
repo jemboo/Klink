@@ -24,7 +24,7 @@ type causeLoadWorkspace
 
     member this.makeTruncatedWorkspaceCfg() 
             =
-            WorkspaceCfg.makeWorkspaceCfg [this]
+            History.makeWorkspaceCfg [this]
 
     interface ICause with
         member this.Id = this.id

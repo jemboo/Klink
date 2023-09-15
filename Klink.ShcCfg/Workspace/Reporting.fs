@@ -1,9 +1,8 @@
 ﻿namespace global
 open System
-open System.IO
 
 
-module Exp1Reporting =
+module Reporting =
 
     let selectedSorterEvalProps =
         [
@@ -43,8 +42,6 @@ module Exp1Reporting =
             |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
 
 
-
-
     let paramPropsSorterEval =
         [
             "generation_current";
@@ -60,6 +57,7 @@ module Exp1Reporting =
             "sorterLength";
             "switchGenMode";
         ]
+
         
     let paramPropsSpeedBins =
         [
@@ -77,8 +75,6 @@ module Exp1Reporting =
             "switchGenMode";
         ]
         
-
-
 
 
     let standardParamValues (wsps:workspaceParams) =
@@ -193,26 +189,6 @@ module Exp1Reporting =
         }
 
 
-    let reportAllEvals
-        (projectFolderPath:string)
-        (reportCfg:shcReportEvalsCfg)
-        =
-        let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
-
-        let runDirs = reportCfg.runIds
-                        |> Array.map(RunId.value >> string)
-                        |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
-                        |> Array.toList
-
-        result {
-            return! 
-                runDirs 
-                |> List.map(reportEvals fsReporter reportCfg.reportFileName reportCfg.evalCompName reportCfg.genMin)
-                |> Result.sequence
-                |> Result.map(ignore)
-        }
-
-
     let reportBins 
             (fsReporter:WorkspaceFileStore) 
             (reportFileName:string)
@@ -235,29 +211,6 @@ module Exp1Reporting =
                     reportSpeedBinLines ssBins wsPram _lineWriter)
                 |> Result.sequence
         }
-
-
-
-    let reportAllBins
-        (projectFolderPath:string)
-        (reportCfg:shcReportBinsCfg)
-        =
-        let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
-
-        let runDirs = reportCfg.runIds
-                        |> Array.map(RunId.value >> string)
-                        |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
-                        |> Array.toList
-
-        result {
-            return! 
-                runDirs 
-                |> List.map(reportBins fsReporter reportCfg.reportFileName reportCfg.genMin)
-                |> Result.sequence
-                |> Result.map(ignore)
-        }
-
-
 
 
 
