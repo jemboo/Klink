@@ -13,21 +13,21 @@ module CauseSets =
             (history:history)
             =
             result {
-                let! rngGenCreate = wsParams |> WorkspaceParamsAttrs.getRngGen "rngGenCreate" 
-                let! order = wsParams |> WorkspaceParamsAttrs.getOrder "order"
-                let! sorterCount = wsParams |> WorkspaceParamsAttrs.getSorterCount "sorterCount"
-                let! switchGenMode = wsParams |> WorkspaceParamsAttrs.getSwitchGenMode "switchGenMode"
-                let! switchCount = wsParams |> WorkspaceParamsAttrs.getSwitchCount "sorterLength"
-                let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode "sorterEvalMode"
-                let! useParallel = wsParams |> WorkspaceParamsAttrs.getUseParallel "useParallel"
-                let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount "stagesSkipped"
+                let! rngGenCreate = wsParams |> WorkspaceParamsAttrs.getRngGen ShcWsParamKeys.rngGenCreate
+                let! order = wsParams |> WorkspaceParamsAttrs.getOrder ShcWsParamKeys.order
+                let! sorterCount = wsParams |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterCount
+                let! switchGenMode = wsParams |> WorkspaceParamsAttrs.getSwitchGenMode ShcWsParamKeys.switchGenMode
+                let! switchCount = wsParams |> WorkspaceParamsAttrs.getSwitchCount ShcWsParamKeys.sorterLength
+                let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode ShcWsParamKeys.sorterEvalMode
+                let! useParallel = wsParams |> WorkspaceParamsAttrs.getUseParallel ShcWsParamKeys.useParallel
+                let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount ShcWsParamKeys.stagesSkipped
 
                 let sortableSetCfg = 
                     SortableSetCertainCfg.makeAllBitsReducedOneStage stagesSkipped order
                            |> sortableSetCfg.Certain
 
                 let wsParamsWithSortableSet = 
-                    wsParams |> WorkspaceParamsAttrs.setSortableSetId "sortableSet"
+                    wsParams |> WorkspaceParamsAttrs.setSortableSetId ShcWsParamKeys.sortableSetId
                                     (sortableSetCfg |> SortableSetCfg.getId)
 
                 let sorterSetCfg = 
@@ -118,20 +118,20 @@ module CauseSets =
             (history:history)
          =
             result {
-                let! mutationRate = wsParams |> WorkspaceParamsAttrs.getMutationRate "mutationRate" 
-                let! noiseFraction = wsParams |> WorkspaceParamsAttrs.getNoiseFraction "noiseFraction" 
-                let! rngGenMutate = wsParams |> WorkspaceParamsAttrs.getRngGen "rngGenMutate" 
-                let! rngGenPrune = wsParams |> WorkspaceParamsAttrs.getRngGen "rngGenPrune"  
-                let! order = wsParams |> WorkspaceParamsAttrs.getOrder "order" 
-                let! sorterCount = wsParams |> WorkspaceParamsAttrs.getSorterCount "sorterCount" 
-                let! sorterCountMutated = wsParams |> WorkspaceParamsAttrs.getSorterCount "sorterCountMutated" 
-                let! sorterSetPruneMethod = wsParams |> WorkspaceParamsAttrs.getSorterSetPruneMethod "sorterSetPruneMethod" 
-                let! stageWeight = wsParams |> WorkspaceParamsAttrs.getStageWeight "stageWeight" 
-                let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode "sorterEvalMode" 
-                let! switchGenMode = wsParams |> WorkspaceParamsAttrs.getSwitchGenMode "switchGenMode" 
-                let! generation = wsParams |> WorkspaceParamsAttrs.getGeneration "generation_current"
+                let! mutationRate = wsParams |> WorkspaceParamsAttrs.getMutationRate ShcWsParamKeys.mutationRate
+                let! noiseFraction = wsParams |> WorkspaceParamsAttrs.getNoiseFraction ShcWsParamKeys.noiseFraction
+                let! rngGenMutate = wsParams |> WorkspaceParamsAttrs.getRngGen ShcWsParamKeys.rngGenMutate
+                let! rngGenPrune = wsParams |> WorkspaceParamsAttrs.getRngGen ShcWsParamKeys.rngGenPrune
+                let! order = wsParams |> WorkspaceParamsAttrs.getOrder ShcWsParamKeys.order
+                let! sorterCount = wsParams |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterCount
+                let! sorterCountMutated = wsParams |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterCountMutated
+                let! sorterSetPruneMethod = wsParams |> WorkspaceParamsAttrs.getSorterSetPruneMethod ShcWsParamKeys.sorterSetPruneMethod
+                let! stageWeight = wsParams |> WorkspaceParamsAttrs.getStageWeight ShcWsParamKeys.stageWeight
+                let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode ShcWsParamKeys.sorterEvalMode
+                let! switchGenMode = wsParams |> WorkspaceParamsAttrs.getSwitchGenMode ShcWsParamKeys.switchGenMode
+                let! generation = wsParams |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
 
-                let! useParallel = wsParams |> WorkspaceParamsAttrs.getUseParallel "useParallel" 
+                let! useParallel = wsParams |> WorkspaceParamsAttrs.getUseParallel ShcWsParamKeys.useParallel
 
                 let causeAddSorterSetMutator = 
                     new causeAddSorterSetMutator(

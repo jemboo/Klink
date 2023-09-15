@@ -44,82 +44,93 @@ module Reporting =
 
     let paramPropsSorterEval =
         [
-            "generation_current";
-            "runId";
-            "mutationRate";
-            "noiseFraction";
-            "order";
-            "sortableSet";
-            "sorterCount";
-            "sorterCountMutated";
-            "sorterSetPruneMethod";
-            "stageWeight";
-            "sorterLength";
-            "switchGenMode";
+            ShcWsParamKeys.generation_current;
+            ShcWsParamKeys.runId;
+            ShcWsParamKeys.mutationRate;
+            ShcWsParamKeys.noiseFraction;
+            ShcWsParamKeys.order;
+            ShcWsParamKeys.sortableSetId;
+            ShcWsParamKeys.sorterCount;
+            ShcWsParamKeys.sorterCountMutated;
+            ShcWsParamKeys.sorterSetPruneMethod;
+            ShcWsParamKeys.stageWeight;
+            ShcWsParamKeys.sorterLength;
+            ShcWsParamKeys.switchGenMode;
         ]
 
         
     let paramPropsSpeedBins =
         [
-            "generation_current";
-            "runId";
-            "mutationRate";
-            "noiseFraction";
-            "order";
-            "sortableSet";
-            "sorterCount";
-            "sorterCountMutated";
-            "sorterSetPruneMethod";
-            "stageWeight";
-            "sorterLength";
-            "switchGenMode";
+            ShcWsParamKeys.generation_current;
+            ShcWsParamKeys.runId;
+            ShcWsParamKeys.mutationRate;
+            ShcWsParamKeys.noiseFraction;
+            ShcWsParamKeys.order;
+            ShcWsParamKeys.sortableSetId;
+            ShcWsParamKeys.sorterCount;
+            ShcWsParamKeys.sorterCountMutated;
+            ShcWsParamKeys.sorterSetPruneMethod;
+            ShcWsParamKeys.stageWeight;
+            ShcWsParamKeys.sorterLength;
+            ShcWsParamKeys.switchGenMode;
         ]
         
 
 
     let standardParamValues (wsps:workspaceParams) =
         let paramMap t = (wsps |> WorkspaceParams.getMap).[t]
-        paramPropsSorterEval |> StringUtil.toCsvLine paramMap
+        paramPropsSorterEval
+            |> StringUtil.toCsvLine paramMap
+
 
     let binParamProps =
         [
-            "runId";
-            "mutationRate";
-            "noiseFraction";
-            "order";
-            "sortableSet";
-            "sorterCount";
-            "sorterCountMutated";
-            "stageWeight";
-            "sorterLength";
-            "switchGenMode";
+            ShcWsParamKeys.runId;
+            ShcWsParamKeys.mutationRate;
+            ShcWsParamKeys.noiseFraction;
+            ShcWsParamKeys.order;
+            ShcWsParamKeys.sortableSetId;
+            ShcWsParamKeys.sorterCount;
+            ShcWsParamKeys.sorterCountMutated;
+            ShcWsParamKeys.stageWeight;
+            ShcWsParamKeys.sorterLength;
+            ShcWsParamKeys.switchGenMode;
         ]
 
     let binnedParamValues (wsps:workspaceParams) (genBinSz:int) =
         let paramMap t = (wsps |> WorkspaceParams.getMap).[t]
         result {
-            let! genBin = wsps |> WorkspaceParamsAttrs.getGeneration "generation_current"
+            let! genBin = wsps |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
                                |> Result.map(Generation.binnedValue genBinSz)
+
+
+
             return $"{ genBin }\t{ binParamProps |> StringUtil.toCsvLine paramMap }"
         }
 
 
     let reportHeaderSorterEvals () =
         sprintf "%s%s" 
-            (paramPropsSorterEval |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
+            (paramPropsSorterEval 
+              |> List.map(WorkspaceParamsKey.value) 
+              |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
             (standardSorterEvalHeaders ())
 
 
     let reportHeaderSpeedBins () =
         sprintf "%s%s" 
-            (paramPropsSpeedBins |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
+            (paramPropsSpeedBins
+              |> List.map(WorkspaceParamsKey.value) 
+              |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
             (SpeedBinProps.getHeader())
 
 
     let reportHeaderBinned () =
         sprintf "%s%s%s"
             "gen_bin\t"
-            (binParamProps |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
+            (binParamProps
+              |> List.map(WorkspaceParamsKey.value) 
+              |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
             "\tSwitchCt\tStageCt\tRecordCt"
 
 
@@ -144,7 +155,7 @@ module Reporting =
             (wsps:workspaceParams)
             (lineAppender:seq<string> -> Result<bool,string>)
         =
-        let stageW1 = (wsps |> WorkspaceParams.getMap).["stageWeight"]
+        let stageW1 = (wsps |> WorkspaceParams.getMap).[ShcWsParamKeys.stageWeight]
 
         let stageW2 = stageW1
                      |> Double.Parse
@@ -166,7 +177,8 @@ module Reporting =
 
 
 
-    let reportEvals (fsReporter:WorkspaceFileStore) 
+    let reportEvals 
+                 (fsReporter:WorkspaceFileStore) 
                  (reportFileName:string) 
                  (evalCompName:wsComponentName)
                  (minGen:generation)
@@ -180,7 +192,7 @@ module Reporting =
             let! compTupes = 
                 fsRunReader.getAllSorterSetEvalsWithParams
                     evalCompName 
-                    (WorkspaceParamsAttrs.generationIsGte minGen)
+                    (WorkspaceParamsAttrs.generationIsGte ShcWsParamKeys.generation_current minGen)
             return!
                 compTupes 
                 |> List.map (fun (ssEval, wsPram) -> 
@@ -204,7 +216,7 @@ module Reporting =
             let! compTupes = 
                 fsRunReader.getAllSpeedSetBinsWithParams 
                     perfBinCompName
-                    (WorkspaceParamsAttrs.generationIsGte minGen)
+                    (WorkspaceParamsAttrs.generationIsGte ShcWsParamKeys.generation_current minGen)
             return!
                 compTupes 
                 |> List.map (fun (ssBins, wsPram) -> 
@@ -218,17 +230,17 @@ module Reporting =
     let paramGroup (genBinSz:generation) 
                    (wsPram:workspaceParams)  =
         result {
-            let! gen = wsPram |> WorkspaceParamsAttrs.getGeneration "generation_current"
+            let! gen = wsPram |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
                               |> Result.map(Generation.binnedValue (genBinSz |> Generation.value))
-            let! mr = wsPram |> WorkspaceParamsAttrs.getMutationRate "mutationRate"
-            let! nf = wsPram |> WorkspaceParamsAttrs.getNoiseFraction "noiseFraction"
-            let! order = wsPram |> WorkspaceParamsAttrs.getOrder "order"
-            let! runId = wsPram |> WorkspaceParamsAttrs.getRunId "runId"
-            let! sct = wsPram |> WorkspaceParamsAttrs.getSorterCount "sorterCount"
-            let! scM = wsPram |> WorkspaceParamsAttrs.getSorterCount "sorterCountMutated"
-            let! sLen = wsPram |> WorkspaceParamsAttrs.getSorterCount "sorterLength"
-            let! stw = wsPram |> WorkspaceParamsAttrs.getStageWeight "stageWeight"
-            let! sgm = wsPram |> WorkspaceParamsAttrs.getSwitchGenMode "switchGenMode"
+            let! mr = wsPram |> WorkspaceParamsAttrs.getMutationRate ShcWsParamKeys.mutationRate
+            let! nf = wsPram |> WorkspaceParamsAttrs.getNoiseFraction ShcWsParamKeys.noiseFraction
+            let! order = wsPram |> WorkspaceParamsAttrs.getOrder ShcWsParamKeys.order
+            let! runId = wsPram |> WorkspaceParamsAttrs.getRunId ShcWsParamKeys.runId
+            let! sct = wsPram |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterCount
+            let! scM = wsPram |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterCountMutated
+            let! sLen = wsPram |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterLength
+            let! stw = wsPram |> WorkspaceParamsAttrs.getStageWeight ShcWsParamKeys.stageWeight
+            let! sgm = wsPram |> WorkspaceParamsAttrs.getSwitchGenMode ShcWsParamKeys.switchGenMode
             return [
                         gen :> obj; 
                         mr :> obj; 

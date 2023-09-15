@@ -129,25 +129,25 @@ module ShcInitRunCfgs =
         let rngGenPrune = (_nextRngGen rngGenMutate)
 
         WorkspaceParams.make Map.empty
-        |> WorkspaceParamsAttrs.setRunId "runId" (gaCfg |> getRunId)
-        |> WorkspaceParamsAttrs.setGeneration "generation_current" (0 |> Generation.create)
-        |> WorkspaceParamsAttrs.setGeneration "generation_max" (gaCfg.newGenerations |> Option.get )
-        |> WorkspaceParamsAttrs.setRngGen "rngGenCreate" rngGenCreate
-        |> WorkspaceParamsAttrs.setRngGen "rngGenMutate" rngGenMutate
-        |> WorkspaceParamsAttrs.setRngGen "rngGenPrune" rngGenPrune
-        |> WorkspaceParamsAttrs.setMutationRate "mutationRate" gaCfg.mutationRate
-        |> WorkspaceParamsAttrs.setNoiseFraction "noiseFraction" (Some gaCfg.noiseFraction)
-        |> WorkspaceParamsAttrs.setOrder "order" gaCfg.order
-        |> WorkspaceParamsAttrs.setSorterCount "sorterCount" gaCfg.sorterCount
-        |> WorkspaceParamsAttrs.setSorterCount "sorterCountMutated" gaCfg.sorterCountMutated
-        |> WorkspaceParamsAttrs.setSorterEvalMode "sorterEvalMode" gaCfg.sorterEvalMode
-        |> WorkspaceParamsAttrs.setStageCount "stagesSkipped" gaCfg.stagesSkipped
-        |> WorkspaceParamsAttrs.setStageWeight "stageWeight" gaCfg.stageWeight
-        |> WorkspaceParamsAttrs.setSwitchCount "sorterLength" gaCfg.switchCount
-        |> WorkspaceParamsAttrs.setSwitchGenMode "switchGenMode" gaCfg.switchGenMode
-        |> WorkspaceParamsAttrs.setSorterSetPruneMethod "sorterSetPruneMethod" gaCfg.sorterSetPruneMethod
-        |> WorkspaceParamsAttrs.setGenerationFilter "generation_filter" (gaCfg.reportFilter |> Option.get )
-        |> WorkspaceParamsAttrs.setUseParallel "useParallel" useParallel
+        |> WorkspaceParamsAttrs.setRunId ShcWsParamKeys.runId (gaCfg |> getRunId)
+        |> WorkspaceParamsAttrs.setGeneration ShcWsParamKeys.generation_current (0 |> Generation.create)
+        |> WorkspaceParamsAttrs.setGeneration ShcWsParamKeys.generation_max (gaCfg.newGenerations |> Option.get )
+        |> WorkspaceParamsAttrs.setRngGen ShcWsParamKeys.rngGenCreate rngGenCreate
+        |> WorkspaceParamsAttrs.setRngGen ShcWsParamKeys.rngGenMutate rngGenMutate
+        |> WorkspaceParamsAttrs.setRngGen ShcWsParamKeys.rngGenPrune rngGenPrune
+        |> WorkspaceParamsAttrs.setMutationRate ShcWsParamKeys.mutationRate gaCfg.mutationRate
+        |> WorkspaceParamsAttrs.setNoiseFraction ShcWsParamKeys.noiseFraction (Some gaCfg.noiseFraction)
+        |> WorkspaceParamsAttrs.setOrder ShcWsParamKeys.order gaCfg.order
+        |> WorkspaceParamsAttrs.setSorterCount ShcWsParamKeys.sorterCount gaCfg.sorterCount
+        |> WorkspaceParamsAttrs.setSorterCount ShcWsParamKeys.sorterCountMutated gaCfg.sorterCountMutated
+        |> WorkspaceParamsAttrs.setSorterEvalMode ShcWsParamKeys.sorterEvalMode gaCfg.sorterEvalMode
+        |> WorkspaceParamsAttrs.setStageCount ShcWsParamKeys.stagesSkipped gaCfg.stagesSkipped
+        |> WorkspaceParamsAttrs.setStageWeight ShcWsParamKeys.stageWeight gaCfg.stageWeight
+        |> WorkspaceParamsAttrs.setSwitchCount ShcWsParamKeys.sorterLength gaCfg.switchCount
+        |> WorkspaceParamsAttrs.setSwitchGenMode ShcWsParamKeys.switchGenMode gaCfg.switchGenMode
+        |> WorkspaceParamsAttrs.setSorterSetPruneMethod ShcWsParamKeys.sorterSetPruneMethod gaCfg.sorterSetPruneMethod
+        |> WorkspaceParamsAttrs.setGenerationFilter ShcWsParamKeys.generation_filter (gaCfg.reportFilter |> Option.get )
+        |> WorkspaceParamsAttrs.setUseParallel ShcWsParamKeys.useParallel useParallel
 
 
 

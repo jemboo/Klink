@@ -10,9 +10,14 @@ type workspaceParamsDto = {
 module WorkspaceParamsDto =
 
     let fromDto (dto:workspaceParamsDto) =
+        let rkm = dto.data 
+                    |> Map.toSeq 
+                    |> Seq.map(fun (k,v) -> (k |> WorkspaceParamsKey.create ,v))
+                    |> Map.ofSeq
+
         WorkspaceParams.load
             (dto.id |> WorkspaceParamsId.create)
-            (dto.data)
+            rkm
 
     let fromJson (jstr: string) =
         result {
@@ -23,7 +28,11 @@ module WorkspaceParamsDto =
     let toDto (workspaceParams: workspaceParams) =
         {
             workspaceParamsDto.id = workspaceParams |> WorkspaceParams.getId |> WorkspaceParamsId.value
-            data = workspaceParams |> WorkspaceParams.getMap
+            data = workspaceParams 
+                        |> WorkspaceParams.getMap
+                        |> Map.toSeq
+                        |> Seq.map(fun (k,v) -> (k |> WorkspaceParamsKey.value ,v))
+                        |> Map.ofSeq
         }
 
     let toJson (workspaceParams: workspaceParams) =

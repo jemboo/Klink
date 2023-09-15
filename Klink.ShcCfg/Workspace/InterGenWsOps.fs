@@ -22,7 +22,7 @@ module InterGenWsOps =
         = 
         result {
 
-            let! runId = wsParams |> WorkspaceParamsAttrs.getRunId "runId"
+            let! runId = wsParams |> WorkspaceParamsAttrs.getRunId ShcWsParamKeys.runId
             let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
             let fs = new WorkspaceFileStore(runDir)
 
@@ -36,11 +36,11 @@ module InterGenWsOps =
                             fs
                             (fun s-> Console.WriteLine(s))
             let! maxGen = 
-                    wsParams |> WorkspaceParamsAttrs.getGeneration "generation_max"
+                    wsParams |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_max
                                 |> Result.map(Generation.value)
 
 
-            let! cg = wsParamsGen1 |> snd |> WorkspaceParamsAttrs.getGeneration "generation_current"
+            let! cg = wsParamsGen1 |> snd |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
                     
             let mutable curGen = cg |> Generation.value
             let mutable curParams = wsParamsGen1 |> snd
@@ -91,7 +91,7 @@ module InterGenWsOps =
             let! paramsLoaded = wsLoaded 
                                 |> Workspace.getComponent ("workspaceParams" |> WsComponentName.create)
                                 |> Result.bind(WorkspaceComponent.asWorkspaceParams)
-            let! genLoaded = paramsLoaded |> WorkspaceParamsAttrs.getGeneration "generation_current"
+            let! genLoaded = paramsLoaded |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
                                 |> Result.map(Generation.value)
 
             let mutable curGen = genLoaded

@@ -2,12 +2,10 @@
 open System
 
 
-
-
 module WorkspaceParamsAttrs =
 
     let getGeneration
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -15,14 +13,14 @@ module WorkspaceParamsAttrs =
           return Convert.ToInt32(cereal) |> Generation.create
         }
     let setGeneration
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:generation)
             (workspaceParams:workspaceParams) 
         =
         workspaceParams |> WorkspaceParams.addItem key (value |> Generation.value |> string)
 
     let incrGeneration
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -33,12 +31,13 @@ module WorkspaceParamsAttrs =
         }
 
     let generationIsGte
+            (key:workspaceParamsKey) 
             (genVal:generation)
             (workspaceParams:workspaceParams) 
         =
 
         let _fg
-                (key:string) 
+                (key:workspaceParamsKey) 
                 (fF: generation -> bool)
                 (workspaceParams:workspaceParams) 
             =
@@ -46,13 +45,13 @@ module WorkspaceParamsAttrs =
 
         workspaceParams 
             |> _fg
-                    "generation_current"
+                    key
                     (fun gen -> 
                             (gen |> Generation.value) >= (genVal |> Generation.value))
 
 
     let getGenerationFilter
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -60,7 +59,7 @@ module WorkspaceParamsAttrs =
           return! cereal |> GenerationFilterDto.fromJson
         }
     let setGenerationFilter
-            (key:string) 
+            (key:workspaceParamsKey) 
             (gf:generationFilter)
             (workspaceParams:workspaceParams) 
         =
@@ -69,7 +68,7 @@ module WorkspaceParamsAttrs =
 
 
     let getMutationRate
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -77,7 +76,7 @@ module WorkspaceParamsAttrs =
           return Convert.ToDouble(cereal) |> MutationRate.create
         }
     let setMutationRate
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:mutationRate)
             (workspaceParams:workspaceParams) 
         =
@@ -85,7 +84,7 @@ module WorkspaceParamsAttrs =
 
 
     let getNoiseFraction
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -95,7 +94,7 @@ module WorkspaceParamsAttrs =
           else return None
         }
     let setNoiseFraction
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:noiseFraction option) 
             (workspaceParams:workspaceParams) 
         =
@@ -107,7 +106,7 @@ module WorkspaceParamsAttrs =
 
 
     let getOrder
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -115,7 +114,7 @@ module WorkspaceParamsAttrs =
           return Convert.ToInt32(cereal) |> Order.createNr
         }
     let setOrder
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:order)
             (workspaceParams:workspaceParams) 
         =
@@ -123,7 +122,7 @@ module WorkspaceParamsAttrs =
 
 
     let getRngGen
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -131,14 +130,14 @@ module WorkspaceParamsAttrs =
           return! cereal |> RngGenDto.fromJson
         }
     let setRngGen
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:rngGen)
             (workspaceParams:workspaceParams) 
         =
         workspaceParams |> WorkspaceParams.addItem key (value |> RngGenDto.toJson)
 
     let updateRngGen
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -149,7 +148,7 @@ module WorkspaceParamsAttrs =
 
 
     let getRunId
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -157,7 +156,7 @@ module WorkspaceParamsAttrs =
           return cereal |> Guid |> RunId.create
         }
     let setRunId
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:runId)
             (workspaceParams:workspaceParams) 
         =
@@ -165,7 +164,7 @@ module WorkspaceParamsAttrs =
 
 
     let getSortableSetId
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -173,7 +172,7 @@ module WorkspaceParamsAttrs =
           return cereal |> Guid |> SortableSetId.create
         }
     let setSortableSetId
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:sortableSetId)
             (workspaceParams:workspaceParams) 
         =
@@ -181,7 +180,7 @@ module WorkspaceParamsAttrs =
 
 
     let getSorterCount
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -189,7 +188,7 @@ module WorkspaceParamsAttrs =
           return Convert.ToInt32(cereal) |> SorterCount.create
         }
     let setSorterCount
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:sorterCount)
             (workspaceParams:workspaceParams) 
         =
@@ -197,7 +196,7 @@ module WorkspaceParamsAttrs =
 
 
     let getSorterEvalMode
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -205,7 +204,7 @@ module WorkspaceParamsAttrs =
           return! Json.deserialize<sorterEvalMode>(cereal)
         }
     let setSorterEvalMode
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:sorterEvalMode)
             (workspaceParams:workspaceParams) 
         =
@@ -213,7 +212,7 @@ module WorkspaceParamsAttrs =
 
 
     let getSorterSetPruneMethod
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -221,7 +220,7 @@ module WorkspaceParamsAttrs =
           return! Json.deserialize<sorterSetPruneMethod>(cereal)
         }
     let setSorterSetPruneMethod
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:sorterSetPruneMethod)
             (workspaceParams:workspaceParams) 
         =
@@ -229,7 +228,7 @@ module WorkspaceParamsAttrs =
 
 
     let getStageCount
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -237,7 +236,7 @@ module WorkspaceParamsAttrs =
           return Convert.ToInt32(cereal) |> StageCount.create
         }
     let setStageCount
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:stageCount)
             (workspaceParams:workspaceParams) 
         =
@@ -245,7 +244,7 @@ module WorkspaceParamsAttrs =
 
 
     let getStageWeight
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -253,7 +252,7 @@ module WorkspaceParamsAttrs =
           return Convert.ToDouble(cereal) |> StageWeight.create
         }
     let setStageWeight
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:stageWeight)
             (workspaceParams:workspaceParams) 
         =
@@ -261,7 +260,7 @@ module WorkspaceParamsAttrs =
 
 
     let getSwitchCount
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -269,7 +268,7 @@ module WorkspaceParamsAttrs =
           return Convert.ToInt32(cereal) |> SwitchCount.create
         }
     let setSwitchCount
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:switchCount)
             (workspaceParams:workspaceParams) 
         =
@@ -277,7 +276,7 @@ module WorkspaceParamsAttrs =
 
 
     let getSwitchGenMode
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -285,7 +284,7 @@ module WorkspaceParamsAttrs =
           return! Json.deserialize<switchGenMode>(cereal)
         }
     let setSwitchGenMode
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:switchGenMode)
             (workspaceParams:workspaceParams) 
         =
@@ -293,7 +292,7 @@ module WorkspaceParamsAttrs =
 
 
     let getUseParallel
-            (key:string) 
+            (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 
         =
         result {
@@ -301,7 +300,7 @@ module WorkspaceParamsAttrs =
           return Convert.ToBoolean (cereal) |> UseParallel.create
         }
     let setUseParallel
-            (key:string) 
+            (key:workspaceParamsKey) 
             (value:useParallel)
             (workspaceParams:workspaceParams) 
         =

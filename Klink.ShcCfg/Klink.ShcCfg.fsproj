@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="Sorting\SorterSetRndCfg.fs" />
     <Compile Include="Sorting\SortableSetCfg.fs" />
+    <Compile Include="Workspace\ShcWsParamKeys.fs" />
     <Compile Include="Workspace\CauseReporting.fs" />
     <Compile Include="Workspace\CauseMakeWsComponent.fs" />
     <Compile Include="Workspace\CauseAddWsComponent.fs" />
