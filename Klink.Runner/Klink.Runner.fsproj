@@ -25,9 +25,9 @@
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
     <ProjectReference Include="..\Klink.FileDataStore\Klink.FileDataStore.fsproj" />
-    <ProjectReference Include="..\Klink.GaCfg\Klink.GaCfg.fsproj" />
+    <ProjectReference Include="..\Klink.GaCfg\Klink.GaRun.fsproj" />
     <ProjectReference Include="..\Klink.RunCfg\Klink.RunCfg.fsproj" />
-    <ProjectReference Include="..\Klink.ShcCfg\Klink.ShcCfg.fsproj" />
+    <ProjectReference Include="..\Klink.ShcCfg\Klink.ShcRun.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />

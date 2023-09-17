@@ -6,21 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Sorting\SorterSetRndCfg.fs" />
-    <Compile Include="Sorting\SortableSetCfg.fs" />
-    <Compile Include="Workspace\ShcWsParamKeys.fs" />
-    <Compile Include="Workspace\CauseReporting.fs" />
-    <Compile Include="Workspace\CauseMakeWsComponent.fs" />
-    <Compile Include="Workspace\CauseAddWsComponent.fs" />
-    <Compile Include="Workspace\CauseSets.fs" />
-    <Compile Include="Workspace\IntraGenWsOps.fs" />
-    <Compile Include="Workspace\InterGenWsOps.fs" />
-    <Compile Include="Workspace\Reporting.fs" />
-    <Compile Include="Run\ShcRunCfg.fs" />
-    <Compile Include="Run\ShcRunCfgDto.fs" />
-    <Compile Include="Exp1\Exp1Params.fs" />
-    <Compile Include="Exp1\Exp1Cfg.fs" />
-    <Compile Include="Exp1\Exp1Run.fs" />
+    <Compile Include="GaRunCfg.fs" />
+    <Compile Include="GaRunCfgDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -29,8 +16,10 @@
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
     <ProjectReference Include="..\Klink.FileDataStore\Klink.FileDataStore.fsproj" />
+    <ProjectReference Include="..\Klink.Genome\Klink.Genome.fsproj" />
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
+    <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />
   </ItemGroup>

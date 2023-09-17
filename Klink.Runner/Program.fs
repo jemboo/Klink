@@ -44,7 +44,7 @@ module Program =
                 |> Result.ExtractOrThrow
 
         let yab =
-                Exp1Run.procRunCfgSet projectFolderPath useParallel shcRunCfgSet
+                RunCfgSet.procRunCfgSet projectFolderPath useParallel shcRunCfgSet
                 |> Result.ExtractOrThrow
 
         let boink = ScriptRun.finishScript scriptFileName projectFolderPath

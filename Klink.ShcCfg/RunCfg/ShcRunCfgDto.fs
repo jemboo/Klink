@@ -2,7 +2,6 @@
 open System
 
 
-
 type shcInitRunCfgDto =
     {
         newGenerations:int
@@ -87,20 +86,20 @@ type shcContinueRunCfgDto =
 
 module ShcContinueRunCfgDto =
 
-    let toDto (cfg:shcContinueRunCfgs) =
+    let toDto (cfg:shcContinueRunCfg) =
         {
             runId = cfg.runId |> RunId.value |> string
             newGenerations = cfg.newGenerations |> Generation.value
 
         }
 
-    let toJson (cfg:shcContinueRunCfgs) =
+    let toJson (cfg:shcContinueRunCfg) =
         cfg |> toDto |> Json.serialize
 
 
     let fromDto (cfg:shcContinueRunCfgDto) =
         {
-            shcContinueRunCfgs.runId = cfg.runId |> Guid.Parse |> RunId.create
+            shcContinueRunCfg.runId = cfg.runId |> Guid.Parse |> RunId.create
             newGenerations = cfg.newGenerations |> Generation.create
         }
 

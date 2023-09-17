@@ -14,7 +14,7 @@ type RunCfgDtos () =
         let runSetName = "initRunSevenEight"
         let shcRunCfgSet = 
             Exp1Cfg.sevenEightShcInitRunCfgPlex 
-               |> ShcRunCfgSet.initRunFromPlex newGens genFilter runSetName
+               |> RunCfgSet.initRunFromPlex newGens genFilter runSetName
 
         let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
@@ -25,7 +25,7 @@ type RunCfgDtos () =
         let runSetName = "initRunSevenEight2"
         let shcRunCfgSet = 
             Exp1Cfg.sevenEightShcInitRunCfgPlex1
-               |> ShcRunCfgSet.initRunFromPlex newGens genFilter runSetName
+               |> RunCfgSet.initRunFromPlex newGens genFilter runSetName
 
         let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
@@ -51,7 +51,7 @@ type RunCfgDtos () =
         let runSetName = "continueRun"
         let shcRunCfgSet = 
             Exp1Cfg.testShcInitRunCfgPlex 
-               |> ShcRunCfgSet.continueRunFromPlex newGens genFilter runSetName
+               |> RunCfgSet.continueRunFromPlex newGens runSetName
 
         let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
@@ -78,7 +78,7 @@ type RunCfgDtos () =
 
         let shcRunCfgSet = 
             [Exp1Cfg.testShcInitRunCfgPlex; Exp1Cfg.testShcInitRunCfgPlex2]
-               |> ShcRunCfgSet.reportAllFromPlexSeq
+               |> RunCfgSet.reportAllFromPlexSeq
                             genMin 
                             genMax 
                             wsCompName 
@@ -108,7 +108,7 @@ type RunCfgDtos () =
 
         let shcRunCfgSet = 
             [Exp1Cfg.testShcInitRunCfgPlex; Exp1Cfg.testShcInitRunCfgPlex2]
-               |> ShcRunCfgSet.reportBinsFromPlexSeq
+               |> RunCfgSet.reportBinsFromPlexSeq
                             genMin 
                             genMax 
                             runSetName 

@@ -115,7 +115,7 @@ type causeMakeSorterSetEval
                                      |> Result.bind(WorkspaceComponent.asWorkspaceParams)
 
                 let order = sorterSet |> SorterSet.getOrder
-                let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount "stagesSkipped"
+                let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount ShcWsParamKeys.stagesSkipped
 
                 let! sorterSetEval = 
                     SorterSetEval.make

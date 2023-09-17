@@ -59,11 +59,11 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.FileDataStore", "Klin
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "KIink.DataStore", "KIink.DataStore\KIink.DataStore.fsproj", "{391916EA-2134-4E4D-A49D-C970280BD750}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.ShcCfg", "Klink.ShcCfg\Klink.ShcCfg.fsproj", "{FA60085F-7B4C-4F54-8BAA-DD9A8FB1EED5}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.ShcRun", "Klink.ShcCfg\Klink.ShcRun.fsproj", "{FA60085F-7B4C-4F54-8BAA-DD9A8FB1EED5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RunCfg", "RunCfg", "{F24EED40-1E8C-47A5-8E81-AB016EDE6707}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Run", "Run", "{F24EED40-1E8C-47A5-8E81-AB016EDE6707}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.GaCfg", "Klink.GaCfg\Klink.GaCfg.fsproj", "{E056EF0E-FD14-4534-AD29-9241C1BE7ECD}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.GaRun", "Klink.GaCfg\Klink.GaRun.fsproj", "{E056EF0E-FD14-4534-AD29-9241C1BE7ECD}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Klink.History", "Klink.History\Klink.History.fsproj", "{9B886BCF-7478-41D2-AE98-62AC39ECF629}"
 EndProject
