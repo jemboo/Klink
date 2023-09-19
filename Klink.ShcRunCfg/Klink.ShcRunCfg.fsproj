@@ -18,6 +18,7 @@
     <Compile Include="Workspace\Reporting.fs" />
     <Compile Include="RunCfg\ShcRunCfg.fs" />
     <Compile Include="RunCfg\ShcRunCfgDto.fs" />
+    <Compile Include="RunCfg\ShcCfgPlex.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -27,6 +28,7 @@
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
     <ProjectReference Include="..\Klink.FileDataStore\Klink.FileDataStore.fsproj" />
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
+    <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />

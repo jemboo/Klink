@@ -3,11 +3,11 @@ open System
 
 module Exp1Cfg =
 
-    open Exp1Params
+    open CommonParams
 
     let testShcInitRunCfgPlex =
         {
-            shcInitRunCfgPlex.orders = [|16 |> Order.createNr |]
+            shcCfgPlex.orders = [|16 |> Order.createNr |]
             mutationRates = [|mr0;mr2;mr4|];
             noiseFractions = [|nf0;nf3|];
             rngGens = rndGens 0 3 ;
@@ -20,7 +20,7 @@ module Exp1Cfg =
 
     let testShcInitRunCfgPlex2 =
         {
-            shcInitRunCfgPlex.orders = [|16 |> Order.createNr |]
+            shcCfgPlex.orders = [|16 |> Order.createNr |]
             mutationRates = [|mr0;mr2;mr4|];
             noiseFractions = [|nf0;nf3|];
             rngGens = rndGens 3 3 ;
@@ -34,7 +34,7 @@ module Exp1Cfg =
 
     let fiveSixShcInitRunCfgPlex =
         {
-            shcInitRunCfgPlex.orders = [|16 |> Order.createNr |]
+            shcCfgPlex.orders = [|16 |> Order.createNr |]
             mutationRates = [|mr0;mr2;mr4|];
             noiseFractions = [|nf3;nf4|];
             rngGens = rndGens 0 3 ;
@@ -47,7 +47,7 @@ module Exp1Cfg =
 
     let fiveSixShcInitRunCfgPlex1 =
         {
-            shcInitRunCfgPlex.orders = [|16 |> Order.createNr |]
+            shcCfgPlex.orders = [|16 |> Order.createNr |]
             mutationRates = [|mr0;mr2;mr4|];
             noiseFractions = [|nf3;nf4|];
             rngGens = rndGens 3 3 ;
@@ -60,7 +60,7 @@ module Exp1Cfg =
 
     let sevenEightShcInitRunCfgPlex =
         {
-            shcInitRunCfgPlex.orders = [|16 |> Order.createNr |]
+            shcCfgPlex.orders = [|16 |> Order.createNr |]
             mutationRates = [|mr2;mr4|];
             noiseFractions = [|nf3;nf4|];
             rngGens = rndGens 2 1 ;
@@ -72,7 +72,7 @@ module Exp1Cfg =
 
     let sevenEightShcInitRunCfgPlex1 =
         {
-            shcInitRunCfgPlex.orders = [|16 |> Order.createNr |]
+            shcCfgPlex.orders = [|16 |> Order.createNr |]
             mutationRates = [|mr2;mr4|];
             noiseFractions = [|nf3;nf4|];
             rngGens = rndGens 3 1 ;

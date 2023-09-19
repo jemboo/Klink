@@ -8,10 +8,10 @@ type RunCfgDtos () =
 
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let newGens = 80000 |> Generation.create
-        let genFilter = { modGenerationFilter.modulus = 80}
+        let newGens = 40 |> Generation.create
+        let genFilter = { modGenerationFilter.modulus = 4}
                             |> generationFilter.ModF
-        let runSetName = "initRunSevenEight"
+        let runSetName = "yabbs"
         let shcRunCfgSet = 
             Exp1Cfg.sevenEightShcInitRunCfgPlex 
                |> RunCfgSet.initRunFromPlex newGens genFilter runSetName
@@ -22,7 +22,7 @@ type RunCfgDtos () =
         |> ignore
 
 
-        let runSetName = "initRunSevenEight2"
+        let runSetName = "yabba"
         let shcRunCfgSet = 
             Exp1Cfg.sevenEightShcInitRunCfgPlex1
                |> RunCfgSet.initRunFromPlex newGens genFilter runSetName

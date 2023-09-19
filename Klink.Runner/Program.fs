@@ -52,12 +52,6 @@ module Program =
 
 
 
-        //    Exp1Reporting.reportEmAll
-
-        //    Exp1Reporting.doReportPerfBins
-
-
-
         let tsEnd = DateTime.Now
 
         let tSpan = tsEnd - tsStart 

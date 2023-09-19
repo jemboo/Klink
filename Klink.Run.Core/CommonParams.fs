@@ -1,7 +1,7 @@
 ﻿namespace global
 open System
 
-module Exp1Params =
+module CommonParams =
 
     let rndGens (offset:int) (take:int) = 
         let rngGenSeed = 1234 |> RandomSeed.create |> RngGen.createLcg

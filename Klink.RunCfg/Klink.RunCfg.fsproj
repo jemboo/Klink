@@ -7,9 +7,11 @@
 
   <ItemGroup>
     <Compile Include="RunCfg.fs" />
+    <Compile Include="RunCfgSet.fs" />
     <Compile Include="RunCfgDto.fs" />
-    <Compile Include="Exp1\Exp1Params.fs" />
-    <Compile Include="Exp1\Exp1Cfg.fs" />
+    <Compile Include="RunCfgSetDto.fs" />
+    <Compile Include="RunCfgSetScript.fs" />
+    <Compile Include="Experiments\Exp1Cfg.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -18,9 +20,10 @@
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
     <ProjectReference Include="..\Klink.FileDataStore\Klink.FileDataStore.fsproj" />
-    <ProjectReference Include="..\Klink.GaCfg\Klink.GaRun.fsproj" />
+    <ProjectReference Include="..\Klink.GaCfg\Klink.GaRunCfg.fsproj" />
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
-    <ProjectReference Include="..\Klink.ShcCfg\Klink.ShcRun.fsproj" />
+    <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
+    <ProjectReference Include="..\Klink.ShcRunCfg\Klink.ShcRunCfg.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />

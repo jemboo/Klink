@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="GaRunCfg.fs" />
     <Compile Include="GaRunCfgDto.fs" />
+    <Compile Include="GaCfgPlex.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -18,6 +19,7 @@
     <ProjectReference Include="..\Klink.FileDataStore\Klink.FileDataStore.fsproj" />
     <ProjectReference Include="..\Klink.Genome\Klink.Genome.fsproj" />
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
+    <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
