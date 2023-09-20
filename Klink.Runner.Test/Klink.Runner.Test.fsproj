@@ -33,7 +33,6 @@
     <ProjectReference Include="..\Klink.GaCfg\Klink.GaRunCfg.fsproj" />
     <ProjectReference Include="..\Klink.RunCfg\Klink.RunCfg.fsproj" />
     <ProjectReference Include="..\Klink.Runner\Klink.Runner.fsproj" />
-    <ProjectReference Include="..\Klink.ShcCfg\Klink.ShcRunCfg.fsproj" />
     <ProjectReference Include="..\Klink.ShcRunCfg\Klink.ShcRunCfg.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />

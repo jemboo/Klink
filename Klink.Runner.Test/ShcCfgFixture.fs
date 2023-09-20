@@ -14,7 +14,7 @@ type RunCfgDtos () =
         let runSetName = "yabbs"
         let shcRunCfgSet = 
             Exp1Cfg.sevenEightShcInitRunCfgPlex 
-               |> RunCfgSet.initRunFromPlex newGens genFilter runSetName
+               |> RunCfgSet.initShcRunFromPlex newGens genFilter runSetName
 
         let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
@@ -25,7 +25,7 @@ type RunCfgDtos () =
         let runSetName = "yabba"
         let shcRunCfgSet = 
             Exp1Cfg.sevenEightShcInitRunCfgPlex1
-               |> RunCfgSet.initRunFromPlex newGens genFilter runSetName
+               |> RunCfgSet.initShcRunFromPlex newGens genFilter runSetName
 
         let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 

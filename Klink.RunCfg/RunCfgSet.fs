@@ -8,6 +8,9 @@ type runCfgSet = { setName:string;
 
 
 module RunCfgSet =
+    
+    let private _runName (prefix:string) (maxChunk:int) (dex:int) =
+        sprintf "%s_%d" prefix (maxChunk * dex)
 
     let procRunCfgSet 
             (projectFolderPath:string)
@@ -24,7 +27,7 @@ module RunCfgSet =
 
 
 
-    let initRunFromPlex
+    let initShcRunFromPlex
             (newGenerations:generation)
             (reportFilter:generationFilter)
             (runSetName:string)
@@ -32,11 +35,103 @@ module RunCfgSet =
         =
         let runCfgs = 
             plex |>
-            ShcCfgPlex.toShcInitRunCfg (Some newGenerations) (Some reportFilter)
+            ShcCfgPlex.toInitRunCfgs (Some newGenerations) (Some reportFilter)
                   |> Seq.map(shcRunCfg.InitRun >> runCfg.Shc)
                   |> Seq.toArray
 
         {setName = runSetName; runCfgs = runCfgs}
+
+
+
+
+
+    let initShcRunsFromPlex
+            (newGenerations:generation)
+            (reportFilter:generationFilter)
+            (runSetPfx:string)
+            (maxRunCount:int)
+            (plex:shcCfgPlex)
+        =
+        let runCfgs = 
+            plex |>
+            ShcCfgPlex.toInitRunCfgs (Some newGenerations) (Some reportFilter)
+                  |> Seq.map(shcRunCfg.InitRun >> runCfg.Shc)
+                  |> Seq.chunkBySize maxRunCount
+                  |> Seq.toArray
+
+        runCfgs |> Array.mapi(
+            fun dex cfgs -> 
+                { setName = _runName runSetPfx maxRunCount dex;
+                  runCfgs = cfgs}
+                )
+
+
+
+    let initGaRunFromPlex
+            (newGenerations:generation)
+            (reportFilter:generationFilter)
+            (runSetName:string)
+            (plex:gaCfgPlex)
+        =
+        let runCfgs = 
+            plex |>
+            GaCfgPlex.toInitRunCfgs (Some newGenerations) (Some reportFilter)
+                  |> Seq.map(gaRunCfg.InitRun >> runCfg.Ga)
+                  |> Seq.toArray
+
+        {setName = runSetName; runCfgs = runCfgs}
+
+
+
+    let initGaRunsFromPlex
+            (newGenerations:generation)
+            (reportFilter:generationFilter)
+            (runSetPfx:string)
+            (maxRunCount:int)
+            (plex:gaCfgPlex)
+        =
+        let runCfgs = 
+            plex |>
+            GaCfgPlex.toInitRunCfgs (Some newGenerations) (Some reportFilter)
+                  |> Seq.map(gaRunCfg.InitRun >> runCfg.Ga)
+                  |> Seq.chunkBySize maxRunCount
+                  |> Seq.toArray
+
+        runCfgs |> Array.mapi(
+            fun dex cfgs -> 
+                { setName = _runName runSetPfx maxRunCount dex;
+                  runCfgs = cfgs}
+                )
+
+
+    let initRunFromPlex
+            (newGenerations:generation)
+            (reportFilter:generationFilter)
+            (runSetName:string)
+            (plex:runCfgPlex)
+        =
+        match plex with
+        | Shc shcCfgPlex -> 
+            shcCfgPlex |> initShcRunFromPlex newGenerations reportFilter runSetName
+        | Ga gaCfgPlex -> 
+            gaCfgPlex |> initGaRunFromPlex newGenerations reportFilter runSetName
+
+
+
+
+    let initRunsFromPlex
+            (newGenerations:generation)
+            (reportFilter:generationFilter)
+            (runSetName:string)
+            (maxRunCount:int)
+            (plex:runCfgPlex)
+        =
+        match plex with
+        | Shc shcCfgPlex -> 
+            shcCfgPlex |> initShcRunsFromPlex newGenerations reportFilter runSetName maxRunCount
+        | Ga gaCfgPlex -> 
+            gaCfgPlex |> initGaRunsFromPlex newGenerations reportFilter runSetName maxRunCount
+
 
 
     let continueRunFromPlex 
@@ -46,11 +141,12 @@ module RunCfgSet =
         =
         let runCfgs = 
             plex |>
-            ShcCfgPlex.toShcContinueRunCfg newGenerations
+            ShcCfgPlex.toContinueRunCfgs newGenerations
                   |> Seq.map(shcRunCfg.Continue >> runCfg.Shc)
                   |> Seq.toArray
 
         {setName = runSetName; runCfgs = runCfgs}
+
 
 
     let reportAllFromPlex 
@@ -64,7 +160,7 @@ module RunCfgSet =
         =
         let runCfg = 
             plex |>
-            ShcCfgPlex.toShcReportEvalsCfg 
+            ShcCfgPlex.toReportEvalsCfg 
                     genMin
                     genMax 
                     evalCompName 
@@ -75,6 +171,7 @@ module RunCfgSet =
                   |> runCfg.Shc
 
         {setName = runSetName; runCfgs = [|runCfg|]}
+
 
 
     let reportAllFromPlexSeq 
@@ -89,7 +186,7 @@ module RunCfgSet =
         let runCfgs = 
             plexes 
             |> Seq.map(
-                ShcCfgPlex.toShcReportEvalsCfg 
+                ShcCfgPlex.toReportEvalsCfg 
                         genMin
                         genMax
                         evalCompName
@@ -101,6 +198,7 @@ module RunCfgSet =
         {setName = runSetName; runCfgs = runCfgs}
 
 
+
     let reportBinsFromPlex 
             (genMin:generation)
             (genMax:generation)
@@ -110,7 +208,7 @@ module RunCfgSet =
         =
         let runCfg = 
             plex |>
-            ShcCfgPlex.toShcReportBinsCfg 
+            ShcCfgPlex.toReportBinsCfg 
                     genMin
                     genMax
                     reportFileName
@@ -131,7 +229,7 @@ module RunCfgSet =
         =
         let runCfgs = 
             plexes |> Seq.map(
-            ShcCfgPlex.toShcReportBinsCfg 
+            ShcCfgPlex.toReportBinsCfg 
                     genMin
                     genMax
                     reportFileName)

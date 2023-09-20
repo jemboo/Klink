@@ -1,6 +1,4 @@
 ﻿namespace global
-open System
-open System.IO
 
 type shcCfgPlex =
     {
@@ -17,7 +15,7 @@ type shcCfgPlex =
 
 module ShcCfgPlex =
 
-    let fromFunc<'a>
+    let _fromFunc<'a>
             (newGenerations:generation option)
             (reportFilter:generationFilter option)
             (plex:shcCfgPlex)
@@ -47,7 +45,7 @@ module ShcCfgPlex =
 
 
 
-    let toShcInitRunCfg
+    let toInitRunCfgs
             (newGenerations:generation option)
             (reportFilter:generationFilter option)
             (plex:shcCfgPlex)
@@ -74,11 +72,12 @@ module ShcCfgPlex =
                     reportFilter = reportFilter
                 }
 
-        fromFunc newGenerations reportFilter plex _toIr
+        _fromFunc newGenerations reportFilter plex _toIr
 
 
 
-    let toShcContinueRunCfg
+
+    let toContinueRunCfgs
             (newGenerations:generation)
             (plex:shcCfgPlex)
         =
@@ -88,13 +87,13 @@ module ShcCfgPlex =
                     shcContinueRunCfg.runId = (gaCfg |> ShcInitRunCfg.getRunId);
                     newGenerations = newGenerations
                 }
-        toShcInitRunCfg None None plex
+        toInitRunCfgs None None plex
         |> Seq.map(_toCrc newGenerations)
 
 
 
 
-    let toShcReportEvalsCfg
+    let toReportEvalsCfg
             (genMin:generation)
             (genMax:generation)
             (evalCompName:wsComponentName)
@@ -103,7 +102,7 @@ module ShcCfgPlex =
             (plex:shcCfgPlex)
         =
         let runIds =
-             toShcInitRunCfg None None plex
+             toInitRunCfgs None None plex
              |> Seq.map(ShcInitRunCfg.getRunId)
              |> Seq.toArray
         {
@@ -118,16 +117,14 @@ module ShcCfgPlex =
 
 
 
-
-
-    let toShcReportBinsCfg
+    let toReportBinsCfg
             (genMin:generation)
             (genMax:generation)
             (reportFileName:string)
             (plex:shcCfgPlex)
         =
         let runIds =
-             toShcInitRunCfg None None plex
+             toInitRunCfgs None None plex
              |> Seq.map(ShcInitRunCfg.getRunId)
              |> Seq.toArray
         {

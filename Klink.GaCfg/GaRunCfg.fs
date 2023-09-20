@@ -169,8 +169,6 @@ type gaReportCfg =
 
 
 
-
-
 type gaRunCfg =
     | InitRun of gaInitRunCfg
     | Continue of gaContinueRunCfg

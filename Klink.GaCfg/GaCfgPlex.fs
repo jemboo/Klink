@@ -17,7 +17,7 @@ type gaCfgPlex =
 
 module GaCfgPlex =
 
-    let fromFunc<'a>
+    let _fromFunc<'a>
             (newGenerations:generation option)
             (reportFilter:generationFilter option)
             (plex:gaCfgPlex)
@@ -47,7 +47,7 @@ module GaCfgPlex =
 
 
 
-    let toShcInitRunCfg
+    let toInitRunCfgs
             (newGenerations:generation option)
             (reportFilter:generationFilter option)
             (plex:gaCfgPlex)
@@ -74,11 +74,11 @@ module GaCfgPlex =
                     reportFilter = reportFilter
                 }
 
-        fromFunc newGenerations reportFilter plex _toIr
+        _fromFunc newGenerations reportFilter plex _toIr
 
 
 
-    let toShcContinueRunCfg
+    let toContinueRunCfgs
             (newGenerations:generation)
             (plex:gaCfgPlex)
         =
@@ -88,13 +88,13 @@ module GaCfgPlex =
                     gaContinueRunCfg.runId = (gaCfg |> GaInitRunCfg.getRunId);
                     newGenerations = newGenerations
                 }
-        toShcInitRunCfg None None plex
+        toInitRunCfgs None None plex
         |> Seq.map(_toCrc newGenerations)
 
 
 
 
-    let toShcReportEvalsCfg
+    let toReportEvalsCfg
             (genMin:generation)
             (genMax:generation)
             (evalCompName:wsComponentName)
@@ -103,7 +103,7 @@ module GaCfgPlex =
             (plex:gaCfgPlex)
         =
         let runIds =
-             toShcInitRunCfg None None plex
+             toInitRunCfgs None None plex
              |> Seq.map(GaInitRunCfg.getRunId)
              |> Seq.toArray
         {
@@ -120,14 +120,14 @@ module GaCfgPlex =
 
 
 
-    let toShcReportBinsCfg
+    let toReportBinsCfg
             (genMin:generation)
             (genMax:generation)
             (reportFileName:string)
             (plex:gaCfgPlex)
         =
         let runIds =
-             toShcInitRunCfg None None plex
+             toInitRunCfgs None None plex
              |> Seq.map(GaInitRunCfg.getRunId)
              |> Seq.toArray
         {
