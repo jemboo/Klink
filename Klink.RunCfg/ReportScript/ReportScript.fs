@@ -3,12 +3,12 @@ open System
 open System.IO
 
 
-type runCfgSetScript =
+type reportScript =
     | Shc of shcRunCfg
     | Ga of gaRunCfg
 
 
-module RunCfgSetScript =
+module ReportScript =
 
     let procRunCfg 
             (projectFolderPath:string)

@@ -15,10 +15,12 @@
     <Compile Include="Workspace\CauseSets.fs" />
     <Compile Include="Workspace\IntraGenWsOps.fs" />
     <Compile Include="Workspace\InterGenWsOps.fs" />
-    <Compile Include="Workspace\Reporting.fs" />
-    <Compile Include="RunCfg\ShcRunCfg.fs" />
-    <Compile Include="RunCfg\ShcRunCfgDto.fs" />
-    <Compile Include="RunCfg\ShcCfgPlex.fs" />
+    <Compile Include="Run\ShcRunCfg.fs" />
+    <Compile Include="Run\ShcRunCfgDto.fs" />
+    <Compile Include="Report\Reporting.fs" />
+    <Compile Include="Report\ShcReportCfg.fs" />
+    <Compile Include="Report\ShcReportCfgDto.fs" />
+    <Compile Include="ShcCfgPlex.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -30,6 +32,7 @@
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
     <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
+    <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />
   </ItemGroup>

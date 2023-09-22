@@ -36,34 +36,34 @@ module RunCfgPlex =
 
         
 
-   let toReportEvalsCfg
-            (genMin:generation)
-            (genMax:generation)
-            (evalCompName:wsComponentName)
-            (reportFilter:generationFilter)
-            (reportFileName:string)
-            (plex:runCfgPlex)
-        =
-        match plex with
-        | Ga gcp -> 
-                GaCfgPlex.toReportEvalsCfg genMin genMax evalCompName reportFilter reportFileName gcp
-                |> gaReportCfg.Evals |> gaRunCfg.Report |> runCfg.Ga
-        | Shc scp ->  
-            ShcCfgPlex.toReportEvalsCfg genMin genMax evalCompName reportFilter reportFileName scp
-            |> shcReportCfg.Evals |> shcRunCfg.Report |> runCfg.Shc
+   //let toReportEvalsCfg
+   //         (genMin:generation)
+   //         (genMax:generation)
+   //         (evalCompName:wsComponentName)
+   //         (reportFilter:generationFilter)
+   //         (reportFileName:string)
+   //         (plex:runCfgPlex)
+   //     =
+   //     match plex with
+   //     | Ga gcp -> 
+   //             GaCfgPlex.toReportEvalsCfg genMin genMax evalCompName reportFilter reportFileName gcp
+   //             |> gaReportCfg.Evals |> gaRunCfg.Report |> runCfg.Ga
+   //     | Shc scp ->  
+   //         ShcCfgPlex.toReportEvalsCfg genMin genMax evalCompName reportFilter reportFileName scp
+   //         |> shcReportCfg.Evals |> shcRunCfg.Report |> runCfg.Shc
 
 
 
-   let toReportBinsCfg
-            (genMin:generation)
-            (genMax:generation)
-            (reportFileName:string)
-            (plex:runCfgPlex)
-        =
-        match plex with
-        | Ga gcp -> 
-            GaCfgPlex.toReportBinsCfg genMin genMax reportFileName gcp
-            |> gaReportCfg.Bins |> gaRunCfg.Report |> runCfg.Ga
-        | Shc scp ->  
-            ShcCfgPlex.toReportBinsCfg genMin genMax reportFileName scp
-            |> shcReportCfg.Bins |> shcRunCfg.Report |> runCfg.Shc
+   //let toReportBinsCfg
+   //         (genMin:generation)
+   //         (genMax:generation)
+   //         (reportFileName:string)
+   //         (plex:runCfgPlex)
+   //     =
+   //     match plex with
+   //     | Ga gcp -> 
+   //         GaCfgPlex.toReportBinsCfg genMin genMax reportFileName gcp
+   //         |> gaReportCfg.Bins |> gaRunCfg.Report |> runCfg.Ga
+   //     | Shc scp ->  
+   //         ShcCfgPlex.toReportBinsCfg genMin genMax reportFileName scp
+   //         |> shcReportCfg.Bins |> shcRunCfg.Report |> runCfg.Shc

@@ -29,7 +29,7 @@ module IntraGenWsOps =
 
                 let! curGenNumber = 
                             wsParams
-                                |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
+                                |> WorkspaceParamsAttrs.getGeneration GaWsParamKeys.generation_current
                                 |> Result.map(Generation.value)
 
 
@@ -75,9 +75,9 @@ module IntraGenWsOps =
                         baseWsCfg
 
                 let! wsParamsNextGen = 
-                        wsParams |> WorkspaceParamsAttrs.incrGeneration ShcWsParamKeys.generation_current
-                                 |> Result.bind(WorkspaceParamsAttrs.updateRngGen ShcWsParamKeys.rngGenMutate)
-                                 |> Result.bind(WorkspaceParamsAttrs.updateRngGen ShcWsParamKeys.rngGenPrune)
+                        wsParams |> WorkspaceParamsAttrs.incrGeneration GaWsParamKeys.generation_current
+                                 |> Result.bind(WorkspaceParamsAttrs.updateRngGen GaWsParamKeys.rngGenMutate)
+                                 |> Result.bind(WorkspaceParamsAttrs.updateRngGen GaWsParamKeys.rngGenPrune)
 
                 let! nextGenCfg = 
                      CauseSets.addNextGenCauses
@@ -99,9 +99,9 @@ module IntraGenWsOps =
 
                 let! nextGen = 
                         wsParamsNextGen 
-                        |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
+                        |> WorkspaceParamsAttrs.getGeneration GaWsParamKeys.generation_current
 
-                let! gf = wsParamsNextGen |> WorkspaceParamsAttrs.getGenerationFilter ShcWsParamKeys.generation_filter
+                let! gf = wsParamsNextGen |> WorkspaceParamsAttrs.getGenerationFilter GaWsParamKeys.generation_filter
                 if (gf |> GenerationFilter.passing nextGen) then
                     let! res = fs.saveWorkSpace wsNextGen
                     logger ($"Saved Gen {nextGen |> Generation.value} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")

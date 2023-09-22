@@ -3,7 +3,6 @@ open System
 open System.IO
 
 
-
 type gaInitRunCfg =
     {
         mutationRate:mutationRate
@@ -42,6 +41,42 @@ module GaInitRunCfg =
         ] |> GuidUtils.guidFromObjs |> RunId.create
 
 
+    let toWorkspaceParams 
+            (useParallel:useParallel)
+            (gaCfg:gaInitRunCfg)
+        =
+        let _nextRngGen rng =
+            rng
+            |> Rando.fromRngGen
+            |> Rando.toRngGen
+
+        let rngGenCreate = (_nextRngGen gaCfg.rngGen)
+        let rngGenMutate = (_nextRngGen rngGenCreate)
+        let rngGenPrune = (_nextRngGen rngGenMutate)
+
+        WorkspaceParams.make Map.empty
+        |> WorkspaceParamsAttrs.setRunId GaWsParamKeys.runId (gaCfg |> getRunId)
+        |> WorkspaceParamsAttrs.setGeneration GaWsParamKeys.generation_current (0 |> Generation.create)
+        |> WorkspaceParamsAttrs.setGeneration GaWsParamKeys.generation_max (gaCfg.newGenerations |> Option.get )
+        |> WorkspaceParamsAttrs.setRngGen GaWsParamKeys.rngGenCreate rngGenCreate
+        |> WorkspaceParamsAttrs.setRngGen GaWsParamKeys.rngGenMutate rngGenMutate
+        |> WorkspaceParamsAttrs.setRngGen GaWsParamKeys.rngGenPrune rngGenPrune
+        |> WorkspaceParamsAttrs.setMutationRate GaWsParamKeys.mutationRate gaCfg.mutationRate
+        |> WorkspaceParamsAttrs.setNoiseFraction GaWsParamKeys.noiseFraction (Some gaCfg.noiseFraction)
+        |> WorkspaceParamsAttrs.setOrder GaWsParamKeys.order gaCfg.order
+        |> WorkspaceParamsAttrs.setSorterCount GaWsParamKeys.sorterCount gaCfg.sorterCount
+        |> WorkspaceParamsAttrs.setSorterCount GaWsParamKeys.sorterCountMutated gaCfg.sorterCountMutated
+        |> WorkspaceParamsAttrs.setSorterEvalMode GaWsParamKeys.sorterEvalMode gaCfg.sorterEvalMode
+        |> WorkspaceParamsAttrs.setStageCount GaWsParamKeys.stagesSkipped gaCfg.stagesSkipped
+        |> WorkspaceParamsAttrs.setStageWeight GaWsParamKeys.stageWeight gaCfg.stageWeight
+        |> WorkspaceParamsAttrs.setSwitchCount GaWsParamKeys.sorterLength gaCfg.switchCount
+        |> WorkspaceParamsAttrs.setSwitchGenMode GaWsParamKeys.switchGenMode gaCfg.switchGenMode
+        |> WorkspaceParamsAttrs.setSorterSetPruneMethod GaWsParamKeys.sorterSetPruneMethod gaCfg.sorterSetPruneMethod
+        |> WorkspaceParamsAttrs.setGenerationFilter GaWsParamKeys.generation_filter (gaCfg.reportFilter |> Option.get )
+        |> WorkspaceParamsAttrs.setUseParallel GaWsParamKeys.useParallel useParallel
+
+
+
 
 
 type gaContinueRunCfg =
@@ -51,128 +86,9 @@ type gaContinueRunCfg =
     }
 
 
-module GaContinueRunCfg =
-    let yab = ()
-    //let fromPlex
-    //        (newGenerations:generation)
-    //        (plex:gaInitRunCfgPlex)
-    //    =
-
-    //    let _toCrc newGenerations (gaCfg:gaInitRunCfg) =
-    //            { 
-    //                gaContinueRunCfg.runId = (gaCfg |> GaInitRunCfg.getRunId);
-    //                newGenerations = newGenerations
-    //            }
-    //    GaInitRunCfg.fromPlex None None plex
-    //    |> Seq.map(_toCrc newGenerations)
-
-
-
-type gaReportEvalsCfg =
-    {
-        reportFileName:string
-        runIds:runId array
-        genMin:generation
-        genMax:generation
-        evalCompName:wsComponentName
-        reportFilter:generationFilter
-    }
-
-module GaReportEvalsCfg =
-    let yab = ()
-    //let fromPlex
-    //        (genMin:generation)
-    //        (genMax:generation)
-    //        (evalCompName:wsComponentName)
-    //        (reportFilter:generationFilter)
-    //        (reportFileName:string)
-    //        (plex:gaInitRunCfgPlex)
-    //    =
-    //    let runIds =
-    //         GaInitRunCfg.fromPlex None None plex
-    //         |> Seq.map(GaInitRunCfg.getRunId)
-    //         |> Seq.toArray
-    //    {
-    //        gaReportEvalsCfg.reportFileName = reportFileName
-    //        runIds = runIds
-    //        genMin = genMin
-    //        genMax = genMax
-    //        evalCompName = evalCompName
-    //        reportFilter = reportFilter
-    //    }
-
-
-    //let reportAllEvals
-    //    (projectFolderPath:string)
-    //    (reportCfg:gaReportEvalsCfg)
-    //    =
-    //    let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
-
-    //    let runDirs = reportCfg.runIds
-    //                    |> Array.map(RunId.value >> string)
-    //                    |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
-    //                    |> Array.toList
-
-    //    result {
-    //        return! 
-    //            runDirs 
-    //            |> List.map(Reporting.reportEvals 
-    //                            fsReporter 
-    //                            reportCfg.reportFileName 
-    //                            reportCfg.evalCompName 
-    //                            reportCfg.genMin)
-    //            |> Result.sequence
-    //            |> Result.map(ignore)
-    //    }
-
-
-
-type gaReportBinsCfg =
-    {
-        reportFileName:string
-        runIds:runId array
-        genMin:generation
-        genMax:generation
-    }
-
-module GaReportBinsCfgs =
-    let yab = ()
-    //let reportAllBins
-    //    (projectFolderPath:string)
-    //    (reportCfg:gaReportBinsCfg)
-    //    =
-    //    let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
-
-    //    let runDirs = reportCfg.runIds
-    //                    |> Array.map(RunId.value >> string)
-    //                    |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
-    //                    |> Array.toList
-
-    //    result {
-    //        return! 
-    //            runDirs 
-    //            |> List.map(Reporting.reportBins 
-    //                            fsReporter 
-    //                            reportCfg.reportFileName 
-    //                            reportCfg.genMin)
-    //            |> Result.sequence
-    //            |> Result.map(ignore)
-    //    }
-
-
-
-
-type gaReportCfg =
-    | Evals of gaReportEvalsCfg
-    | Bins of gaReportBinsCfg
-
-
-
-
 type gaRunCfg =
     | InitRun of gaInitRunCfg
     | Continue of gaContinueRunCfg
-    | Report of gaReportCfg
 
 
 module GaRunCfg =
@@ -191,13 +107,13 @@ module GaRunCfg =
                  //       projectFolderPath 
                  //       crc.runId 
                  //       crc.newGenerations
-            | Report rrc -> ()
-                //match rrc with
-                //| Evals rac ->
-                //    GaReportEvalsCfg.reportAllEvals 
-                //            projectFolderPath 
-                //            rac
-                //| Bins rbc ->
-                //    GaReportBinsCfgs.reportAllBins
-                //            projectFolderPath 
-                //            rbc
+            //| Report rrc -> ()
+            //    //match rrc with
+            //    //| Evals rac ->
+            //    //    GaReportEvalsCfg.reportAllEvals 
+            //    //            projectFolderPath 
+            //    //            rac
+            //    //| Bins rbc ->
+            //    //    GaReportBinsCfgs.reportAllBins
+            //    //            projectFolderPath 
+            //    //            rbc

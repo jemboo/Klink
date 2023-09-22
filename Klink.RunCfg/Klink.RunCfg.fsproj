@@ -8,10 +8,12 @@
   <ItemGroup>
     <Compile Include="RunCfg.fs" />
     <Compile Include="RunCfgPlex.fs" />
-    <Compile Include="RunCfgSet.fs" />
-    <Compile Include="RunCfgDto.fs" />
-    <Compile Include="RunCfgSetDto.fs" />
-    <Compile Include="RunCfgSetScript.fs" />
+    <Compile Include="RunScript\RunCfgSet.fs" />
+    <Compile Include="RunScript\RunCfgDto.fs" />
+    <Compile Include="RunScript\RunCfgSetDto.fs" />
+    <Compile Include="RunScript\RunScript.fs" />
+    <Compile Include="ReportScript\ReportCfg.fs" />
+    <Compile Include="ReportScript\ReportScript.fs" />
     <Compile Include="Experiments\Exp1Cfg.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

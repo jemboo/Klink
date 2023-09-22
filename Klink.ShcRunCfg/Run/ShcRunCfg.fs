@@ -6,7 +6,7 @@ open System.IO
 type shcInitRunCfg =
     {
         mutationRate:mutationRate
-        newGenerations:generation option
+        newGenerations:generation
         noiseFraction:noiseFraction
         order:order
         rngGen:rngGen
@@ -58,7 +58,7 @@ module ShcInitRunCfg =
         WorkspaceParams.make Map.empty
         |> WorkspaceParamsAttrs.setRunId ShcWsParamKeys.runId (gaCfg |> getRunId)
         |> WorkspaceParamsAttrs.setGeneration ShcWsParamKeys.generation_current (0 |> Generation.create)
-        |> WorkspaceParamsAttrs.setGeneration ShcWsParamKeys.generation_max (gaCfg.newGenerations |> Option.get )
+        |> WorkspaceParamsAttrs.setGeneration ShcWsParamKeys.generation_max (gaCfg.newGenerations)
         |> WorkspaceParamsAttrs.setRngGen ShcWsParamKeys.rngGenCreate rngGenCreate
         |> WorkspaceParamsAttrs.setRngGen ShcWsParamKeys.rngGenMutate rngGenMutate
         |> WorkspaceParamsAttrs.setRngGen ShcWsParamKeys.rngGenPrune rngGenPrune
@@ -85,89 +85,9 @@ type shcContinueRunCfg =
     }
 
 
-
-type shcReportEvalsCfg =
-    {
-        reportFileName:string
-        runIds:runId array
-        genMin:generation
-        genMax:generation
-        evalCompName:wsComponentName
-        reportFilter:generationFilter
-    }
-
-module ShcReportEvalsCfg =
-
-    let reportAllEvals
-        (projectFolderPath:string)
-        (reportCfg:shcReportEvalsCfg)
-        =
-        let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
-
-        let runDirs = reportCfg.runIds
-                        |> Array.map(RunId.value >> string)
-                        |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
-                        |> Array.toList
-
-        result {
-            return! 
-                runDirs 
-                |> List.map(Reporting.reportEvals 
-                                fsReporter 
-                                reportCfg.reportFileName 
-                                reportCfg.evalCompName 
-                                reportCfg.genMin)
-                |> Result.sequence
-                |> Result.map(ignore)
-        }
-
-
-
-type shcReportBinsCfg =
-    {
-        reportFileName:string
-        runIds:runId array
-        genMin:generation
-        genMax:generation
-    }
-
-module ShcReportBinsCfgs =
-
-    let reportAllBins
-        (projectFolderPath:string)
-        (reportCfg:shcReportBinsCfg)
-        =
-        let fsReporter = new WorkspaceFileStore(Path.Combine(projectFolderPath, "Reports"))
-
-        let runDirs = reportCfg.runIds
-                        |> Array.map(RunId.value >> string)
-                        |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
-                        |> Array.toList
-
-        result {
-            return! 
-                runDirs 
-                |> List.map(Reporting.reportBins 
-                                fsReporter 
-                                reportCfg.reportFileName 
-                                reportCfg.genMin)
-                |> Result.sequence
-                |> Result.map(ignore)
-        }
-
-
-
-
-type shcReportCfg =
-    | Evals of shcReportEvalsCfg
-    | Bins of shcReportBinsCfg
-
-
-
 type shcRunCfg =
     | InitRun of shcInitRunCfg
     | Continue of shcContinueRunCfg
-    | Report of shcReportCfg
 
 
 module ShcRunCfg =
@@ -186,16 +106,16 @@ module ShcRunCfg =
                         projectFolderPath 
                         crc.runId 
                         crc.newGenerations
-            | Report rrc -> 
-                match rrc with
-                | Evals rac ->
-                    ShcReportEvalsCfg.reportAllEvals 
-                            projectFolderPath 
-                            rac
-                | Bins rbc ->
-                    ShcReportBinsCfgs.reportAllBins
-                            projectFolderPath 
-                            rbc
+            //| Report rrc -> 
+            //    match rrc with
+            //    | Evals rac ->
+            //        ShcReportEvalsCfg.reportAllEvals 
+            //                projectFolderPath 
+            //                rac
+            //    | Bins rbc ->
+            //        ShcReportBinsCfgs.reportAllBins
+            //                projectFolderPath 
+            //                rbc
 
 
 

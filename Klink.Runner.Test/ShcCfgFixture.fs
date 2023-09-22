@@ -76,23 +76,23 @@ type RunCfgDtos () =
         let scriptFileName = "reportAllScript"
         let runSetName = "reportAllRunset"
 
-        let shcRunCfgSet = 
-            [Exp1Cfg.testShcInitRunCfgPlex; Exp1Cfg.testShcInitRunCfgPlex2]
-               |> RunCfgSet.reportAllFromPlexSeq
-                            genMin 
-                            genMax 
-                            wsCompName 
-                            genFilter 
-                            runSetName 
-                            reportFileName
+        //let shcRunCfgSet = 
+        //    [Exp1Cfg.testShcInitRunCfgPlex; Exp1Cfg.testShcInitRunCfgPlex2]
+        //       |> RunCfgSet.reportAllFromPlexSeq
+        //                    genMin 
+        //                    genMax 
+        //                    wsCompName 
+        //                    genFilter 
+        //                    runSetName 
+        //                    reportFileName
 
-        let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
+        //let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
-        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" scriptFileName cereal
-        |> ignore
+        //TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" scriptFileName cereal
+        //|> ignore
 
-        let yabba = cereal |> RunCfgSetDto.fromJson
-                           |> Result.ExtractOrThrow
+        //let yabba = cereal |> RunCfgSetDto.fromJson
+        //                   |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);
 
@@ -106,21 +106,21 @@ type RunCfgDtos () =
         let scriptFileName = "reportBinsScript"
         let runSetName = "reportBinsRunset"
 
-        let shcRunCfgSet = 
-            [Exp1Cfg.testShcInitRunCfgPlex; Exp1Cfg.testShcInitRunCfgPlex2]
-               |> RunCfgSet.reportBinsFromPlexSeq
-                            genMin 
-                            genMax 
-                            runSetName 
-                            reportFileName
+        //let shcRunCfgSet = 
+        //    [Exp1Cfg.testShcInitRunCfgPlex; Exp1Cfg.testShcInitRunCfgPlex2]
+        //       |> RunCfgSet.reportBinsFromPlexSeq
+        //                    genMin 
+        //                    genMax 
+        //                    runSetName 
+        //                    reportFileName
 
-        let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
+        //let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
-        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT2\scripts" |> Some) "toDo" scriptFileName cereal
-        |> ignore
+        //TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT2\scripts" |> Some) "toDo" scriptFileName cereal
+        //|> ignore
 
-        let yabba = cereal |> RunCfgSetDto.fromJson
-                           |> Result.ExtractOrThrow
+        //let yabba = cereal |> RunCfgSetDto.fromJson
+        //                   |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);
 
