@@ -3,30 +3,15 @@ open System
 open System.IO
 open System.Threading
 
-module ScriptRun =
-
-    let scriptFolder = "scripts"
-    let toDoFolder = "toDo"
-    let runningFolder = "running"
-    let completedFolder = "completed"
-
-    let scriptToDoFolder (projectPath:string) =
-        IO.Path.Combine(projectPath, scriptFolder, toDoFolder)
-
-    let scriptRunningFolder (projectPath:string) =
-        IO.Path.Combine(projectPath, scriptFolder, runningFolder)
-
-    let scriptCompletedFolder (projectPath:string) =
-        IO.Path.Combine(projectPath, scriptFolder, completedFolder)
-
+module ScriptFileRun =
 
     let getNextScript (projectFolderPath:string) =
             use mutex = new Mutex(false, "FileMoveMutex")
             let mutable fileNameAndContents = ("", "") |> Ok
             if mutex.WaitOne() then
                   try
-                        let scriptToDoFolder = scriptToDoFolder projectFolderPath
-                        let scriptRunningFolder = scriptRunningFolder projectFolderPath
+                        let scriptToDoFolder = ScriptParams.toDoFolder projectFolderPath
+                        let scriptRunningFolder = ScriptParams.runningFolder projectFolderPath
                         Directory.CreateDirectory(scriptRunningFolder) |> ignore
                         let currentScriptToDoPath = 
                             IO.Directory.EnumerateFiles scriptToDoFolder
@@ -55,9 +40,9 @@ module ScriptRun =
 
 
     let finishScript (scriptFileName:string) (projectFolderPath:string) =
-        let scriptRunningFolder = scriptRunningFolder projectFolderPath
+        let scriptRunningFolder = ScriptParams.runningFolder projectFolderPath
         let scriptRunningPath = Path.Combine(scriptRunningFolder, scriptFileName)
-        let scriptCompletedFolder = scriptCompletedFolder projectFolderPath
+        let scriptCompletedFolder = ScriptParams.completedFolder projectFolderPath
         let scriptCompletedPath = Path.Combine(scriptCompletedFolder, scriptFileName)
         try
             Directory.CreateDirectory(scriptCompletedFolder) |> ignore

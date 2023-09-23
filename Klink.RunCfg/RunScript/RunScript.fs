@@ -12,6 +12,18 @@ type initScriptSet =
 
 module InitScriptSet =
 
+    let make 
+            (setNamePfx:string) 
+            (generations:generation) 
+            (reportFilter:generationFilter) 
+            (runCfgPlex:runCfgPlex ) 
+        =
+            { setNamePfx = setNamePfx;
+              generations = generations;
+              reportFilter = reportFilter
+              runCfgPlex = runCfgPlex  }
+
+
     let makeRunConfigSets 
             (initScriptSet:initScriptSet)
             (maxRunsPerScript:int)
@@ -22,6 +34,15 @@ module InitScriptSet =
             initScriptSet.setNamePfx
             maxRunsPerScript
             initScriptSet.runCfgPlex
+
+   
+    let createScriptFiles 
+            (maxRunsPerScript:int)
+            (initScriptSet:initScriptSet)
+        =
+         makeRunConfigSets initScriptSet maxRunsPerScript
+         |> Array.map(fun dto ->(dto.setName, dto |> RunCfgSetDto.toJson))
+
 
 
 
@@ -43,3 +64,10 @@ module ContinueScriptSet =
                 continueScriptSet.generationsToAdd
                 continueScriptSet.setName
                 continueScriptSet.runCfgPlex
+
+   
+    let createScriptFile
+            (continueScriptSet:continueScriptSet)
+        =
+         let yab  = procRunCfg continueScriptSet
+         (yab.setName, yab |> RunCfgSetDto.toJson)

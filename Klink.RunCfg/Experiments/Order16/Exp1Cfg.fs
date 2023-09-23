@@ -15,7 +15,7 @@ module Exp1Cfg =
             sorterSetPruneMethods = [|sspm1; sspm2|];
             stageWeights = [|sw0; sw1|];
             switchGenModes = [|switchGenMode.StageSymmetric|];
-        }
+        } |> runCfgPlex.Shc
 
 
     let testShcInitRunCfgPlex2 =
@@ -28,7 +28,7 @@ module Exp1Cfg =
             sorterSetPruneMethods = [|sspm1; sspm2|];
             stageWeights = [|sw2; sw3|];
             switchGenModes = [|switchGenMode.StageSymmetric|];
-        }
+        } |> runCfgPlex.Shc
 
 
 
@@ -42,7 +42,7 @@ module Exp1Cfg =
             sorterSetPruneMethods = [|sspm1;|];
             stageWeights = [|sw0; sw1|];
             switchGenModes = [|switchGenMode.StageSymmetric|];
-        }
+        } |> runCfgPlex.Shc
 
 
     let fiveSixShcInitRunCfgPlex1 =
@@ -55,7 +55,7 @@ module Exp1Cfg =
             sorterSetPruneMethods = [|sspm1;|];
             stageWeights = [|sw2; sw3|];
             switchGenModes = [|switchGenMode.StageSymmetric|];
-        }
+        } |> runCfgPlex.Shc
 
 
     let sevenEightShcInitRunCfgPlex =
@@ -63,12 +63,12 @@ module Exp1Cfg =
             shcCfgPlex.orders = [|16 |> Order.createNr |]
             mutationRates = [|mr2;mr4|];
             noiseFractions = [|nf3;nf4|];
-            rngGens = rndGens 2 1 ;
+            rngGens = rndGens 1 4 ;
             tupSorterSetSizes = [|ssz7_8|];
             sorterSetPruneMethods = [|sspm1;|];
             stageWeights = [|sw0;|];
             switchGenModes = [|switchGenMode.StageSymmetric|];
-        }
+        } |> runCfgPlex.Shc
 
     let sevenEightShcInitRunCfgPlex1 =
         {
@@ -80,4 +80,4 @@ module Exp1Cfg =
             sorterSetPruneMethods = [|sspm1;|];
             stageWeights = [|sw1|];
             switchGenModes = [|switchGenMode.StageSymmetric|];
-        }
+        } |> runCfgPlex.Shc

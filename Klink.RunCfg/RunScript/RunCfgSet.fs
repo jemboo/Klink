@@ -39,7 +39,7 @@ module RunCfgSet =
         =
         let runCfgs = 
             plex |>
-            ShcCfgPlex.toInitRunCfgs (Some newGenerations) (Some reportFilter)
+            ShcCfgPlex.toInitRunCfgs newGenerations (Some reportFilter)
                   |> Seq.map(shcRunCfg.InitRun >> runCfg.Shc)
                   |> Seq.toArray
 
@@ -54,7 +54,7 @@ module RunCfgSet =
         =
         let runCfgs = 
             plex |>
-            GaCfgPlex.toInitRunCfgs (Some newGenerations) (Some reportFilter)
+            GaCfgPlex.toInitRunCfgs newGenerations (Some reportFilter)
                   |> Seq.map(gaRunCfg.InitRun >> runCfg.Ga)
                   |> Seq.toArray
 
@@ -70,7 +70,7 @@ module RunCfgSet =
         =
         let runCfgs = 
             plex |>
-            ShcCfgPlex.toInitRunCfgs (Some generations) (Some reportFilter)
+            ShcCfgPlex.toInitRunCfgs generations (Some reportFilter)
                   |> Seq.map(shcRunCfg.InitRun >> runCfg.Shc)
                   |> Seq.chunkBySize maxRunCount
                   |> Seq.toArray
@@ -92,7 +92,7 @@ module RunCfgSet =
         =
         let runCfgs = 
             plex |>
-            GaCfgPlex.toInitRunCfgs (Some newGenerations) (Some reportFilter)
+            GaCfgPlex.toInitRunCfgs newGenerations (Some reportFilter)
                   |> Seq.map(gaRunCfg.InitRun >> runCfg.Ga)
                   |> Seq.chunkBySize maxRunCount
                   |> Seq.toArray

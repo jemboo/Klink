@@ -18,10 +18,10 @@ type gaCfgPlex =
 module GaCfgPlex =
 
     let _fromFunc<'a>
-            (newGenerations:generation option)
+            (newGenerations:generation)
             (reportFilter:generationFilter option)
             (plex:gaCfgPlex)
-            (daFunc: order -> generation option -> generationFilter option -> 
+            (daFunc: order -> generation -> generationFilter option -> 
                      rngGen -> (sorterCount*sorterCount) -> 
                      switchGenMode -> stageWeight -> 
                      noiseFraction -> mutationRate -> sorterSetPruneMethod -> 'a)
@@ -46,9 +46,39 @@ module GaCfgPlex =
 
 
 
+    let _fromFunc2<'a>
+            (plex:gaCfgPlex)
+            (daFunc: order ->
+                     rngGen -> (sorterCount*sorterCount) -> 
+                     switchGenMode -> stageWeight -> 
+                     noiseFraction -> mutationRate -> sorterSetPruneMethod -> 'a)
+            =
+        seq {
+        for order in plex.orders do
+            for rngGen in plex.rngGens do
+                for tupSorterSetSize in plex.tupSorterSetSizes do
+                    for switchGenMode in plex.switchGenModes do
+                        for stageWeight in plex.stageWeights do
+                            for noiseFraction in plex.noiseFractions do
+                                for mutationRate in plex.mutationRates do
+                                    for sorterSetPruneMethod in plex.sorterSetPruneMethods do
+                                        yield
+                                            daFunc 
+                                                order 
+                                                rngGen 
+                                                tupSorterSetSize 
+                                                switchGenMode 
+                                                stageWeight
+                                                noiseFraction
+                                                mutationRate 
+                                                sorterSetPruneMethod
+        }
+
+
+
 
     let toInitRunCfgs
-            (newGenerations:generation option)
+            (newGenerations:generation)
             (reportFilter:generationFilter option)
             (plex:gaCfgPlex)
         =
@@ -78,18 +108,46 @@ module GaCfgPlex =
 
 
 
+
+    let toRunIds (plex:gaCfgPlex)
+        =
+        let _toIr order rngGen 
+                  tupSorterSetSize switchGenMode stageWeight 
+                  noiseFraction mutationRate sorterSetPruneMethod =
+
+                GaInitRunCfg.getRunId2
+                    mutationRate
+                    noiseFraction
+                    order
+                    rngGen
+                    sorterEvalMode.DontCheckSuccess
+                    (fst tupSorterSetSize)
+                    (snd tupSorterSetSize)
+                    sorterSetPruneMethod
+                    stageWeight
+                    (SwitchCount.orderTo999SwitchCount order)
+                    switchGenMode
+
+        _fromFunc2 plex _toIr
+
+
+
+
+
+
+
     let toContinueRunCfgs
             (newGenerations:generation)
             (plex:gaCfgPlex)
         =
 
-        let _toCrc newGenerations (gaCfg:gaInitRunCfg) =
+        let _toCrc (runId:runId) =
                 { 
-                    gaContinueRunCfg.runId = (gaCfg |> GaInitRunCfg.getRunId);
+                    gaContinueRunCfg.runId = runId;
                     newGenerations = newGenerations
                 }
-        toInitRunCfgs None None plex
-        |> Seq.map(_toCrc newGenerations)
+        toRunIds plex
+        |> Seq.map(_toCrc )
 
 
 

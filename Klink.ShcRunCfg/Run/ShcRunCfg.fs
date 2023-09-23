@@ -24,6 +24,36 @@ type shcInitRunCfg =
 
 module ShcInitRunCfg =
 
+
+    let getRunId2 
+            (mutationRate:mutationRate) 
+            (noiseFraction:noiseFraction) 
+            (order:order) 
+            (rngGen:rngGen) 
+            (sorterEvalMode:sorterEvalMode) 
+            (sorterCount:sorterCount) 
+            (sorterCountMutated:sorterCount) 
+            (sorterSetPruneMethod:sorterSetPruneMethod) 
+            (stageWeight:stageWeight) 
+            (switchCount:switchCount) 
+            (switchGenMode:switchGenMode)
+        =
+        [
+            mutationRate |> MutationRate.value :> obj;
+            noiseFraction |> NoiseFraction.value :> obj;
+            order |> Order.value :> obj;
+            rngGen :> obj;
+            sorterEvalMode :> obj
+            sorterCount |> SorterCount.value :> obj;
+            sorterCountMutated |> SorterCount.value :> obj;
+            sorterSetPruneMethod :> obj;
+            stageWeight |> StageWeight.value :> obj;
+            switchCount :> obj;
+            switchGenMode :> obj;
+
+        ] |> GuidUtils.guidFromObjs |> RunId.create
+
+
     let getRunId (cfg:shcInitRunCfg) =
         [
             cfg.mutationRate |> MutationRate.value :> obj;

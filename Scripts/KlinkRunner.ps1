@@ -1,12 +1,7 @@
 #$exePath = "C:\Users\jembo\source\Klink\Klink.Runner\bin\Release\net6.0\Klink.Runner.exe"
 $exePath = "C:\source\Klink\Klink.Runner\bin\Release\net6.0\Klink.Runner.exe"
 $workingDir = 'C:\Klink'
-$projectFolder = 'ShcT2'
-$reportFileName = 'deucey'
-$procedure = 'doRun'
-$configCount = '12'
-$iterationCount = '4000'
-#$procedure = 'doRun'
+$projectFolder = 'Shc16'
 
 $processOptions = @{
     FilePath = "C:\source\Klink\Klink.Runner\bin\Release\net6.0\Klink.Runner.exe"

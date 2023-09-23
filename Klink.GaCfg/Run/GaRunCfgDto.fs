@@ -25,7 +25,7 @@ module GaInitRunCfgDto =
 
     let toDto (cfg:gaInitRunCfg) =
         {
-            newGenerations = cfg.newGenerations |> Option.get |> Generation.value
+            newGenerations = cfg.newGenerations |> Generation.value
             mutationRate = cfg.mutationRate |> MutationRate.value
             noiseFraction = cfg.noiseFraction |> NoiseFraction.value
             order = cfg.order |> Order.value
@@ -52,7 +52,7 @@ module GaInitRunCfgDto =
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
             return
                 {
-                    gaInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create |> Some
+                    gaInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create
                     mutationRate = cfg.mutationRate |> MutationRate.create
                     noiseFraction = cfg.noiseFraction |> NoiseFraction.create
                     order = cfg.order |> Order.createNr

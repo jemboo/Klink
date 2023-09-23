@@ -6,7 +6,7 @@ open System.IO
 type gaInitRunCfg =
     {
         mutationRate:mutationRate
-        newGenerations:generation option
+        newGenerations:generation
         noiseFraction:noiseFraction
         order:order
         rngGen:rngGen
@@ -23,6 +23,36 @@ type gaInitRunCfg =
 
 
 module GaInitRunCfg =
+
+
+    let getRunId2 
+            (mutationRate:mutationRate) 
+            (noiseFraction:noiseFraction) 
+            (order:order) 
+            (rngGen:rngGen) 
+            (sorterEvalMode:sorterEvalMode) 
+            (sorterCount:sorterCount) 
+            (sorterCountMutated:sorterCount) 
+            (sorterSetPruneMethod:sorterSetPruneMethod) 
+            (stageWeight:stageWeight) 
+            (switchCount:switchCount) 
+            (switchGenMode:switchGenMode)
+        =
+        [
+            mutationRate |> MutationRate.value :> obj;
+            noiseFraction |> NoiseFraction.value :> obj;
+            order |> Order.value :> obj;
+            rngGen :> obj;
+            sorterEvalMode :> obj
+            sorterCount |> SorterCount.value :> obj;
+            sorterCountMutated |> SorterCount.value :> obj;
+            sorterSetPruneMethod :> obj;
+            stageWeight |> StageWeight.value :> obj;
+            switchCount :> obj;
+            switchGenMode :> obj;
+
+        ] |> GuidUtils.guidFromObjs |> RunId.create
+
 
     let getRunId (cfg:gaInitRunCfg) =
         [
@@ -41,6 +71,9 @@ module GaInitRunCfg =
         ] |> GuidUtils.guidFromObjs |> RunId.create
 
 
+
+
+
     let toWorkspaceParams 
             (useParallel:useParallel)
             (gaCfg:gaInitRunCfg)
@@ -57,7 +90,7 @@ module GaInitRunCfg =
         WorkspaceParams.make Map.empty
         |> WorkspaceParamsAttrs.setRunId GaWsParamKeys.runId (gaCfg |> getRunId)
         |> WorkspaceParamsAttrs.setGeneration GaWsParamKeys.generation_current (0 |> Generation.create)
-        |> WorkspaceParamsAttrs.setGeneration GaWsParamKeys.generation_max (gaCfg.newGenerations |> Option.get )
+        |> WorkspaceParamsAttrs.setGeneration GaWsParamKeys.generation_max (gaCfg.newGenerations)
         |> WorkspaceParamsAttrs.setRngGen GaWsParamKeys.rngGenCreate rngGenCreate
         |> WorkspaceParamsAttrs.setRngGen GaWsParamKeys.rngGenMutate rngGenMutate
         |> WorkspaceParamsAttrs.setRngGen GaWsParamKeys.rngGenPrune rngGenPrune

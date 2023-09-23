@@ -23,8 +23,7 @@ module GaReportEvalsCfg =
             (plex:gaCfgPlex)
         =
         let runIds =
-             GaCfgPlex.toInitRunCfgs None None plex
-             |> Seq.map(GaInitRunCfg.getRunId)
+             GaCfgPlex.toRunIds plex
              |> Seq.toArray
         {
             gaReportEvalsCfg.reportFileName = reportFileName

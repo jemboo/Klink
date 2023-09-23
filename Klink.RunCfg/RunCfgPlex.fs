@@ -8,7 +8,7 @@ type runCfgPlex =
 module RunCfgPlex =
 
    let toInitRunCfgs
-            (newGenerations:generation option)
+            (newGenerations:generation)
             (reportFilter:generationFilter option)
             (plex:runCfgPlex)
         =

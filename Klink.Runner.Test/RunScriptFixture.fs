@@ -4,31 +4,33 @@ open System
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
 [<TestClass>]
-type ShcCfgFixture () =
+type RunScriptFixture () =
 
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let newGens = 40 |> Generation.create
+        let initGens = 40 |> Generation.create
         let genFilter = { modGenerationFilter.modulus = 4}
                             |> generationFilter.ModF
-        let maxRunsPerScript = 24
 
-        let initScriptSet = StageSymmetricCfg.initScriptSet_nf
+        let maxRunsPerScript = 4
+
+        let initRunsPrefix = "yabbs"
+        let initScriptSet = 
+                InitScriptSet.make
+                    initRunsPrefix
+                    initGens
+                    genFilter
+                    Exp1Cfg.sevenEightShcInitRunCfgPlex
+
+
         let scriptFiles = 
-                InitScriptSet.createScriptFiles 
-                    maxRunsPerScript
-                    initScriptSet
+            initScriptSet |> InitScriptSet.createScriptFiles maxRunsPerScript
 
-        scriptFiles |> Array.iter(
-            fun (fn, fc) ->
-                TextIO.writeToFileOverwrite 
-                        "txt" 
-                        ($"c:\Klink\Shc16\scripts" |> Some) 
-                        "toDo" 
-                        fn 
-                        fc
-                |> ignore
-             )
+        scriptFiles |> Array.map(fun (fn, cereal) -> 
+                  TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT2t\scripts" |> Some) "toDo" fn cereal
+                  
+            ) |> ignore
+
 
         Assert.AreEqual (1, 1);
 

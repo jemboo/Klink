@@ -8,13 +8,15 @@
   <ItemGroup>
     <Compile Include="RunCfg.fs" />
     <Compile Include="RunCfgPlex.fs" />
+    <Compile Include="ScriptParams.fs" />
     <Compile Include="RunScript\RunCfgSet.fs" />
     <Compile Include="RunScript\RunCfgDto.fs" />
     <Compile Include="RunScript\RunCfgSetDto.fs" />
     <Compile Include="RunScript\RunScript.fs" />
     <Compile Include="ReportScript\ReportCfg.fs" />
     <Compile Include="ReportScript\ReportScript.fs" />
-    <Compile Include="Experiments\Exp1Cfg.fs" />
+    <Compile Include="Experiments\Order16\StageSymmetricCfg.fs" />
+    <Compile Include="Experiments\Order16\Exp1Cfg.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

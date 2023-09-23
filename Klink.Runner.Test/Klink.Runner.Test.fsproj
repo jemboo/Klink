@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Include="ShcCfgFixture.fs" />
+    <Compile Include="RunScriptFixture.fs" />
     <Compile Include="WorkspaceFixture.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
