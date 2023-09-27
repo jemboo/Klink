@@ -67,7 +67,7 @@ type causeUpdateSorterSpeedBinSet
 
                 let ssBins =
                         sorterSetEval 
-                        |> SorterSetEval.getSorterEvals 
+                        |> SorterSetEval.getSorterEvalsArray 
                         |> Array.map(SorterSpeedBin.fromSorterEval order sorterSpeedBinType)
 
 

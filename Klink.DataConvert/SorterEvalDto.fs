@@ -246,7 +246,7 @@ module SorterSetEvalDto =
             sorterSetEvalId = ssEvl |> SorterSetEval.getSorterSetEvalId |> SorterSetEvalId.value
             sorterSetId = ssEvl |> SorterSetEval.getSorterSetlId |> SorterSetId.value
             sortableSetId = ssEvl |> SorterSetEval.getSortableSetId |> SortableSetId.value
-            sorterEvals = ssEvl |> SorterSetEval.getSorterEvals |> Array.map(SorterEvalDto.toJson)
+            sorterEvals = ssEvl |> SorterSetEval.getSorterEvalsArray |> Array.map(SorterEvalDto.toJson)
         }
 
     let toJson (sorterSetEvl:sorterSetEval) =

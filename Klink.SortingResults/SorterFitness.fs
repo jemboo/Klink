@@ -27,6 +27,7 @@ module SorterFitness =
         (sorterSpd |> SorterSpeed.getSwitchCount |> SwitchCount.value |> float)
         |> create
 
+
 type selectionFraction = private SelectionFraction of float
 module SelectionFraction =
     let value (SelectionFraction v) = v

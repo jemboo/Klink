@@ -8,9 +8,6 @@ type ShcCfgFixture () =
 
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let newGens = 40 |> Generation.create
-        let genFilter = { modGenerationFilter.modulus = 4}
-                            |> generationFilter.ModF
         let maxRunsPerScript = 24
 
         let initScriptSet = StageSymmetricCfg.initScriptSet_nf

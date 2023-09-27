@@ -205,9 +205,9 @@ type causePruneSorterSetsWhole
                 let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
 
                 let sorterSetEvalsAll = 
-                        (sorterSetEvalParent |> SorterSetEval.getSorterEvals)
+                        (sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray)
                                 |> Array.append
-                                    (sorterSetEvalChild |> SorterSetEval.getSorterEvals)
+                                    (sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray)
 
                 let sorterSetPruner = 
                     SorterSetPruner.make 
@@ -354,9 +354,9 @@ type causePruneSorterSetsShc
                                 this.rngGen |> RngGenProvider.nextRngGen
 
                 let sorterSetEvalsAll = 
-                        (_sorterSetEvalParent |> SorterSetEval.getSorterEvals)
+                        (_sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray)
                                 |> Array.append
-                                    (_sorterSetEvalChild |> SorterSetEval.getSorterEvals)
+                                    (_sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray)
 
                 let sorterSetPruner = 
                     SorterSetPruner.make 

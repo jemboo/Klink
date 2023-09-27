@@ -141,7 +141,7 @@ module Reporting =
         =
         let lines = 
             sorterSetEval 
-                |> SorterSetEval.getSorterEvals 
+                |> SorterSetEval.getSorterEvalsArray 
                 |> Array.map(fun sev ->
                                     sprintf "%s%s" 
                                         (standardParamValues wsps)

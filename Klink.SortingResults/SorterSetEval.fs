@@ -16,7 +16,7 @@ type sorterSetEval =
             sorterSetEvalId:sorterSetEvalId
             sorterSetId:sorterSetId
             sortableSetId:sortableSetId
-            sorterEvals:sorterEval[]
+            sorterEvals: Map<sorterId, sorterEval>
         }
 
 module SorterSetEval 
@@ -30,8 +30,11 @@ module SorterSetEval
     let getSortableSetId (ssEvl:sorterSetEval) =
             ssEvl.sortableSetId
 
-    let getSorterEvals (ssEvl:sorterSetEval) =
+    let getSorterEvalsMap (ssEvl:sorterSetEval) =
             ssEvl.sorterEvals
+
+    let getSorterEvalsArray (ssEvl:sorterSetEval) =
+            ssEvl.sorterEvals |> Map.toArray |> Array.map(snd)
             
     let evalSorters
             (sorterEvalMode: sorterEvalMode)
@@ -67,11 +70,12 @@ module SorterSetEval
             (sortableStId: sortableSetId)
             (sorterEvals: sorterEval[])
         =
+          let sEvs = sorterEvals |> Array.map(fun sev -> (sev.sortrId, sev)) |> Map.ofArray
           {
             sorterSetEvalId = sorterSetEvalId
             sorterSetId = sorterSetId
             sortableSetId = sortableStId
-            sorterEvals = sorterEvals
+            sorterEvals = sEvs
           }
 
 
@@ -119,7 +123,10 @@ module SorterSetEval
     let getSorterSpeedBins (sorterSetEval:sorterSetEval) =
         result {
             let! sorterSpeeds =
-                 sorterSetEval |> getSorterEvals |> Array.map(SorterEval.getSorterSpeed)
+                 sorterSetEval 
+                 |> getSorterEvalsMap
+                 |> Map.toArray
+                 |> Array.map(snd >> SorterEval.getSorterSpeed)
                  |> Array.map(Result.ofOption("SorterSpeed missing"))
                  |> Array.toList
                  |> Result.sequence

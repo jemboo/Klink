@@ -187,16 +187,16 @@ type causePruneSorterSetsWhole
 
             result {
 
-                let! sorterSetParent = 
+                let! _sorterSetParent = 
                         w |> Workspace.getComponent this.sorterSetParentName
                           |> Result.bind(WorkspaceComponent.asSorterSet)
-                let! sorterSetChild = 
+                let! _sorterSetChild = 
                         w |> Workspace.getComponent this.sorterSetChildName
                           |> Result.bind(WorkspaceComponent.asSorterSet)
-                let! sorterSetEvalParent = 
+                let! _sorterSetEvalParent = 
                         w |> Workspace.getComponent this.sorterSetEvalParentName
                           |> Result.bind(WorkspaceComponent.asSorterSetEval)
-                let! sorterSetEvalChild = 
+                let! _sorterSetEvalChild = 
                         w |> Workspace.getComponent this.sorterSetEvalChildName
                           |> Result.bind(WorkspaceComponent.asSorterSetEval)
 
@@ -204,10 +204,9 @@ type causePruneSorterSetsWhole
                         RngGenProvider.make this.rngGen
                 let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
 
-                let sorterSetEvalsAll = 
-                        (sorterSetEvalParent |> SorterSetEval.getSorterEvals)
-                                |> Array.append
-                                    (sorterSetEvalChild |> SorterSetEval.getSorterEvals)
+                let sevsP = _sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray
+                let sevsC = _sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray
+                let sorterSetEvalsAll = sevsP |> Array.append sevsC
 
                 let sorterSetPruner = 
                     SorterSetPruner.make 
@@ -222,9 +221,9 @@ type causePruneSorterSetsWhole
                                 _rngGen
 
                 let mergedSorterMap = 
-                        (sorterSetParent |> SorterSet.getSorters)
+                        (_sorterSetParent |> SorterSet.getSorters)
                             |> Array.append
-                                (sorterSetChild |> SorterSet.getSorters)
+                                (_sorterSetChild |> SorterSet.getSorters)
                         |> Array.map(fun s -> ((s |> Sorter.getSorterId), s))
                         |> Map.ofArray
 
@@ -236,8 +235,8 @@ type causePruneSorterSetsWhole
                 let prunedSorterSetId = 
                     SorterSetPruner.makePrunedSorterSetId
                         (sorterSetPruner |> SorterSetPruner.getId)
-                        (sorterSetParent |> SorterSet.getId)
-                        (sorterSetChild |> SorterSet.getId)
+                        (_sorterSetParent |> SorterSet.getId)
+                        (_sorterSetChild |> SorterSet.getId)
                         (this.stageWeight)
                         (this.noiseFraction)
                         _rngGen
@@ -245,15 +244,15 @@ type causePruneSorterSetsWhole
                 let prunedSorterSet = 
                      SorterSet.load 
                             prunedSorterSetId
-                            (sorterSetParent |> SorterSet.getOrder)
+                            (_sorterSetParent |> SorterSet.getOrder)
                             prunedSorters
 
 
                 let prunedSorterSetEvalId = 
                     SorterSetPruner.makePrunedSorterSetEvalId
                         (sorterSetPruner |> SorterSetPruner.getId)
-                        (sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
-                        (sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
+                        (_sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
+                        (_sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
                         _rngGen
 
 
@@ -261,7 +260,7 @@ type causePruneSorterSetsWhole
                     SorterSetEval.load
                         prunedSorterSetEvalId
                         prunedSorterSetId
-                        (sorterSetEvalChild |> SorterSetEval.getSortableSetId)
+                        (_sorterSetEvalChild |> SorterSetEval.getSortableSetId)
                         sorterEvalsPruned
 
 
@@ -353,10 +352,10 @@ type causePruneSorterSetsShc
                 let _rngGen = RngGenProvider.make 
                                 this.rngGen |> RngGenProvider.nextRngGen
 
-                let sorterSetEvalsAll = 
-                        (_sorterSetEvalParent |> SorterSetEval.getSorterEvals)
-                                |> Array.append
-                                    (_sorterSetEvalChild |> SorterSetEval.getSorterEvals)
+
+                let sevsP = _sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray
+                let sevsC = _sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray
+                let sorterSetEvalsAll = sevsP |> Array.append sevsC
 
                 let sorterSetPruner = 
                     SorterSetPruner.make 
