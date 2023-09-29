@@ -82,23 +82,23 @@ module CauseSets =
             }
 
 
-    let addResetSpeedBinsCauses
-            (wnSorterSpeedBinSet:wsComponentName)
-            (wsParams:workspaceParams)
-            (history:history)
-            =
-            result {
+    //let addResetSpeedBinsCauses
+    //        (wnSorterSpeedBinSet:wsComponentName)
+    //        (wsParams:workspaceParams)
+    //        (history:history)
+    //        =
+    //        result {
 
-                let causeAddSorterSpeedBinSet =
-                    new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
+    //            let causeAddSorterSpeedBinSet =
+    //                new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
 
-                return
-                   history 
-                        |> History.addCauses 
-                            [
-                                causeAddSorterSpeedBinSet;
-                            ]
-            }
+    //            return
+    //               history 
+    //                    |> History.addCauses 
+    //                        [
+    //                            causeAddSorterSpeedBinSet;
+    //                        ]
+    //        }
 
 
 

@@ -27,18 +27,16 @@ type SorterSetParentMapFixture() =
 
       let extendedMap = sorterSetParentMap |> SorterSetParentMap.extendToParents
 
-      let sorterSetAncestryId = Guid.NewGuid() |> SorterSetAncestryId.create
+      let sorterSetAncestryTag = Guid.NewGuid()
       let sorterSetAncestry = 
             SorterSetAncestry.create
-                sorterSetAncestryId
+                sorterSetAncestryTag
                 parentSorterIds
-
+                (0 |> Generation.create)
       
-      let sorterSetAncestryId2 = Guid.NewGuid() |> SorterSetAncestryId.create
       let ssaUpdate = 
             sorterSetAncestry |>
                 SorterSetAncestry.update
-                    sorterSetAncestryId2
                     extendedMap
 
 
@@ -51,7 +49,6 @@ type SorterSetParentMapFixture() =
       let ssaUpdate = 
             sorterSetAncestry |>
                 SorterSetAncestry.update
-                    sorterSetAncestryId2
                     extendedMapR
 
 

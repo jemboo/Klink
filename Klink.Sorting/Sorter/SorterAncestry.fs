@@ -37,6 +37,16 @@ type sorterSetAncestryId = private SorterSetAncestryId of Guid
 module SorterSetAncestryId =
     let value (SorterSetAncestryId v) = v
     let create (v: Guid) = SorterSetAncestryId v
+    let fromTag 
+            (tag:Guid) 
+            (generation:generation)
+        =
+        [|
+            tag:> obj;
+            generation |> Generation.value :> obj;
+            "sorterSetAncestry" :> obj;
+        |] |> GuidUtils.guidFromObjs  
+            |> create
 
 
 type sorterSetAncestry =
@@ -44,6 +54,7 @@ type sorterSetAncestry =
         id: sorterSetAncestryId;
         generation:generation;
         ancestorMap:Map<sorterId, sorterAncestry>
+        tag:Guid
         }
 
 
@@ -55,9 +66,11 @@ module SorterSetAncestry =
     let getAncestorMap (sa:sorterSetAncestry) =
         sa.ancestorMap
 
-    let create (id:sorterSetAncestryId) 
+    let create (tag:Guid) 
                (sorterIds:sorterId seq) 
+               (generation:generation)
         =
+        let id = SorterSetAncestryId.fromTag tag generation
         {
             id = id;
             generation = 0 |> Generation.create; 
@@ -65,15 +78,15 @@ module SorterSetAncestry =
                 sorterIds
                 |> Seq.map(fun sid -> (sid, SorterAncestry.create sid))
                 |> Map.ofSeq
+            tag = tag
         }
 
     let update 
-            (newId:sorterSetAncestryId)
             (parentMap:Map<sorterId, sorterParentId>)
             (sorterSetAncestry:sorterSetAncestry) 
         =
         let nextGen = (sorterSetAncestry.generation |> Generation.next)
-
+        let newId = SorterSetAncestryId.fromTag sorterSetAncestry.tag nextGen
         let _update (sorterId, sorterParentId) =
             if (sorterId |> SorterId.value) = (sorterParentId |> SorterParentId.value) 
                then
@@ -99,5 +112,6 @@ module SorterSetAncestry =
             id = newId;
             generation = nextGen; 
             ancestorMap = newAncestorMap
+            tag = sorterSetAncestry.tag
         }
 

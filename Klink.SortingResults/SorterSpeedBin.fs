@@ -101,6 +101,7 @@ type sorterSpeedBinSet =
         {
             id: sorterSpeedBinSetId;
             binMap : Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>
+            generation:generation
             tag:Guid
         }
 
@@ -108,17 +109,20 @@ module SorterSpeedBinSet
     = 
     let load (binMap : Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>) 
              (id:sorterSpeedBinSetId)
+             (generation:generation)
              (tag:Guid) 
         =
         {
             id = id
             binMap = binMap
+            generation = generation
             tag = tag
         }
 
     let create (binMap : Map<sorterSpeedBinKey, Map<sorterPhenotypeId,sorterCount>>)
                (generation:generation)
-               (tag:Guid)    =
+               (tag:Guid)    
+        =
         let sorterSpeedBinSetId  = 
                 [|
                   tag:> obj;
@@ -127,11 +131,14 @@ module SorterSpeedBinSet
                 |] |> GuidUtils.guidFromObjs  
                    |> SorterSpeedBinSetId.create
 
-        load binMap sorterSpeedBinSetId tag
+        load binMap sorterSpeedBinSetId (0 |> Generation.create) tag
 
 
     let getBinMap (ssbss:sorterSpeedBinSet) =
         ssbss.binMap
+
+    let getGeneration (ssbss:sorterSpeedBinSet) =
+        ssbss.generation
 
     let getId (ssbss:sorterSpeedBinSet) =
         ssbss.id

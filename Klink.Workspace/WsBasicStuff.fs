@@ -33,11 +33,12 @@ type workspaceComponentType =
     | WorkspaceDescription = 0
     | SortableSet = 10
     | SorterSet = 20
-    | SorterSetMutator = 21
-    | SorterSetParentMap = 22
-    | SorterSetConcatMap = 23
-    | SorterSetEval = 30
-    | SorterSpeedBinSet = 31
+    | SorterSetAncestry = 21
+    | SorterSetConcatMap = 22
+    | SorterSetEval = 23
+    | SorterSetMutator = 24
+    | SorterSetParentMap = 25
+    | SorterSpeedBinSet = 30
     | SorterSetPruner = 40
     | WorkspaceParams = 50
 

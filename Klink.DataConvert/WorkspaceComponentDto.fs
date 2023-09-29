@@ -24,6 +24,9 @@ module WorkspaceComponentDto =
         | SorterSetEval sorterSetEval -> 
             (sorterSetEval |> SorterSetEvalDto.toJson, 
              workspaceComponentType.SorterSetEval)
+        | SorterSetAncestry sorterSetAncestry ->
+            (sorterSetAncestry |> SorterSetAncestryDto.toJson, 
+             workspaceComponentType.SorterSetAncestry)
         | SorterSpeedBinSet sorterSpeedBinSet ->
             (sorterSpeedBinSet |> SorterSpeedBinSetDto.toJson, 
              workspaceComponentType.SorterSpeedBinSet)

@@ -49,7 +49,8 @@ module IntraGenWsOps =
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalMutated:wsComponentName)
             (wnSorterSetEvalPruned:wsComponentName)
-            (wnSorterSpeedBinSet:wsComponentName)      
+            (wnSorterSpeedBinSet:wsComponentName)     
+            (wnSorterSetAncestry:wsComponentName)       
             (fs:WorkspaceFileStore)
             (logger: string -> unit)            
             (wsParams:workspaceParams)
@@ -106,12 +107,20 @@ module IntraGenWsOps =
                     let! res = fs.saveWorkSpace wsNextGen
                     logger ($"Saved Gen {nextGen |> Generation.value} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
                     let causeAddSorterSpeedBinSet =
-                        new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
+                        new causeAddSorterSpeedBinSet(wnSorterSpeedBinSet, wsParams)
+
+                    let causeAddSorterSetAncestry =
+                        new causeAddSorterSetAncestry(wnSorterSetAncestry, wsParams, wnSorterSetEvalPruned)
+
+
                     let! resetWs =
                         wsNextGen
                         |> History.runWorkspaceCfgOnWorkspace
                                 logger
-                                [causeAddSorterSpeedBinSet]
+                                [
+                                    causeAddSorterSpeedBinSet;
+                                    causeAddSorterSetAncestry
+                                ]
 
                     return resetWs, wsParamsNextGen
 

@@ -44,10 +44,11 @@ module WorkspaceComponentDescr
 type workspaceComponent =
     | SortableSet of sortableSet
     | SorterSet of sorterSet
-    | SorterSetMutator of sorterSetMutator
-    | SorterSetParentMap of sorterSetParentMap
+    | SorterSetAncestry of sorterSetAncestryP
     | SorterSetConcatMap of sorterSetConcatMap
     | SorterSetEval of sorterSetEval
+    | SorterSetMutator of sorterSetMutator
+    | SorterSetParentMap of sorterSetParentMap
     | SorterSpeedBinSet of sorterSpeedBinSet
     | SorterSetPruner of sorterSetPruner
     | WorkspaceDescription of workspaceDescription
@@ -105,18 +106,21 @@ module WorkspaceComponent =
         | SorterSet sorterSet -> 
             sorterSet 
                 |> SorterSet.getId |> SorterSetId.value
-        | SorterSetMutator sorterSetMutator -> 
-            sorterSetMutator 
-                |> SorterSetMutator.getId |> SorterSetMutatorId.value
-        | SorterSetParentMap sorterSetParentMap -> 
-            sorterSetParentMap 
-                |> SorterSetParentMap.getId |> SorterSetParentMapId.value
+        | SorterSetAncestry sorterSetAncestry -> 
+            sorterSetAncestry 
+                |> SorterSetAncestryP.getId |> SorterSetAncestryId.value
         | SorterSetConcatMap sorterSetConcatMap -> 
             sorterSetConcatMap 
                 |> SorterSetConcatMap.getId |> SorterSetConcatMapId.value
         | SorterSetEval sorterSetEval -> 
             sorterSetEval 
                 |> SorterSetEval.getSorterSetEvalId |> SorterSetEvalId.value
+        | SorterSetMutator sorterSetMutator -> 
+            sorterSetMutator 
+                |> SorterSetMutator.getId |> SorterSetMutatorId.value
+        | SorterSetParentMap sorterSetParentMap -> 
+            sorterSetParentMap 
+                |> SorterSetParentMap.getId |> SorterSetParentMapId.value
         | SorterSpeedBinSet sorterSpeedBinSet ->
             sorterSpeedBinSet 
                 |> SorterSpeedBinSet.getId |> SorterSpeedBinSetId.value
@@ -137,14 +141,16 @@ module WorkspaceComponent =
              workspaceComponentType.SortableSet
         | SorterSet _ -> 
              workspaceComponentType.SorterSet
-        | SorterSetMutator _ -> 
-             workspaceComponentType.SorterSetMutator
-        | SorterSetParentMap _ -> 
-             workspaceComponentType.SorterSetParentMap
+        | SorterSetAncestry _ -> 
+             workspaceComponentType.SorterSetAncestry
         | SorterSetConcatMap _ -> 
              workspaceComponentType.SorterSetConcatMap
         | SorterSetEval _ -> 
              workspaceComponentType.SorterSetEval
+        | SorterSetMutator _ -> 
+             workspaceComponentType.SorterSetMutator
+        | SorterSetParentMap _ -> 
+             workspaceComponentType.SorterSetParentMap
         | SorterSpeedBinSet _ -> 
              workspaceComponentType.SorterSpeedBinSet
         | SorterSetPruner _ ->
@@ -165,14 +171,10 @@ module WorkspaceComponent =
             WorkspaceComponentDescr.create
                  (comp |> getId)
                  workspaceComponentType.SorterSet
-        | SorterSetMutator _ -> 
+        | SorterSetAncestry _ -> 
             WorkspaceComponentDescr.create
                  (comp |> getId)
-                 workspaceComponentType.SorterSetMutator
-        | SorterSetParentMap _ -> 
-            WorkspaceComponentDescr.create
-                 (comp |> getId)
-                 workspaceComponentType.SorterSetParentMap
+                 workspaceComponentType.SorterSetAncestry
         | SorterSetConcatMap _ -> 
             WorkspaceComponentDescr.create
                  (comp |> getId)
@@ -181,6 +183,14 @@ module WorkspaceComponent =
             WorkspaceComponentDescr.create
                  (comp |> getId)
                  workspaceComponentType.SorterSetEval
+        | SorterSetMutator _ -> 
+            WorkspaceComponentDescr.create
+                 (comp |> getId)
+                 workspaceComponentType.SorterSetMutator
+        | SorterSetParentMap _ -> 
+            WorkspaceComponentDescr.create
+                 (comp |> getId)
+                 workspaceComponentType.SorterSetParentMap
         | SorterSpeedBinSet _ -> 
             WorkspaceComponentDescr.create
                  (comp |> getId)

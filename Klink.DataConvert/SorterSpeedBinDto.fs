@@ -50,6 +50,7 @@ type sorterSpeedBinSetDto =
     {
         id: Guid
         binMap:(sorterSpeedBinKeyDto*Map<Guid,int>) array;
+        generation:int
         tag:Guid
     }
 
@@ -75,6 +76,7 @@ module SorterSpeedBinSetDto =
             return SorterSpeedBinSet.load 
                         (kvps |> Map.ofList)
                         (dto.id |> SorterSpeedBinSetId.create)
+                        (dto.generation |> Generation.create)
                         dto.tag
         }
 
@@ -103,6 +105,9 @@ module SorterSpeedBinSetDto =
             id = sorterSpeedBinSet 
                     |> SorterSpeedBinSet.getId
                     |> SorterSpeedBinSetId.value
+            generation = sorterSpeedBinSet 
+                            |> SorterSpeedBinSet.getGeneration
+                            |> Generation.value
             tag = sorterSpeedBinSet
                     |> SorterSpeedBinSet.getTag
         }
