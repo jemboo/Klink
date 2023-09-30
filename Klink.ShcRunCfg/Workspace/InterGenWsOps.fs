@@ -14,40 +14,57 @@ module InterGenWsOps =
     let wnSorterSetEvalMutated = "sorterSetEvalMutated" |> WsComponentName.create
     let wnSorterSetEvalPruned = "sorterSetEvalPruned" |> WsComponentName.create
     let wnSorterSpeedBinSet = "sorterSpeedBinSet" |> WsComponentName.create
+    let wnSorterSetAncestry = "sorterSetAncestry" |> WsComponentName.create
        
 
-    let doGenLoop
+
+    let setupGenLoopStart
             (projectFolderPath:string)
             (wsParams: workspaceParams)
-        = 
+        =
         result {
 
             let! runId = wsParams |> WorkspaceParamsAttrs.getRunId ShcWsParamKeys.runId
             let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
-            let fs = new WorkspaceFileStore(runDir)
+            let workplaceFileStore = new WorkspaceFileStore(runDir)
 
-            let! wsParamsGen1, ws = 
+            let! wsParamsGen1, curWorkspace = 
                     IntraGenWsOps.setupWorkspace
                             wnSortableSet
                             wnSorterSetParent
                             wnSorterSetEvalParent
                             wnSorterSpeedBinSet
                             wsParams
-                            fs
+                            workplaceFileStore
                             (fun s-> Console.WriteLine(s))
             let! maxGen = 
                     wsParams |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_max
-                                |> Result.map(Generation.value)
 
 
-            let! cg = wsParamsGen1 |> snd |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
-                    
-            let mutable curGen = cg |> Generation.value
-            let mutable curParams = wsParamsGen1 |> snd
-            let mutable curWorkspace = ws
+            let! curgen = wsParamsGen1 |> snd |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
+            let curParams = wsParamsGen1 |> snd
 
-            while curGen < maxGen do
-                let! wsN, wsPramsN =
+            return (curgen, maxGen, curParams, curWorkspace, workplaceFileStore)
+        }
+
+
+
+    let runLoops 
+            (curGen:generation)
+            (maxGen:generation)
+            (curParams:workspaceParams)
+            (curWorkspace:workspace)
+            (workplaceFileStore:WorkspaceFileStore)
+        =
+            let mutable _curGen = curGen |> Generation.value
+            let mutable _maxGen = maxGen |> Generation.value
+            let mutable _curParams = curParams
+            let mutable _curWorkspace = curWorkspace
+            let mutable _keepGoing = true
+            let mutable _msg = ""
+
+            while ((_curGen < _maxGen ) && _keepGoing) do
+                let tup =
                     IntraGenWsOps.doGen
                         wnSortableSet
                         wnSorterSetParent
@@ -59,70 +76,75 @@ module InterGenWsOps =
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
                         wnSorterSpeedBinSet
-                        fs
+                        wnSorterSetAncestry
+                        workplaceFileStore
                         (fun s-> Console.WriteLine(s))
-                        curParams
-                        curWorkspace
+                        _curParams
+                        _curWorkspace
+                _msg <-
+                    match tup with
+                    | Ok (wsN, wsPramsN) -> 
+                            _keepGoing <- true
+                            _curWorkspace <- wsN
+                            _curParams <- wsPramsN
+                            _curGen <- _curGen + 1
+                            ""
+                    | Error m -> 
+                            _keepGoing <- false
+                            m
+            _msg
 
-                curWorkspace <- wsN
-                curParams <- wsPramsN
-                curGen <- curGen + 1
-
-            return ()
-        }
 
 
-    let continueUpdating
+    let startGenLoops
+            (projectFolderPath:string)
+            (wsParams: workspaceParams)
+        = 
+        let res = setupGenLoopStart projectFolderPath wsParams
+        match res with
+        | Error m -> Console.Write($"error in setupGenLoopStart: {m}")
+        | Ok (curgen, maxGen, curParams, curWorkspace, workplaceFileStore) ->
+            let msg = runLoops curgen maxGen curParams curWorkspace workplaceFileStore
+            Console.WriteLine($"error in runLoops: {msg}")
+
+
+
+
+    let setupGenLoopContinue
             (projectDir:string)
             (runId:runId)
             (newGenerations:generation)
         =
-        let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
         result {
+            let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
             Console.WriteLine(runDir)
 
-            let fs = new WorkspaceFileStore(runDir)
+            let workplaceFileStore = new WorkspaceFileStore(runDir)
 
-            let! workspaceId = fs.getLastWorkspaceId
+            let! workspaceId = workplaceFileStore.getLastWorkspaceId
                 
             Console.WriteLine($" wsId: {workspaceId}")
 
-            let! wsLoaded = fs.loadWorkSpace workspaceId
+            let! wsLoaded = workplaceFileStore.loadWorkSpace workspaceId
             let! paramsLoaded = wsLoaded 
                                 |> Workspace.getComponent ("workspaceParams" |> WsComponentName.create)
                                 |> Result.bind(WorkspaceComponent.asWorkspaceParams)
             let! genLoaded = paramsLoaded |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
-                                |> Result.map(Generation.value)
+            let maxGen = genLoaded |> Generation.add (newGenerations |> Generation.value)
 
-            let mutable curGen = genLoaded
-            let mutable curParams = paramsLoaded
-            let mutable curWorkspace = wsLoaded
-
-
-            let maxGen = curGen + (newGenerations |> Generation.value)
-            while curGen < maxGen do
-                let! wsN, wsPramsN = 
-                    IntraGenWsOps.doGen
-                        wnSortableSet
-                        wnSorterSetParent
-                        wnSorterSetMutator
-                        wnSorterSetMutated
-                        wnSorterSetPruned
-                        wnParentMap
-                        wnSorterSetEvalParent
-                        wnSorterSetEvalMutated
-                        wnSorterSetEvalPruned
-                        wnSorterSpeedBinSet
-                        fs
-                        (fun s-> Console.WriteLine(s))
-                        curParams
-                        curWorkspace
-
-                curWorkspace <- wsN
-                curParams <- wsPramsN
-                curGen <- curGen + 1
-
-            return ()
+            return (genLoaded, maxGen, paramsLoaded, wsLoaded, workplaceFileStore)
         }
 
 
+
+    let continueGenLoops
+            (projectDir:string)
+            (runId:runId)
+            (newGenerations:generation)
+        =
+        let res = setupGenLoopContinue projectDir runId newGenerations
+        match res with
+        | Error m -> Console.Write($"error in setupGenLoopContinue: {m}")
+        | Ok (curgen, maxGen, curParams, curWorkspace, workplaceFileStore) ->
+            let msg = runLoops curgen maxGen curParams curWorkspace workplaceFileStore
+            Console.WriteLine($"error in runLoops: {msg}")

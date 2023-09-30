@@ -20,7 +20,7 @@ type ShcCfgFixture () =
             fun (fn, fc) ->
                 TextIO.writeToFileOverwrite 
                         "txt" 
-                        ($"c:\Klink\Shc16\scripts" |> Some) 
+                        ($"c:\Klink\Test\scripts" |> Some) 
                         "toDo" 
                         fn 
                         fc

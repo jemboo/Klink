@@ -1,6 +1,4 @@
 ﻿namespace global
-open System
-open System.IO
 
 
 type runCfgSet = { setName:string; 
@@ -16,18 +14,14 @@ module RunCfgSet =
                 =
         sprintf "%s_%d" prefix (maxChunk * dex)
 
+
     let procRunCfgSet 
             (projectFolderPath:string)
             (up:useParallel)
             (rcs:runCfgSet)
         =
-        result {
-            let! yab = rcs.runCfgs
-                      |> Array.map(RunCfg.procRunCfg projectFolderPath up)
-                      |> Array.toList
-                      |> Result.sequence
-            return ()
-        }
+        rcs.runCfgs
+        |> Array.map(RunCfg.procRunCfg projectFolderPath up)
 
 
 

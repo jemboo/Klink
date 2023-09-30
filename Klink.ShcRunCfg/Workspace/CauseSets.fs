@@ -66,7 +66,7 @@ module CauseSets =
                             useParallel)
 
                 let causeAddSorterSpeedBinSet =
-                    new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
+                    new causeAddSorterSpeedBinSet(wnSorterSpeedBinSet, wsParams)
 
                 return
                    ( history 
@@ -240,6 +240,7 @@ module CauseSets =
             (wnSorterSetEvalPruned:wsComponentName)
             (wnParentMap:wsComponentName)
             (wnSorterSpeedBinSet:wsComponentName)
+            (wnSorterSetAncestry:wsComponentName)
             (wsParams:workspaceParams)
             (history:history)
             =
@@ -254,6 +255,7 @@ module CauseSets =
                             wnSorterSetEvalPruned,
                             wnParentMap,
                             wnSorterSpeedBinSet,
+                            wnSorterSetAncestry,
                             wsParams
                             )
 

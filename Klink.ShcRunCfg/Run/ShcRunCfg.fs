@@ -130,12 +130,13 @@ module ShcRunCfg =
             match shcRunCfg with
             | InitRun irc -> 
                 irc |> ShcInitRunCfg.toWorkspaceParams up
-                    |> InterGenWsOps.doGenLoop projectFolderPath
+                    |> InterGenWsOps.startGenLoops projectFolderPath
             | Continue crc -> 
-                 InterGenWsOps.continueUpdating 
-                        projectFolderPath 
-                        crc.runId 
-                        crc.newGenerations
+                failwith "not implemented"
+                 //InterGenWsOps.continueUpdating 
+                 //       projectFolderPath 
+                 //       crc.runId 
+                 //       crc.newGenerations
             //| Report rrc -> 
             //    match rrc with
             //    | Evals rac ->

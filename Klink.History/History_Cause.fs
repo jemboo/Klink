@@ -84,12 +84,14 @@ module History =
             | [] -> wksR
             | h::t ->
                 match wksR with
-                | Error _ -> wksR
+                | Error m -> 
+                    logger $"error in History.makeWorkspace: {m}"
+                    wksR
                 | Ok wsCur ->
-                let nextId = makeWorkspaceId (wsCur |> Workspace.getId) [h]
-                let nextWs = h.Updater wsCur nextId
-                //logger $"updatingQ: {h.Name}"
-                _makeWorkspace nextWs t
+                    let nextId = makeWorkspaceId (wsCur |> Workspace.getId) [h]
+                    let nextWs = h.Updater wsCur nextId
+                    //logger $"updatingQ: {h.Name}"
+                    _makeWorkspace nextWs t
 
         _makeWorkspace (startingWs |> Ok) causeHist
 

@@ -58,9 +58,9 @@ module IntraGenWsOps =
          =
             result {
                 
-                let baseWsCfg = History.Empty
+                let baseWsHistory = History.Empty
 
-                let! workspaceCfgPrune = 
+                let! wsHistoryWIthPrune = 
                      CauseSets.addMutantsAndPruneCauses
                         wnSortableSet
                         wnSorterSetParent
@@ -73,14 +73,14 @@ module IntraGenWsOps =
                         wnSorterSetEvalPruned
                         wnSorterSpeedBinSet
                         wsParams
-                        baseWsCfg
+                        baseWsHistory
 
                 let! wsParamsNextGen = 
                         wsParams |> WorkspaceParamsAttrs.incrGeneration ShcWsParamKeys.generation_current
                                  |> Result.bind(WorkspaceParamsAttrs.updateRngGen ShcWsParamKeys.rngGenMutate)
                                  |> Result.bind(WorkspaceParamsAttrs.updateRngGen ShcWsParamKeys.rngGenPrune)
 
-                let! nextGenCfg = 
+                let! wsHistoryNextGen = 
                      CauseSets.addNextGenCauses
                         wnSortableSet
                         wnSorterSetParent
@@ -89,14 +89,15 @@ module IntraGenWsOps =
                         wnSorterSetEvalPruned
                         wnParentMap
                         wnSorterSpeedBinSet
+                        wnSorterSetAncestry
                         wsParamsNextGen
-                        workspaceCfgPrune
+                        wsHistoryWIthPrune
 
                 let! wsNextGen =
                         ws
                         |> History.runWorkspaceCfgOnWorkspace
                                 logger
-                                (nextGenCfg.causes) 
+                                (wsHistoryNextGen.causes) 
 
                 let! nextGen = 
                         wsParamsNextGen 
@@ -110,7 +111,7 @@ module IntraGenWsOps =
                         new causeAddSorterSpeedBinSet(wnSorterSpeedBinSet, wsParams)
 
                     let causeAddSorterSetAncestry =
-                        new causeAddSorterSetAncestry(wnSorterSetAncestry, wsParams, wnSorterSetEvalPruned)
+                        new causeAddSorterSetAncestry(wnSorterSetAncestry, wsParams, wnSorterSetEvalParent)
 
 
                     let! resetWs =
