@@ -225,6 +225,14 @@ module WorkspaceComponent =
              $"Workspace component type is {comp}, not SorterSet" |> Error
 
 
+    let asSorterSetAncestry (comp:workspaceComponent) =
+        match comp with
+        | SorterSetAncestry sorterSetAncestry -> 
+             sorterSetAncestry |> Ok
+        | _  -> 
+             $"Workspace component type is {comp}, not SorterSetAncestry" |> Error
+
+
     let asSorterSetMutator (comp:workspaceComponent) =
         match comp with
         | SorterSetMutator sorterSetMutator -> 

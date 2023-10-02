@@ -490,8 +490,8 @@ type causeSetupForNextGen
                 let! wcSorterSpeedBinSet = 
                         w |> Workspace.getComponent this.wnSorterSpeedBinSet
 
-                //let! wcSorterSetAncestry = 
-                //        w |> Workspace.getComponent this.wnSorterSetAncestry
+                let! wcSorterSetAncestry = 
+                        w |> Workspace.getComponent this.wnSorterSetAncestry
 
                 let! wcSorterSetParentMap = 
                         w |> Workspace.getComponent this.wnParentMap
@@ -511,7 +511,7 @@ type causeSetupForNextGen
                                 (this.wnSorterSetEvalParent, wcSorterSetEvalParentNew)
                                 (this.wnParentMap, wcSorterSetParentMap)
                                 (this.wnSorterSpeedBinSet, wcSorterSpeedBinSet)
-                                //(this.wnSorterSetAncestry, wcSorterSetAncestry)
+                                (this.wnSorterSetAncestry, wcSorterSetAncestry)
                                 (this.wsnParams, wcParams)
                             ]
             }

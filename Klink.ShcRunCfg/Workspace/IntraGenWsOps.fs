@@ -8,7 +8,8 @@ module IntraGenWsOps =
             (wnSortableSet:wsComponentName)
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
-            (wnSorterSpeedBinSet:wsComponentName)       
+            (wnSorterSpeedBinSet:wsComponentName)    
+            (wnSorterSetAncestry:wsComponentName)   
             (wsParams:workspaceParams)
             (fs:WorkspaceFileStore)
             (logger: string -> unit)
@@ -21,6 +22,7 @@ module IntraGenWsOps =
                         wnSorterSetParent
                         wnSorterSetEvalParent
                         wnSorterSpeedBinSet
+                        wnSorterSetAncestry
                         wsParams
                         emptyWsCfg
 
@@ -72,6 +74,7 @@ module IntraGenWsOps =
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
                         wnSorterSpeedBinSet
+                        wnSorterSetAncestry
                         wsParams
                         baseWsHistory
 

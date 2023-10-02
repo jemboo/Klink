@@ -112,17 +112,22 @@ type causeAddSorterSetAncestry
     member this.updater = 
             fun (w :workspace) (newWorkspaceId :workspaceId) ->
             result {
+
                 let! sorterSetEvalParent = 
                         w |> Workspace.getComponent this.wsnSorterSetEvalParentName
                           |> Result.bind(WorkspaceComponent.asSorterSetEval)
                 let! stageWeight = 
                     workspaceParams 
                         |> WorkspaceParamsAttrs.getStageWeight ShcWsParamKeys.stageWeight
+                let! curGen = 
+                    workspaceParams 
+                        |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
+
                 let wsSorterSetAncestry = 
                       SorterSetAncestryP.create 
                             sorterSetEvalParent
                             stageWeight
-                            (0 |> Generation.create)
+                            curGen
                             (workspaceParams |> WorkspaceParams.getId |> WorkspaceParamsId.value)
                       |> workspaceComponent.SorterSetAncestry
                 return w |> Workspace.addComponents 
@@ -150,52 +155,66 @@ type causeAddSorterSetAncestry
 
 type causeUpdateSorterSetAncestry
             (
-             wsnSorterSpeedBinSet:wsComponentName,
+             wnSorterSetAncestry:wsComponentName,
              wsnSorterSetEval:wsComponentName,
-             order:order,
-             sorterSpeedBinType:sorterSpeedBinType,
-             generation:generation
+             wsnSorterSetParentMap:wsComponentName,
+             workspaceParams:workspaceParams
             )
     = 
     member this.causeName = "causeUpdateSorterSpeedBinSet"
-    member this.wsnSorterSpeedBinSet = wsnSorterSpeedBinSet
+    member this.wnSorterSetAncestry = wnSorterSetAncestry
     member this.wsnSorterSetEval = wsnSorterSetEval
-    member this.sorterSpeedBinType = sorterSpeedBinType
+    member this.wsnSorterSetParentMap = wsnSorterSetParentMap
     member this.updater =
             fun (w :workspace) (newWorkspaceId :workspaceId) ->
             result {
 
-                let! wcSorterSpeedBinSet 
-                    = w |> Workspace.getComponent this.wsnSorterSpeedBinSet
-                        |> Result.bind(WorkspaceComponent.asSorterSpeedBinSet)
+                let! sorterSetAncestry 
+                    = w |> Workspace.getComponent this.wnSorterSetAncestry
+                        |> Result.bind(WorkspaceComponent.asSorterSetAncestry)
+
 
                 let! sorterSetEval 
                     = w |> Workspace.getComponent this.wsnSorterSetEval
                         |> Result.bind(WorkspaceComponent.asSorterSetEval)
 
 
-                let ssBins =
-                        sorterSetEval 
-                        |> SorterSetEval.getSorterEvalsArray 
-                        |> Array.map(SorterSpeedBin.fromSorterEval order sorterSpeedBinType)
+                let! parentMap
+                    = w |> Workspace.getComponent this.wsnSorterSetParentMap
+                        |> Result.bind(WorkspaceComponent.asSorterSetParentMap)
 
 
-                let wsSpeedBinsUpdated =
-                        ssBins 
-                        |> SorterSpeedBinSet.addBins wcSorterSpeedBinSet generation
-                        |> workspaceComponent.SorterSpeedBinSet
+                let! stageWeight = 
+                    workspaceParams 
+                        |> WorkspaceParamsAttrs.getStageWeight ShcWsParamKeys.stageWeight
+
+                let! generation = 
+                    workspaceParams 
+                        |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
+
+
+                let sorterSetAncestryUpdated =
+                        sorterSetAncestry 
+                        |> SorterSetAncestryP.update 
+                                    generation 
+                                    stageWeight
+                                    sorterSetEval
+                                    (parentMap |> SorterSetParentMap.getParentMap)
+
+                        |> workspaceComponent.SorterSetAncestry
+
 
                 return w |> Workspace.addComponents 
                             newWorkspaceId
                             this.causeName
                             [
-                                (this.wsnSorterSpeedBinSet, wsSpeedBinsUpdated)
+                                (this.wnSorterSetAncestry, sorterSetAncestryUpdated)
                             ]
             }
 
     member this.id =
         [
-            this.wsnSorterSpeedBinSet :> obj
+            this.wnSorterSetAncestry :> obj
         ]
              |> GuidUtils.guidFromObjs
              |> CauseId.create

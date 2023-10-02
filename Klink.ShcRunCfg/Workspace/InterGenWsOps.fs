@@ -34,6 +34,7 @@ module InterGenWsOps =
                             wnSorterSetParent
                             wnSorterSetEvalParent
                             wnSorterSpeedBinSet
+                            wnSorterSetAncestry
                             wsParams
                             workplaceFileStore
                             (fun s-> Console.WriteLine(s))

@@ -87,13 +87,14 @@ module SorterAncestryP =
             (sorterPhenotypeId:sorterPhenotypeId) 
             (sorterFitness:sorterFitness) 
             (parentSorterAncestry:sorterAncestryP) 
-
         =
-        let _replace last newStuff history =
-            if newStuff.sorterPhenotypeId = last.sorterPhenotypeId then
-                newStuff::history
+        let _replace newInfo last history =
+            if newInfo.sorterPhenotypeId = last.sorterPhenotypeId then
+                match history with
+                | [] -> [last]
+                | _ ->  newInfo::history
             else
-                newStuff::last::history
+                newInfo::last::history
 
         let newStuff = 
             {
@@ -105,8 +106,11 @@ module SorterAncestryP =
 
         let updatedAncestors =
             match parentSorterAncestry.ancestors with
-            | [] -> [newStuff]
-            | last::t -> _replace newStuff last t
+            | [] -> 
+                [newStuff]
+            | last::history -> 
+                let yab = _replace newStuff last history
+                yab
 
         {
             sorterAncestryP.sorterId = sorterId;
@@ -183,13 +187,13 @@ module SorterSetAncestryP =
 
 
     let update
-            (sorterSetEval:sorterSetEval)
+            (generation:generation)
             (stageWeight:stageWeight)
+            (sorterSetEval:sorterSetEval)
             (parentMap:Map<sorterId, sorterParentId>)
-            (sorterSetAncestry:sorterSetAncestryP) 
+            (sorterSetAncestry:sorterSetAncestryP)
         =
-        let nextGen = (sorterSetAncestry.generation |> Generation.next)
-        let newId = SorterSetAncestryId.fromTag sorterSetAncestry.tag nextGen
+        let newId = SorterSetAncestryId.fromTag sorterSetAncestry.tag generation
 
         let _updateSorterAncestry 
                 (parentSorterAncestry:sorterAncestryP)
@@ -207,30 +211,44 @@ module SorterSetAncestryP =
         let evalMap = sorterSetEval |> SorterSetEval.getSorterEvalsMap
 
         let _update  (sorterId, sorterParentId) =
+            let asSorterId = sorterParentId |> SorterParentId.toSorterId
             if (sorterId |> SorterId.value) = (sorterParentId |> SorterParentId.value) 
                then
-                (sorterId, sorterSetAncestry.ancestorMap.[sorterId])
+                (sorterId, sorterSetAncestry.ancestorMap.[asSorterId])
+
                else
                 let parentSorterAncestry = 
-                    sorterSetAncestry.ancestorMap.[sorterParentId |> SorterParentId.toSorterId]
-                (
-                    sorterId,
-                    _updateSorterAncestry
+                    sorterSetAncestry.ancestorMap.[asSorterId]
+                let updatedSorterAncestry = 
+                     _updateSorterAncestry
                         parentSorterAncestry 
                         evalMap.[sorterId]
-                        nextGen
+                        generation
                         stageWeight
+                (
+                    sorterId,
+                    updatedSorterAncestry
                 )
 
+        // if the sorter is not in the parent map, then it is it's own parent
+        let _lookupParentSorter (sorterId:sorterId) =
+            if (parentMap.ContainsKey sorterId) then
+                parentMap.[sorterId]
+            else
+                sorterId |> SorterParentId.toSorterParentId
+
         let newAncestorMap = 
-            parentMap
-            |> Map.toSeq 
+            sorterSetEval
+            |> SorterSetEval.getSorterEvalsMap
+            |> Map.toArray
+            |> Array.map(fst)
+            |> Array.map(fun sorterId -> (sorterId, _lookupParentSorter sorterId))
             |> Seq.map(_update)
             |> Map.ofSeq
 
         {
             id = newId;
-            generation = nextGen; 
+            generation = generation; 
             ancestorMap = newAncestorMap
             tag = sorterSetAncestry.tag
         }

@@ -9,6 +9,7 @@ module CauseSets =
             (wnSorterSetParent:wsComponentName)
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSpeedBinSet:wsComponentName)
+            (wnSorterSetAncestry:wsComponentName)
             (wsParams:workspaceParams)
             (history:history)
             =
@@ -68,6 +69,11 @@ module CauseSets =
                 let causeAddSorterSpeedBinSet =
                     new causeAddSorterSpeedBinSet(wnSorterSpeedBinSet, wsParams)
 
+
+                let causeAddSorterSetAncestry =
+                    new causeAddSorterSetAncestry(wnSorterSetAncestry, wsParams, wnSorterSetEvalParent)
+
+
                 return
                    ( history 
                         |> History.addCauses 
@@ -77,6 +83,7 @@ module CauseSets =
                                 causeAddSorterSetRnd;
                                 causeAddSorterSpeedBinSet;
                                 causeMakeSorterSetEvalParent;
+                                causeAddSorterSetAncestry;
                             ],
                      wsParamsWithSortableSet )
             }
@@ -113,7 +120,8 @@ module CauseSets =
             (wnSorterSetEvalParent:wsComponentName)
             (wnSorterSetEvalMutated:wsComponentName)
             (wnSorterSetEvalPruned:wsComponentName)
-            (wnSorterSpeedBinSet:wsComponentName)       
+            (wnSorterSpeedBinSet:wsComponentName)
+            (wnSorterSetAncestry:wsComponentName)
             (wsParams:workspaceParams)
             (history:history)
          =
@@ -214,6 +222,15 @@ module CauseSets =
                             not handled in makeMutantsAndPrune" |> Error
 
 
+                let causeUpdateSorterSetAncestry =
+                    new causeUpdateSorterSetAncestry(
+                        wnSorterSetAncestry,
+                        wnSorterSetEvalPruned,
+                        wnParentMap,
+                        wsParams
+                    ) :> ICause |> Ok
+
+
                 let! causeList = 
                             [
                                 causeAddSorterSetMutator;
@@ -222,6 +239,7 @@ module CauseSets =
                                 causeUpdateSorterSpeedBinSetParent;
                                 causeUpdateSorterSpeedBinSetMutant;
                                 causePruneSorterSets;
+                                causeUpdateSorterSetAncestry
                             ] |> Result.sequence
 
                 return
