@@ -75,7 +75,6 @@ module ShcReportBinsCfgs =
 
 
 
-
 type shcReportCfg =
     | Evals of shcReportEvalsCfg
     | Bins of shcReportBinsCfg

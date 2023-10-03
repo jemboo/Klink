@@ -17,7 +17,7 @@ module StageSymmetricCfg =
             switchGenModes = [|switchGenMode.StageSymmetric|];
         } |> runCfgPlex.Shc
 
-    let baseGenerationCount = 5000 |> Generation.create
+    let baseGenerationCount = 500 |> Generation.create
     let baseReportFilter = ScriptParams.modulusFilter 5
     let initScriptName = "nf"
     let initScriptSet_nf = 

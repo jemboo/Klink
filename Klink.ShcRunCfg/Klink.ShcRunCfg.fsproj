@@ -9,7 +9,7 @@
     <Compile Include="SortingCfg\SorterSetRndCfg.fs" />
     <Compile Include="SortingCfg\SortableSetCfg.fs" />
     <Compile Include="Workspace\ShcWsParamKeys.fs" />
-    <Compile Include="Workspace\CauseReporting.fs" />
+    <Compile Include="Workspace\CauseStats.fs" />
     <Compile Include="Workspace\CauseMakeWsComponent.fs" />
     <Compile Include="Workspace\CauseAddWsComponent.fs" />
     <Compile Include="Workspace\CauseSets.fs" />

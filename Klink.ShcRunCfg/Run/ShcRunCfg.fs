@@ -132,21 +132,28 @@ module ShcRunCfg =
                 irc |> ShcInitRunCfg.toWorkspaceParams up
                     |> InterGenWsOps.startGenLoops projectFolderPath
             | Continue crc -> 
-                failwith "not implemented"
-                 //InterGenWsOps.continueUpdating 
-                 //       projectFolderPath 
-                 //       crc.runId 
-                 //       crc.newGenerations
-            //| Report rrc -> 
-            //    match rrc with
-            //    | Evals rac ->
-            //        ShcReportEvalsCfg.reportAllEvals 
-            //                projectFolderPath 
-            //                rac
-            //    | Bins rbc ->
-            //        ShcReportBinsCfgs.reportAllBins
-            //                projectFolderPath 
-            //                rbc
+                InterGenWsOps.continueGenLoops
+                    projectFolderPath
+                    crc.runId
+                    crc.newGenerations
+
+
+
+            //    failwith "not implemented"
+            //     //InterGenWsOps.continueUpdating 
+            //     //       projectFolderPath 
+            //     //       crc.runId 
+            //     //       crc.newGenerations
+            ////| Report rrc -> 
+            ////    match rrc with
+            ////    | Evals rac ->
+            ////        ShcReportEvalsCfg.reportAllEvals 
+            ////                projectFolderPath 
+            ////                rac
+            ////    | Bins rbc ->
+            ////        ShcReportBinsCfgs.reportAllBins
+            ////                projectFolderPath 
+            ////                rbc
 
 
 
