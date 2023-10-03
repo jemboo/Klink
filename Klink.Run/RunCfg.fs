@@ -19,8 +19,8 @@ module RunCfg =
             | Shc shc -> 
                     shc |> ShcRunCfg.procShcRunCfg projectFolderPath up
 
-            | Ga ga -> 
-                    failwith "not implemnted"
+            //| Ga ga -> 
+            //        failwith "not implemnted"
                     // ga |> GaRunCfg.procGaRunCfg projectFolderPath up |> Ok
             //match res with
             //| Ok msg ->  Console.WriteLine($"success: {msg}" )

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="CommonTypes.fs" />
+    <Compile Include="scriptDto.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+    <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
+    <ProjectReference Include="..\Klink.Report\Klink.Report.fsproj" />
+    <ProjectReference Include="..\Klink.RunCfg\Klink.RunCfg.fsproj" />
+    <ProjectReference Include="..\Klink.Run\Klink.Run.fsproj" />
+  </ItemGroup>
+
+</Project>

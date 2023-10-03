@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <Compile Include="CommonParams.fs" />
-    <Compile Include="CommonTypes.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

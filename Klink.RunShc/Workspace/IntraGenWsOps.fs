@@ -11,7 +11,7 @@ module IntraGenWsOps =
             (wnSorterSpeedBinSet:wsComponentName)    
             (wnSorterSetAncestry:wsComponentName)   
             (wsParams:workspaceParams)
-            (fs:WorkspaceFileStore)
+            (fs:IWorkspaceStore)
             (logger: string -> unit)
          =
             result {
@@ -35,7 +35,7 @@ module IntraGenWsOps =
                                 |> Result.map(Generation.value)
 
 
-                let! res = fs.saveWorkSpace wsGenZero
+                let! res = fs.SaveWorkSpace wsGenZero
                 logger ($"Saved Gen {curGenNumber} to {wsGenZero |> Workspace.getId |> WorkspaceId.value}")
                 return (wsCfg, wsParams), wsGenZero
              }
@@ -53,7 +53,7 @@ module IntraGenWsOps =
             (wnSorterSetEvalPruned:wsComponentName)
             (wnSorterSpeedBinSet:wsComponentName)     
             (wnSorterSetAncestry:wsComponentName)       
-            (fs:WorkspaceFileStore)
+            (fs:IWorkspaceStore)
             (logger: string -> unit)            
             (wsParams:workspaceParams)
             (ws:workspace)
@@ -108,7 +108,7 @@ module IntraGenWsOps =
 
                 let! gf = wsParamsNextGen |> WorkspaceParamsAttrs.getGenerationFilter ShcWsParamKeys.generation_filter
                 if (gf |> GenerationFilter.passing nextGen) then
-                    let! res = fs.saveWorkSpace wsNextGen
+                    let! res = fs.SaveWorkSpace wsNextGen
                     logger ($"Saved Gen {nextGen |> Generation.value} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
                     let causeAddSorterSpeedBinSet =
                         new causeAddSorterSpeedBinSet(wnSorterSpeedBinSet, wsParams)

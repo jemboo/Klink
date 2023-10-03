@@ -21,12 +21,12 @@ module InterGenWsOps =
     let setupGenLoopStart
             (projectFolderPath:string)
             (wsParams: workspaceParams)
+            (workplaceFileStore:IWorkspaceStore)
         =
         result {
 
             let! runId = wsParams |> WorkspaceParamsAttrs.getRunId ShcWsParamKeys.runId
             let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
-            let workplaceFileStore = new WorkspaceFileStore(runDir)
 
             let! wsParamsGen1, curWorkspace = 
                     IntraGenWsOps.setupWorkspace
@@ -55,7 +55,7 @@ module InterGenWsOps =
             (maxGen:generation)
             (curParams:workspaceParams)
             (curWorkspace:workspace)
-            (workplaceFileStore:WorkspaceFileStore)
+            (workplaceFileStore:IWorkspaceStore)
         =
             let mutable _curGen = curGen |> Generation.value
             let mutable _maxGen = maxGen |> Generation.value
@@ -100,13 +100,14 @@ module InterGenWsOps =
     let startGenLoops
             (projectFolderPath:string)
             (wsParams: workspaceParams)
+            (workplaceFileStore:IWorkspaceStore)
         = 
-        let res = setupGenLoopStart projectFolderPath wsParams
+        let res = setupGenLoopStart projectFolderPath wsParams workplaceFileStore
         match res with
-        | Error m -> Console.Write($"error in setupGenLoopStart: {m}")
         | Ok (curgen, maxGen, curParams, curWorkspace, workplaceFileStore) ->
             let msg = runLoops curgen maxGen curParams curWorkspace workplaceFileStore
             Console.WriteLine($"error in runLoops: {msg}")
+        | Error m -> Console.Write($"error in setupGenLoopStart: {m}")
 
 
 
@@ -115,18 +116,19 @@ module InterGenWsOps =
             (projectDir:string)
             (runId:runId)
             (newGenerations:generation)
+            (workplaceFileStore:IWorkspaceStore)
         =
         result {
-            let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
-            Console.WriteLine(runDir)
+            //let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
+            //Console.WriteLine(runDir)
 
-            let workplaceFileStore = new WorkspaceFileStore(runDir)
+           // let workplaceFileStore = new WorkspaceFileStore(runDir)
 
-            let! workspaceId = workplaceFileStore.getLastWorkspaceId
+            let! workspaceId = workplaceFileStore.GetLastWorkspaceId()
                 
             Console.WriteLine($" wsId: {workspaceId}")
 
-            let! wsLoaded = workplaceFileStore.loadWorkSpace workspaceId
+            let! wsLoaded = workplaceFileStore.LoadWorkSpace workspaceId
             let! paramsLoaded = wsLoaded 
                                 |> Workspace.getComponent ("workspaceParams" |> WsComponentName.create)
                                 |> Result.bind(WorkspaceComponent.asWorkspaceParams)
@@ -142,10 +144,11 @@ module InterGenWsOps =
             (projectDir:string)
             (runId:runId)
             (newGenerations:generation)
+            (workplaceFileStore:IWorkspaceStore)
         =
-        let res = setupGenLoopContinue projectDir runId newGenerations
+        let res = setupGenLoopContinue projectDir runId newGenerations workplaceFileStore
         match res with
-        | Error m -> Console.Write($"error in setupGenLoopContinue: {m}")
         | Ok (curgen, maxGen, curParams, curWorkspace, workplaceFileStore) ->
             let msg = runLoops curgen maxGen curParams curWorkspace workplaceFileStore
             Console.WriteLine($"error in runLoops: {msg}")
+        | Error m -> Console.Write($"error in setupGenLoopContinue: {m}")

@@ -19,12 +19,13 @@ module InterGenWsOps =
     let doGenLoop
             (projectFolderPath:string)
             (wsParams: workspaceParams)
+            (workplaceFileStore:IWorkspaceStore)
         = 
         result {
 
             let! runId = wsParams |> WorkspaceParamsAttrs.getRunId GaWsParamKeys.runId
-            let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
-            let fs = new WorkspaceFileStore(runDir)
+            //let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
+            //let fs = new WorkspaceFileStore(runDir)
 
             let! wsParamsGen1, ws = 
                     IntraGenWsOps.setupWorkspace
@@ -33,7 +34,7 @@ module InterGenWsOps =
                             wnSorterSetEvalParent
                             wnSorterSpeedBinSet
                             wsParams
-                            fs
+                            workplaceFileStore
                             (fun s-> Console.WriteLine(s))
             let! maxGen = 
                     wsParams |> WorkspaceParamsAttrs.getGeneration GaWsParamKeys.generation_max
@@ -59,7 +60,7 @@ module InterGenWsOps =
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
                         wnSorterSpeedBinSet
-                        fs
+                        workplaceFileStore
                         (fun s-> Console.WriteLine(s))
                         curParams
                         curWorkspace
@@ -76,18 +77,19 @@ module InterGenWsOps =
             (projectDir:string)
             (runId:runId)
             (newGenerations:generation)
+            (workplaceFileStore:IWorkspaceStore)
         =
         let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
         result {
-            Console.WriteLine(runDir)
+            //Console.WriteLine(runDir)
 
-            let fs = new WorkspaceFileStore(runDir)
+            //let fs = new WorkspaceFileStore(runDir)
 
-            let! workspaceId = fs.getLastWorkspaceId()
+            let! workspaceId = workplaceFileStore.GetLastWorkspaceId()
                 
             Console.WriteLine($" wsId: {workspaceId}")
 
-            let! wsLoaded = fs.loadWorkSpace workspaceId
+            let! wsLoaded = workplaceFileStore.LoadWorkSpace workspaceId
             let! paramsLoaded = wsLoaded 
                                 |> Workspace.getComponent ("workspaceParams" |> WsComponentName.create)
                                 |> Result.bind(WorkspaceComponent.asWorkspaceParams)
@@ -113,7 +115,7 @@ module InterGenWsOps =
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
                         wnSorterSpeedBinSet
-                        fs
+                        workplaceFileStore
                         (fun s-> Console.WriteLine(s))
                         curParams
                         curWorkspace

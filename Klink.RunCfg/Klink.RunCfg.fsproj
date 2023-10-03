@@ -6,10 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="RunCfg.fs" />
-    <Compile Include="RunCfgPlex.fs" />
     <Compile Include="ScriptParams.fs" />
-    <Compile Include="RunScript\RunCfgSet.fs" />
     <Compile Include="RunScript\RunCfgDto.fs" />
     <Compile Include="RunScript\RunCfgSetDto.fs" />
     <Compile Include="RunScript\RunScript.fs" />
@@ -28,6 +25,9 @@
     <ProjectReference Include="..\Klink.GaCfg\Klink.GaRunCfg.fsproj" />
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
     <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
+    <ProjectReference Include="..\Klink.RunGa\Klink.RunGa.fsproj" />
+    <ProjectReference Include="..\Klink.RunShc\Klink.RunShc.fsproj" />
+    <ProjectReference Include="..\Klink.Run\Klink.Run.fsproj" />
     <ProjectReference Include="..\Klink.ShcRunCfg\Klink.ShcRunCfg.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />

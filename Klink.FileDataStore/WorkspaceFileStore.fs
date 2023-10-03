@@ -41,11 +41,7 @@ type WorkspaceFileStore (wsRootDir:string) =
     member this.markLastWorkspaceId (wsId:workspaceId) = 
            TextIO.writeToFileOverwrite this.fileExt (Some this.wsRootDir) "" "lastUpdate" (wsId |> WorkspaceId.value |> string )
 
-    member this.getLastWorkspaceId =
-           //result {
-           //     let! txt = TextIO.readAllText this.fileExt (Some this.wsRootDir) "" "lastUpdate"
-           //     return txt |> Guid.Parse |> WorkspaceId.create
-           //}
+    member this.getLastWorkspaceId () =
            TextIO.readAllText this.fileExt (Some this.wsRootDir) "" "lastUpdate"
            |> Result.map (Guid.Parse >> WorkspaceId.create)
 
@@ -338,3 +334,4 @@ type WorkspaceFileStore (wsRootDir:string) =
         member this.SaveWorkSpace(ws) = this.saveWorkSpace(ws)
         member this.LoadWorkSpace(wsId) = this.loadWorkSpace(wsId)
         member this.WorkSpaceExists(wsId) = this.workSpaceExists(wsId)
+        member this.GetLastWorkspaceId() = this.getLastWorkspaceId ()
