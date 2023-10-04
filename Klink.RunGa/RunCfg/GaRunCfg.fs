@@ -55,22 +55,18 @@ module GaInitRunCfg =
 
 
     let getRunId (cfg:gaInitRunCfg) =
-        [
-            cfg.mutationRate |> MutationRate.value :> obj;
-            cfg.noiseFraction |> NoiseFraction.value :> obj;
-            cfg.order |> Order.value :> obj;
-            cfg.rngGen :> obj;
-            cfg.sorterEvalMode :> obj
-            cfg.sorterCount |> SorterCount.value :> obj;
-            cfg.sorterCountMutated |> SorterCount.value :> obj;
-            cfg.sorterSetPruneMethod :> obj;
-            cfg.stageWeight |> StageWeight.value :> obj;
-            cfg.switchCount :> obj;
-            cfg.switchGenMode :> obj;
-
-        ] |> GuidUtils.guidFromObjs |> RunId.create
-
-
+        getRunId2 
+            cfg.mutationRate
+            cfg.noiseFraction
+            cfg.order
+            cfg.rngGen
+            cfg.sorterEvalMode
+            cfg.sorterCount
+            cfg.sorterCountMutated
+            cfg.sorterSetPruneMethod
+            cfg.stageWeight
+            cfg.switchCount
+            cfg.switchGenMode
 
 
 
@@ -129,17 +125,19 @@ module GaRunCfg =
     let procGaRunCfg 
             (projectFolderPath:string)
             (up:useParallel)
+            (workspaceFileStoreF: string -> IWorkspaceStore)
             (runCfg:gaRunCfg)
         =
             match runCfg with
-            | InitRun irc -> ()
-                //irc |> GaInitRunCfg.toWorkspaceParams up
-                //    |> InterGenWsOps.doGenLoop projectFolderPath
-            | Continue crc -> ()
-                 //InterGenWsOps.continueUpdating 
-                 //       projectFolderPath 
-                 //       crc.runId 
-                 //       crc.newGenerations
+            | InitRun irc -> 
+                irc |> GaInitRunCfg.toWorkspaceParams up
+                    |> InterGenWsOps.startGenLoops projectFolderPath workspaceFileStoreF
+            | Continue crc ->
+                 InterGenWsOps.continueGenLoops 
+                        projectFolderPath 
+                        crc.runId 
+                        crc.newGenerations
+                        workspaceFileStoreF
             //| Report rrc -> ()
             //    //match rrc with
             //    //| Evals rac ->

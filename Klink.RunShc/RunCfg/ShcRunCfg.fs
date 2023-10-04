@@ -55,20 +55,18 @@ module ShcInitRunCfg =
 
 
     let getRunId (cfg:shcInitRunCfg) =
-        [
-            cfg.mutationRate |> MutationRate.value :> obj;
-            cfg.noiseFraction |> NoiseFraction.value :> obj;
-            cfg.order |> Order.value :> obj;
-            cfg.rngGen :> obj;
-            cfg.sorterEvalMode :> obj
-            cfg.sorterCount |> SorterCount.value :> obj;
-            cfg.sorterCountMutated |> SorterCount.value :> obj;
-            cfg.sorterSetPruneMethod :> obj;
-            cfg.stageWeight |> StageWeight.value :> obj;
-            cfg.switchCount :> obj;
-            cfg.switchGenMode :> obj;
-
-        ] |> GuidUtils.guidFromObjs |> RunId.create
+        getRunId2 
+            cfg.mutationRate
+            cfg.noiseFraction
+            cfg.order
+            cfg.rngGen
+            cfg.sorterEvalMode
+            cfg.sorterCount
+            cfg.sorterCountMutated
+            cfg.sorterSetPruneMethod
+            cfg.stageWeight
+            cfg.switchCount
+            cfg.switchGenMode
 
 
 
@@ -139,13 +137,6 @@ module ShcRunCfg =
                     crc.newGenerations
                     workspaceFileStoreF
 
-
-
-            //    failwith "not implemented"
-            //     //InterGenWsOps.continueUpdating 
-            //     //       projectFolderPath 
-            //     //       crc.runId 
-            //     //       crc.newGenerations
             ////| Report rrc -> 
             ////    match rrc with
             ////    | Evals rac ->

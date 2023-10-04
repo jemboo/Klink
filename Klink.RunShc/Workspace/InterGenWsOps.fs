@@ -28,6 +28,7 @@ module InterGenWsOps =
             let! runId = wsParams |> WorkspaceParamsAttrs.getRunId ShcWsParamKeys.runId
             let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
             let workplaceFileStore = workplaceFileStoreF runDir
+
             let! wsParamsGen1, curWorkspace = 
                     IntraGenWsOps.setupWorkspace
                             wnSortableSet

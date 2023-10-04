@@ -13,8 +13,6 @@ module Program =
 
         let workingDirectory = argResults.GetResults Working_Directory |> List.head
         let projectFolder = argResults.GetResults Project_Folder |> List.head
-        let reportFileName = argResults.GetResults Report_File_Name |> List.head
-
         let logLevel = argResults.GetResults Log_level |> List.head
 
 

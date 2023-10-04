@@ -35,7 +35,8 @@ module ShcCfgPlex =
                                     for sorterSetPruneMethod in plex.sorterSetPruneMethods do
                                         yield
                                             daFunc 
-                                                order newGenerations 
+                                                order 
+                                                newGenerations 
                                                 reportFilter rngGen 
                                                 tupSorterSetSize switchGenMode 
                                                 stageWeight noiseFraction
