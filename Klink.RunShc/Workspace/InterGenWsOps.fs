@@ -21,13 +21,13 @@ module InterGenWsOps =
     let setupGenLoopStart
             (projectFolderPath:string)
             (wsParams: workspaceParams)
-            (workplaceFileStore:IWorkspaceStore)
+            (workplaceFileStoreF: string -> IWorkspaceStore)
         =
         result {
 
             let! runId = wsParams |> WorkspaceParamsAttrs.getRunId ShcWsParamKeys.runId
             let runDir = IO.Path.Combine(projectFolderPath, runId |> RunId.value |> string)
-
+            let workplaceFileStore = workplaceFileStoreF runDir
             let! wsParamsGen1, curWorkspace = 
                     IntraGenWsOps.setupWorkspace
                             wnSortableSet
@@ -99,10 +99,10 @@ module InterGenWsOps =
 
     let startGenLoops
             (projectFolderPath:string)
+            (workplaceFileStoreF: string -> IWorkspaceStore)
             (wsParams: workspaceParams)
-            (workplaceFileStore:IWorkspaceStore)
         = 
-        let res = setupGenLoopStart projectFolderPath wsParams workplaceFileStore
+        let res = setupGenLoopStart projectFolderPath wsParams workplaceFileStoreF
         match res with
         | Ok (curgen, maxGen, curParams, curWorkspace, workplaceFileStore) ->
             let msg = runLoops curgen maxGen curParams curWorkspace workplaceFileStore
@@ -116,13 +116,13 @@ module InterGenWsOps =
             (projectDir:string)
             (runId:runId)
             (newGenerations:generation)
-            (workplaceFileStore:IWorkspaceStore)
+            (workspaceFileStoreF: string -> IWorkspaceStore)
         =
         result {
-            //let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
+            let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
             //Console.WriteLine(runDir)
 
-           // let workplaceFileStore = new WorkspaceFileStore(runDir)
+            let workplaceFileStore = workspaceFileStoreF runDir
 
             let! workspaceId = workplaceFileStore.GetLastWorkspaceId()
                 
@@ -144,9 +144,9 @@ module InterGenWsOps =
             (projectDir:string)
             (runId:runId)
             (newGenerations:generation)
-            (workplaceFileStore:IWorkspaceStore)
+            (workspaceFileStoreF: string -> IWorkspaceStore)
         =
-        let res = setupGenLoopContinue projectDir runId newGenerations workplaceFileStore
+        let res = setupGenLoopContinue projectDir runId newGenerations workspaceFileStoreF
         match res with
         | Ok (curgen, maxGen, curParams, curWorkspace, workplaceFileStore) ->
             let msg = runLoops curgen maxGen curParams curWorkspace workplaceFileStore

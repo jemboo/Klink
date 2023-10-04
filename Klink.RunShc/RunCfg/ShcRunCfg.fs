@@ -125,17 +125,19 @@ module ShcRunCfg =
     let procShcRunCfg 
             (projectFolderPath:string)
             (up:useParallel)
+            (workspaceFileStoreF: string -> IWorkspaceStore)
             (shcRunCfg:shcRunCfg)
         =
             match shcRunCfg with
             | InitRun irc -> 
                 irc |> ShcInitRunCfg.toWorkspaceParams up
-                    |> InterGenWsOps.startGenLoops projectFolderPath
+                    |> InterGenWsOps.startGenLoops projectFolderPath workspaceFileStoreF
             | Continue crc -> 
                 InterGenWsOps.continueGenLoops
                     projectFolderPath
                     crc.runId
                     crc.newGenerations
+                    workspaceFileStoreF
 
 
 

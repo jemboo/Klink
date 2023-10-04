@@ -18,10 +18,11 @@ module RunCfgSet =
     let procRunCfgSet 
             (projectFolderPath:string)
             (up:useParallel)
+            (workspaceFileStoreF: string -> IWorkspaceStore)
             (rcs:runCfgSet)
         =
         rcs.runCfgs
-        |> Array.map(RunCfg.procRunCfg projectFolderPath up)
+        |> Array.map(RunCfg.procRunCfg projectFolderPath up workspaceFileStoreF)
 
 
 

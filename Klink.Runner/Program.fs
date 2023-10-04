@@ -38,13 +38,16 @@ module Program =
             Console.WriteLine(errorMsg)
             () |> Ok
 
+        let _makeFileStore (path:string) = 
+            new WorkspaceFileStore(path) :> IWorkspaceStore
+
 
         let (scriptFileName, runCfgSet) =
                 ScriptFileRun.getNextRunCfgSet projectFolderPath
                 |> Result.ExtractOrThrow
 
         let yab =
-                RunCfgSet.procRunCfgSet projectFolderPath useParallel runCfgSet
+                RunCfgSet.procRunCfgSet projectFolderPath useParallel _makeFileStore runCfgSet
                // |> Result.ExtractOrThrow
 
         let boink = ScriptFileRun.finishScript scriptFileName projectFolderPath

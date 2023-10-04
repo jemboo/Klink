@@ -13,14 +13,15 @@ module RunCfg =
     let procRunCfg 
             (projectFolderPath:string)
             (up:useParallel)
+            (workspaceFileStoreF: string -> IWorkspaceStore)
             (runCfg:runCfg)
         =
             match runCfg with
             | Shc shc -> 
-                    shc |> ShcRunCfg.procShcRunCfg projectFolderPath up
+                    shc |> ShcRunCfg.procShcRunCfg projectFolderPath up workspaceFileStoreF
 
-            //| Ga ga -> 
-            //        failwith "not implemnted"
+            | Ga ga -> 
+                    failwith "not implemnted"
                     // ga |> GaRunCfg.procGaRunCfg projectFolderPath up |> Ok
             //match res with
             //| Ok msg ->  Console.WriteLine($"success: {msg}" )
