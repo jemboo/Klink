@@ -121,7 +121,6 @@ module InterGenWsOps =
         =
         result {
             let runDir = IO.Path.Combine(projectDir, runId |> RunId.value |> string)
-            //Console.WriteLine(runDir)
 
             let workplaceFileStore = workspaceFileStoreF runDir
 

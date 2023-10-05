@@ -1,6 +1,10 @@
 ﻿namespace global
 open System
 
+
+// DELETE THIS
+
+
 type runCfgSetDto = {   setName:string;
                         runs:runCfgDto[] }
 

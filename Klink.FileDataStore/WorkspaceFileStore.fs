@@ -262,7 +262,6 @@ type WorkspaceFileStore (wsRootDir:string) =
         }
 
 
-
     member this.getAllSpeedSetBinsWithParams
                      (wscn:wsComponentName)
                      (fF:workspaceParams -> bool)
@@ -291,8 +290,6 @@ type WorkspaceFileStore (wsRootDir:string) =
                        |> Result.sequence
 
         }
-
-
 
 
     member this.workSpaceExists (id:workspaceId) =
@@ -331,7 +328,12 @@ type WorkspaceFileStore (wsRootDir:string) =
         }
 
     interface IWorkspaceStore with
-        member this.SaveWorkSpace(ws) = this.saveWorkSpace(ws)
-        member this.LoadWorkSpace(wsId) = this.loadWorkSpace(wsId)
-        member this.WorkSpaceExists(wsId) = this.workSpaceExists(wsId)
+        member this.SaveWorkSpace ws = this.saveWorkSpace ws
+        member this.LoadWorkSpace wsId = this.loadWorkSpace wsId
+        member this.WorkSpaceExists wsId = this.workSpaceExists wsId
         member this.GetLastWorkspaceId() = this.getLastWorkspaceId ()
+        member this.WriteLinesEnsureHeader wsc folder hdr data = this.writeLinesEnsureHeader wsc folder hdr data
+        member this.GetAllSorterSetEvalsWithParams evalCompName fF = this.getAllSorterSetEvalsWithParams evalCompName fF
+        member this.GetAllSpeedSetBinsWithParams evalCompName fF = this.getAllSpeedSetBinsWithParams evalCompName fF
+        member this.GetAllWorkspaceDescriptionsWithParams () = this.getAllWorkspaceDescriptionsWithParams ()
+        member this.GetComponent wsCompName wsDescr = this.getComponent wsCompName wsDescr 

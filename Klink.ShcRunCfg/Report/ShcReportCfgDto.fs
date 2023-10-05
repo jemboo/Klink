@@ -1,5 +1,6 @@
 ﻿namespace global
 open System
+open ShcReportEvalsCfg
 
 
 type shcReportAllCfgDto =

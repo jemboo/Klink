@@ -178,19 +178,20 @@ module Reporting =
 
 
     let reportEvals 
-                 (fsReporter:WorkspaceFileStore) 
+                 (fsReporter:IWorkspaceStore) 
+                 (forEvalsReaderF: string -> IWorkspaceStore)
                  (reportFileName:string) 
                  (evalCompName:wsComponentName)
                  (minGen:generation)
                  (runFolderPath:string) 
         =
         let _lineWriter (lines:string seq) =
-            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderSorterEvals ()] lines
+            fsReporter.WriteLinesEnsureHeader None reportFileName [reportHeaderSorterEvals ()] lines
 
         result {
-            let fsRunReader = new WorkspaceFileStore(runFolderPath)
+            let fsRunReader = forEvalsReaderF runFolderPath
             let! compTupes = 
-                fsRunReader.getAllSorterSetEvalsWithParams
+                fsRunReader.GetAllSorterSetEvalsWithParams
                     evalCompName 
                     (WorkspaceParamsAttrs.generationIsGte ShcWsParamKeys.generation_current minGen)
             return!
@@ -202,19 +203,20 @@ module Reporting =
 
 
     let reportBins 
-            (fsReporter:WorkspaceFileStore) 
+            (fsReporter:IWorkspaceStore)
+            (forEvalsReaderF: string -> IWorkspaceStore)
             (reportFileName:string)
             (minGen:generation)
             (runFolderPath:string) 
         =
         let _lineWriter (lines:string seq) =
-            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderSpeedBins ()] lines
+            fsReporter.WriteLinesEnsureHeader None reportFileName [reportHeaderSpeedBins ()] lines
 
         result {
-            let fsRunReader = new WorkspaceFileStore(runFolderPath)
+            let fsRunReader = forEvalsReaderF runFolderPath
             let perfBinCompName = "sorterSpeedBinSet" |> WsComponentName.create
             let! compTupes = 
-                fsRunReader.getAllSpeedSetBinsWithParams 
+                fsRunReader.GetAllSpeedSetBinsWithParams 
                     perfBinCompName
                     (WorkspaceParamsAttrs.generationIsGte ShcWsParamKeys.generation_current minGen)
             return!
@@ -223,8 +225,6 @@ module Reporting =
                     reportSpeedBinLines ssBins wsPram _lineWriter)
                 |> Result.sequence
         }
-
-
 
 
     let paramGroup (genBinSz:generation) 
@@ -256,16 +256,16 @@ module Reporting =
         }
 
 
-    let addToGroupReport 
+    let addToGroupReport
             (lineAppender:seq<string> -> Result<bool,string>)
-            (fsRun:WorkspaceFileStore)
+            (fsRun:IWorkspaceStore)
             (genBinSz:generation)
             (tupL:(workspaceDescription*workspaceParams) list) =
 
         let _getSorterSetEvals worspaceDescr = 
             let wnSorterSetEvalParent = "sorterSetEvalParent" |> WsComponentName.create
             result {
-                return! fsRun.getComponent wnSorterSetEvalParent worspaceDescr
+                return! fsRun.GetComponent wnSorterSetEvalParent worspaceDescr
                               |> Result.bind(WorkspaceComponent.asSorterSetEval)
             }
 
@@ -302,6 +302,7 @@ module Reporting =
 
 
     let doReportPerfBins
+            (workspaceFileStoreF: string -> IWorkspaceStore)
             (projectDir:string)
             (genBinSz: generation)
         =
@@ -311,18 +312,18 @@ module Reporting =
 
 
         let reportFileName = wnToQuery |> WsComponentName.value |> string
-        let fsReporter = new WorkspaceFileStore(projectDir)
+        let fsReporter = workspaceFileStoreF projectDir
 
         let _lineWriter (lines:string seq) =
-            fsReporter.writeLinesEnsureHeader None reportFileName [reportHeaderBinned ()] lines
+            fsReporter.WriteLinesEnsureHeader None reportFileName [reportHeaderBinned ()] lines
 
         let runDirs = IO.Directory.EnumerateDirectories(projectDir)
 
         result {
             for runDir in runDirs do
 
-                let fsForRun = new WorkspaceFileStore(runDir)
-                let! compTupes = fsForRun.getAllWorkspaceDescriptionsWithParams()
+                let fsForRun = workspaceFileStoreF runDir
+                let! compTupes = fsForRun.GetAllWorkspaceDescriptionsWithParams()
                 let dscrs = compTupes |> List.filter(
                     fun (descr, prams) -> descr |> WorkspaceDescription.getLastCauseName = "setupForNextGen" )
                 let! taggedTupes = 

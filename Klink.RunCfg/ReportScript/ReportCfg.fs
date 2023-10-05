@@ -1,6 +1,7 @@
 ﻿namespace global
 open System
 open System.IO
+open ShcReportEvalsCfg
 
 type reportCfg = 
     | Shc of shcReportCfg
