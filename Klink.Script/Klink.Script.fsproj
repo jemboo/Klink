@@ -6,8 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="CommonTypes.fs" />
-    <Compile Include="scriptDto.fs" />
+    <Compile Include="ReportCfgDto.fs" />
+    <Compile Include="KlinkScript.fs" />
+    <Compile Include="KlinkScriptDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

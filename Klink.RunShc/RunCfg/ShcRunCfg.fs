@@ -137,26 +137,6 @@ module ShcRunCfg =
                     crc.newGenerations
                     workspaceFileStoreF
 
-            ////| Report rrc -> 
-            ////    match rrc with
-            ////    | Evals rac ->
-            ////        ShcReportEvalsCfg.reportAllEvals 
-            ////                projectFolderPath 
-            ////                rac
-            ////    | Bins rbc ->
-            ////        ShcReportBinsCfgs.reportAllBins
-            ////                projectFolderPath 
-            ////                rbc
-
-
-
-
-
-
-
-
-
-
 
 
 

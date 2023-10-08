@@ -18,7 +18,7 @@ module StageSymmetricCfg =
         } |> runCfgPlex.Shc
 
     let baseGenerationCount = 500 |> Generation.create
-    let baseReportFilter = ScriptParams.modulusFilter 5
+    let baseReportFilter = FolderParams.modulusFilter 5
     let initScriptName = "nf"
     let initScriptSet_nf = 
             InitScriptSet.make 

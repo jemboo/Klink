@@ -1,6 +1,7 @@
 ﻿namespace global
 open System
 
+// Move to a Dto project
 
 type runCfgDto = {duType:string; cereal:string}
 module RunCfgDto =

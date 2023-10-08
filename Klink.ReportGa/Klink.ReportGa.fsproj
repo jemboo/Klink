@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Reporting.fs" />
     <Compile Include="GaReportCfg.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -14,6 +15,7 @@
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.Genome\Klink.Genome.fsproj" />
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
+    <ProjectReference Include="..\Klink.RunGa\Klink.RunGa.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />

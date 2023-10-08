@@ -12,6 +12,7 @@ type shcReportEvalsCfg =
         reportFilter:generationFilter
     }
 
+
 module ShcReportEvalsCfg =
 
     let reportAllEvals
@@ -86,7 +87,7 @@ module ShcReportEvalsCfg =
 
     module ShcReportCfg =
 
-        let procRunCfg 
+        let procReportCfg 
                 (projectFolderPath:string)
                 (up:useParallel)
                 (workspaceFileStoreF: string -> IWorkspaceStore)

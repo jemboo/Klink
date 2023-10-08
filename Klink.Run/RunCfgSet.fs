@@ -77,7 +77,6 @@ module RunCfgSet =
                 )
 
 
-
     let initGaRunsFromPlex
             (newGenerations:generation)
             (reportFilter:generationFilter)

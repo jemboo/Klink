@@ -10,8 +10,8 @@ module ScriptFileRun =
             let mutable fileNameAndContents = ("", "") |> Ok
             if mutex.WaitOne() then
                   try
-                        let scriptToDoFolder = ScriptParams.toDoFolder projectFolderPath
-                        let scriptRunningFolder = ScriptParams.runningFolder projectFolderPath
+                        let scriptToDoFolder = FolderParams.toDoFolder projectFolderPath
+                        let scriptRunningFolder = FolderParams.runningFolder projectFolderPath
                         Directory.CreateDirectory(scriptRunningFolder) |> ignore
                         let currentScriptToDoPath = 
                             IO.Directory.EnumerateFiles scriptToDoFolder
@@ -40,9 +40,9 @@ module ScriptFileRun =
 
 
     let finishScript (scriptFileName:string) (projectFolderPath:string) =
-        let scriptRunningFolder = ScriptParams.runningFolder projectFolderPath
+        let scriptRunningFolder = FolderParams.runningFolder projectFolderPath
         let scriptRunningPath = Path.Combine(scriptRunningFolder, scriptFileName)
-        let scriptCompletedFolder = ScriptParams.completedFolder projectFolderPath
+        let scriptCompletedFolder = FolderParams.completedFolder projectFolderPath
         let scriptCompletedPath = Path.Combine(scriptCompletedFolder, scriptFileName)
         try
             Directory.CreateDirectory(scriptCompletedFolder) |> ignore

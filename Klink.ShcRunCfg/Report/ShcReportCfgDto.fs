@@ -3,7 +3,7 @@ open System
 open ShcReportEvalsCfg
 
 
-type shcReportAllCfgDto =
+type shcReportEvalsCfgDto =
     {
         runIds:string array
         genMin:int
@@ -14,11 +14,11 @@ type shcReportAllCfgDto =
     }
 
 
-module ShcReportAllCfgDto =
+module ShcReportEvalsCfgDto =
 
     let toDto (cfg:shcReportEvalsCfg) =
         {
-            shcReportAllCfgDto.runIds = cfg.runIds |> Array.map(RunId.value >> string)
+            shcReportEvalsCfgDto.runIds = cfg.runIds |> Array.map(RunId.value >> string)
             genMin = cfg.genMin |> Generation.value
             genMax = cfg.genMax |> Generation.value
             evalCompName = cfg.evalCompName |> WsComponentName.value
@@ -30,7 +30,7 @@ module ShcReportAllCfgDto =
         cfg |> toDto |> Json.serialize
 
 
-    let fromDto (dto:shcReportAllCfgDto) =
+    let fromDto (dto:shcReportEvalsCfgDto) =
         result {
             let! reportFilter = dto.reportGenFilter |> GenerationFilterDto.fromDto
             return
@@ -46,7 +46,7 @@ module ShcReportAllCfgDto =
 
     let fromJson (cereal:string) =
         result {
-            let! dto = Json.deserialize<shcReportAllCfgDto> cereal
+            let! dto = Json.deserialize<shcReportEvalsCfgDto> cereal
             return! fromDto dto
         }
 

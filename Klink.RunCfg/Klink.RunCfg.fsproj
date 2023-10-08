@@ -6,12 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="ScriptParams.fs" />
-    <Compile Include="RunScript\RunCfgDto.fs" />
-    <Compile Include="RunScript\RunCfgSetDto.fs" />
-    <Compile Include="RunScript\RunScript.fs" />
-    <Compile Include="ReportScript\ReportCfg.fs" />
-    <Compile Include="ReportScript\ReportScript.fs" />
+    <Compile Include="Old\RunCfgDto.fs" />
+    <Compile Include="Old\RunCfgSetDto.fs" />
+    <Compile Include="Old\RunScript.fs" />
+    <Compile Include="FolderParams.fs" />
     <Compile Include="Experiments\Order16\StageSymmetricCfg.fs" />
     <Compile Include="Experiments\Order16\Exp1Cfg.fs" />
     <Compile Include="Program.fs" />
@@ -25,8 +23,6 @@
     <ProjectReference Include="..\Klink.GaCfg\Klink.GaRunCfg.fsproj" />
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
     <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
-    <ProjectReference Include="..\Klink.RunGa\Klink.RunGa.fsproj" />
-    <ProjectReference Include="..\Klink.RunShc\Klink.RunShc.fsproj" />
     <ProjectReference Include="..\Klink.Run\Klink.Run.fsproj" />
     <ProjectReference Include="..\Klink.ShcRunCfg\Klink.ShcRunCfg.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />

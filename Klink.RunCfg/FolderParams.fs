@@ -1,7 +1,7 @@
 ﻿namespace global
 open System
 
-module ScriptParams =
+module FolderParams =
 
     let scriptFolder = "scripts"
 
