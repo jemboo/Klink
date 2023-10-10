@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="FolderParams.fs" />
     <Compile Include="ScriptFileRun.fs" />
     <Compile Include="CliArguments.fs" />
     <None Include="App.config" />

@@ -44,56 +44,56 @@ module ShcReportEvalsCfg =
 
 
 
-    type shcReportBinsCfg =
-        {
-            reportFileName:string
-            runIds:runId array
-            genMin:generation
-            genMax:generation
+type shcReportBinsCfg =
+    {
+        reportFileName:string
+        runIds:runId array
+        genMin:generation
+        genMax:generation
+    }
+
+module ShcReportBinsCfgs =
+
+    let reportAllBins
+        (projectFolderPath:string)
+        (workspaceFileStoreF: string -> IWorkspaceStore)
+        (reportCfg:shcReportBinsCfg)
+        =
+        let reportPath = Path.Combine(projectFolderPath, "Reports")
+        let fsReporter =  workspaceFileStoreF reportPath
+
+        let runDirs = reportCfg.runIds
+                        |> Array.map(RunId.value >> string)
+                        |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
+                        |> Array.toList
+
+        result {
+            return! 
+                runDirs 
+                |> List.map(Reporting.reportBins 
+                                fsReporter 
+                                workspaceFileStoreF
+                                reportCfg.reportFileName 
+                                reportCfg.genMin)
+                |> Result.sequence
+                |> Result.map(ignore)
         }
 
-    module ShcReportBinsCfgs =
 
-        let reportAllBins
+
+type shcReportCfg =
+    | Evals of shcReportEvalsCfg
+    | Bins of shcReportBinsCfg
+
+module ShcReportCfg =
+
+    let procReportCfg 
             (projectFolderPath:string)
+            (up:useParallel)
             (workspaceFileStoreF: string -> IWorkspaceStore)
-            (reportCfg:shcReportBinsCfg)
-            =
-            let reportPath = Path.Combine(projectFolderPath, "Reports")
-            let fsReporter =  workspaceFileStoreF reportPath
+            (shcReportCfg:shcReportCfg)
+        =
+            match shcReportCfg with
+            | Evals a -> ()
 
-            let runDirs = reportCfg.runIds
-                            |> Array.map(RunId.value >> string)
-                            |> Array.map(fun fldr -> Path.Combine(projectFolderPath, fldr))
-                            |> Array.toList
-
-            result {
-                return! 
-                    runDirs 
-                    |> List.map(Reporting.reportBins 
-                                    fsReporter 
-                                    workspaceFileStoreF
-                                    reportCfg.reportFileName 
-                                    reportCfg.genMin)
-                    |> Result.sequence
-                    |> Result.map(ignore)
-            }
-
-
-
-    type shcReportCfg =
-        | Evals of shcReportEvalsCfg
-        | Bins of shcReportBinsCfg
-
-    module ShcReportCfg =
-
-        let procReportCfg 
-                (projectFolderPath:string)
-                (up:useParallel)
-                (workspaceFileStoreF: string -> IWorkspaceStore)
-                (shcReportCfg:shcReportCfg)
-            =
-                match shcReportCfg with
-                | Evals a -> ()
-
-                | Bins b -> ()
+            | Bins b -> ()

@@ -13,12 +13,3 @@ module FolderParams =
 
     let completedFolder (projectPath:string) =
         IO.Path.Combine(projectPath, scriptFolder, "completed")
-
-    let modulusFilter (modulus:int) = 
-            {modGenerationFilter.modulus = modulus } |> generationFilter.ModF
-
-    let expFilter (exper:float) =
-            {expGenerationFilter.exp = exper } |> generationFilter.ExpF
-
-
-

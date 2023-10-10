@@ -9,7 +9,6 @@
     <Compile Include="Old\RunCfgDto.fs" />
     <Compile Include="Old\RunCfgSetDto.fs" />
     <Compile Include="Old\RunScript.fs" />
-    <Compile Include="FolderParams.fs" />
     <Compile Include="Experiments\Order16\StageSymmetricCfg.fs" />
     <Compile Include="Experiments\Order16\Exp1Cfg.fs" />
     <Compile Include="Program.fs" />

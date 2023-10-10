@@ -3,6 +3,13 @@ open System
 
 module CommonParams =
 
+    let modulusFilter (modulus:int) = 
+            {modGenerationFilter.modulus = modulus } |> generationFilter.ModF
+
+    let expFilter (exper:float) =
+            {expGenerationFilter.exp = exper } |> generationFilter.ExpF
+
+
     let rndGens (offset:int) (take:int) = 
         let rngGenSeed = 1234 |> RandomSeed.create |> RngGen.createLcg
         rngGenSeed |> Rando.toMoreRngGens
