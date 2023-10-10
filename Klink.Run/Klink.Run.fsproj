@@ -6,9 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="RunCfg.fs" />
-    <Compile Include="RunCfgPlex.fs" />
-    <Compile Include="RunCfgSet.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

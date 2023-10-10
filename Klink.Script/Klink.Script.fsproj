@@ -6,9 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Dto\GaRunCfgDto.fs" />
+    <Compile Include="Dto\GaReportCfgDto.fs" />
+    <Compile Include="Dto\ShcRunCfgDto.fs" />
+    <Compile Include="Dto\ShcReportCfgDto.fs" />
+    <Compile Include="Old\RunCfgDto.fs" />
+    <Compile Include="Old\RunCfgSetDto.fs" />
+    <Compile Include="Old\RunScript.fs" />
     <Compile Include="ReportCfgDto.fs" />
     <Compile Include="KlinkScript.fs" />
     <Compile Include="KlinkScriptDto.fs" />
+    <Compile Include="Experiments\Order16\Exp1Cfg.fs" />
+    <Compile Include="Experiments\Order16\StageSymmetricCfg.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

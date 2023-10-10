@@ -2,8 +2,6 @@
 open System
 open System.IO
 
-
-
 type gaReportEvalsCfg =
     {
         reportFileName:string
@@ -15,25 +13,26 @@ type gaReportEvalsCfg =
     }
 
 module GaReportEvalsCfg =
-    let fromPlex
-            (genMin:generation)
-            (genMax:generation)
-            (evalCompName:wsComponentName)
-            (reportFilter:generationFilter)
-            (reportFileName:string)
-            (plex:gaCfgPlex)
-        =
-        let runIds =
-             GaCfgPlex.toRunIds plex
-             |> Seq.toArray
-        {
-            gaReportEvalsCfg.reportFileName = reportFileName
-            runIds = runIds
-            genMin = genMin
-            genMax = genMax
-            evalCompName = evalCompName
-            reportFilter = reportFilter
-        }
+
+    //let fromPlex
+    //        (genMin:generation)
+    //        (genMax:generation)
+    //        (evalCompName:wsComponentName)
+    //        (reportFilter:generationFilter)
+    //        (reportFileName:string)
+    //        (plex:gaCfgPlex)
+    //    =
+    //    let runIds =
+    //         GaCfgPlex.toRunIds plex
+    //         |> Seq.toArray
+    //    {
+    //        gaReportEvalsCfg.reportFileName = reportFileName
+    //        runIds = runIds
+    //        genMin = genMin
+    //        genMax = genMax
+    //        evalCompName = evalCompName
+    //        reportFilter = reportFilter
+    //    }
 
 
     let reportAllEvals

@@ -15,8 +15,6 @@
     <Compile Include="Workspace\CauseSets.fs" />
     <Compile Include="Workspace\IntraGenWsOps.fs" />
     <Compile Include="Workspace\InterGenWsOps.fs" />
-    <Compile Include="RunCfg\GaRunCfg.fs" />
-    <Compile Include="RunCfg\GaCfgPlex.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
