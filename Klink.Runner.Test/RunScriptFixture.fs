@@ -2,6 +2,7 @@ namespace Klink.Runner.Test
 
 open System
 open Microsoft.VisualStudio.TestTools.UnitTesting
+    open CommonParams
 
 [<TestClass>]
 type RunScriptFixture () =
@@ -14,13 +15,25 @@ type RunScriptFixture () =
 
         let maxRunsPerScript = 4
 
+        let sevenEightShcInitRunCfgPlex =
+            {
+                shcCfgPlex.orders = [|16 |> Order.createNr |]
+                mutationRates = [|mr2;mr4|];
+                noiseFractions = [|nf3;nf4|];
+                rngGens = rndGens 1 4 ;
+                tupSorterSetSizes = [|ssz7_8|];
+                sorterSetPruneMethods = [|sspm1;|];
+                stageWeights = [|sw0;|];
+                switchGenModes = [|switchGenMode.StageSymmetric|];
+            } |> runCfgPlex.Shc
+
         let initRunsPrefix = "yabbs"
         let initScriptSet = 
                 InitScriptSet.make
                     initRunsPrefix
                     initGens
                     genFilter
-                    Exp1Cfg.sevenEightShcInitRunCfgPlex
+                    sevenEightShcInitRunCfgPlex
 
 
         let scriptFiles = 
@@ -43,9 +56,24 @@ type RunScriptFixture () =
         let newGens = 50 |> Generation.create
         let genFilter = { modGenerationFilter.modulus = 1}
                             |> generationFilter.ModF
+
+
+        let sevenEightShcInitRunCfgPlex =
+            {
+                shcCfgPlex.orders = [|16 |> Order.createNr |]
+                mutationRates = [|mr2;mr4|];
+                noiseFractions = [|nf3;nf4|];
+                rngGens = rndGens 1 4 ;
+                tupSorterSetSizes = [|ssz7_8|];
+                sorterSetPruneMethods = [|sspm1;|];
+                stageWeights = [|sw0;|];
+                switchGenModes = [|switchGenMode.StageSymmetric|];
+            } |> runCfgPlex.Shc
+
+
         let runSetName = "continueRun"
         let shcRunCfgSet = 
-            Exp1Cfg.testShcInitRunCfgPlex 
+            sevenEightShcInitRunCfgPlex 
                |> RunCfgSet.continueRunFromPlex newGens runSetName
 
         let cereal = shcRunCfgSet |> RunCfgSetDto.toJson

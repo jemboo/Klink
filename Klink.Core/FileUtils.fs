@@ -223,7 +223,7 @@ module TextIO =
             Directory.CreateDirectory(fldr) |> ignore
             let fp = Path.Combine(fldr, fne)
             File.WriteAllText(fp, data)
-            true |> Ok
+            () |> Ok
         with ex ->
             ("error in TextIO.writeToFile: " + ex.Message) |> Result.Error
 

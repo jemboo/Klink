@@ -63,7 +63,7 @@ module InterGenWsOps =
             let mutable _curParams = curParams
             let mutable _curWorkspace = curWorkspace
             let mutable _keepGoing = true
-            let mutable _msg = ""
+            let mutable _msg = "success"
 
             while ((_curGen < _maxGen ) && _keepGoing) do
                 let tup =
@@ -98,7 +98,7 @@ module InterGenWsOps =
 
 
 
-    let startGenLoops
+    let runGenLoops
             (projectFolderPath:string)
             (workplaceFileStoreF: string -> IWorkspaceStore)
             (wsParams: workspaceParams)
@@ -107,8 +107,8 @@ module InterGenWsOps =
         match res with
         | Ok (curgen, maxGen, curParams, curWorkspace, workplaceFileStore) ->
             let msg = runLoops curgen maxGen curParams curWorkspace workplaceFileStore
-            Console.WriteLine($"error in runLoops: {msg}")
-        | Error m -> Console.Write($"error in setupGenLoopStart: {m}")
+            Console.WriteLine($"runGenLoops result: {msg}")
+        | Error m -> Console.Write($"error in runGenLoops: {m}")
 
 
 

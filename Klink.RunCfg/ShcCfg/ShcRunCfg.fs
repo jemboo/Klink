@@ -129,7 +129,7 @@ module ShcRunCfg =
             match shcRunCfg with
             | InitRun irc -> 
                 irc |> ShcInitRunCfg.toWorkspaceParams up
-                    |> InterGenWsOps.startGenLoops projectFolderPath workspaceFileStoreF
+                    |> InterGenWsOps.runGenLoops projectFolderPath workspaceFileStoreF
             | Continue crc -> 
                 InterGenWsOps.continueGenLoops
                     projectFolderPath

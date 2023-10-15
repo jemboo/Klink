@@ -2,7 +2,7 @@
 open System
 
 
-module Reporting =
+module ShcReporting =
 
     let selectedSorterEvalProps =
         [
@@ -44,35 +44,35 @@ module Reporting =
 
     let paramPropsSorterEval =
         [
-            GaWsParamKeys.generation_current;
-            GaWsParamKeys.runId;
-            GaWsParamKeys.mutationRate;
-            GaWsParamKeys.noiseFraction;
-            GaWsParamKeys.order;
-            GaWsParamKeys.sortableSetId;
-            GaWsParamKeys.sorterCount;
-            GaWsParamKeys.sorterCountMutated;
-            GaWsParamKeys.sorterSetPruneMethod;
-            GaWsParamKeys.stageWeight;
-            GaWsParamKeys.sorterLength;
-            GaWsParamKeys.switchGenMode;
+            ShcWsParamKeys.generation_current;
+            ShcWsParamKeys.runId;
+            ShcWsParamKeys.mutationRate;
+            ShcWsParamKeys.noiseFraction;
+            ShcWsParamKeys.order;
+            ShcWsParamKeys.sortableSetId;
+            ShcWsParamKeys.sorterCount;
+            ShcWsParamKeys.sorterCountMutated;
+            ShcWsParamKeys.sorterSetPruneMethod;
+            ShcWsParamKeys.stageWeight;
+            ShcWsParamKeys.sorterLength;
+            ShcWsParamKeys.switchGenMode;
         ]
 
         
     let paramPropsSpeedBins =
         [
-            GaWsParamKeys.generation_current;
-            GaWsParamKeys.runId;
-            GaWsParamKeys.mutationRate;
-            GaWsParamKeys.noiseFraction;
-            GaWsParamKeys.order;
-            GaWsParamKeys.sortableSetId;
-            GaWsParamKeys.sorterCount;
-            GaWsParamKeys.sorterCountMutated;
-            GaWsParamKeys.sorterSetPruneMethod;
-            GaWsParamKeys.stageWeight;
-            GaWsParamKeys.sorterLength;
-            GaWsParamKeys.switchGenMode;
+            ShcWsParamKeys.generation_current;
+            ShcWsParamKeys.runId;
+            ShcWsParamKeys.mutationRate;
+            ShcWsParamKeys.noiseFraction;
+            ShcWsParamKeys.order;
+            ShcWsParamKeys.sortableSetId;
+            ShcWsParamKeys.sorterCount;
+            ShcWsParamKeys.sorterCountMutated;
+            ShcWsParamKeys.sorterSetPruneMethod;
+            ShcWsParamKeys.stageWeight;
+            ShcWsParamKeys.sorterLength;
+            ShcWsParamKeys.switchGenMode;
         ]
         
 
@@ -85,22 +85,22 @@ module Reporting =
 
     let binParamProps =
         [
-            GaWsParamKeys.runId;
-            GaWsParamKeys.mutationRate;
-            GaWsParamKeys.noiseFraction;
-            GaWsParamKeys.order;
-            GaWsParamKeys.sortableSetId;
-            GaWsParamKeys.sorterCount;
-            GaWsParamKeys.sorterCountMutated;
-            GaWsParamKeys.stageWeight;
-            GaWsParamKeys.sorterLength;
-            GaWsParamKeys.switchGenMode;
+            ShcWsParamKeys.runId;
+            ShcWsParamKeys.mutationRate;
+            ShcWsParamKeys.noiseFraction;
+            ShcWsParamKeys.order;
+            ShcWsParamKeys.sortableSetId;
+            ShcWsParamKeys.sorterCount;
+            ShcWsParamKeys.sorterCountMutated;
+            ShcWsParamKeys.stageWeight;
+            ShcWsParamKeys.sorterLength;
+            ShcWsParamKeys.switchGenMode;
         ]
 
     let binnedParamValues (wsps:workspaceParams) (genBinSz:int) =
         let paramMap t = (wsps |> WorkspaceParams.getMap).[t]
         result {
-            let! genBin = wsps |> WorkspaceParamsAttrs.getGeneration GaWsParamKeys.generation_current
+            let! genBin = wsps |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
                                |> Result.map(Generation.binnedValue genBinSz)
 
 
@@ -155,7 +155,7 @@ module Reporting =
             (wsps:workspaceParams)
             (lineAppender:seq<string> -> Result<bool,string>)
         =
-        let stageW1 = (wsps |> WorkspaceParams.getMap).[GaWsParamKeys.stageWeight]
+        let stageW1 = (wsps |> WorkspaceParams.getMap).[ShcWsParamKeys.stageWeight]
 
         let stageW2 = stageW1
                      |> Double.Parse
@@ -175,6 +175,8 @@ module Reporting =
 
 
 
+
+
     let reportEvals 
                  (fsReporter:IWorkspaceStore) 
                  (forEvalsReaderF: string -> IWorkspaceStore)
@@ -191,7 +193,7 @@ module Reporting =
             let! compTupes = 
                 fsRunReader.GetAllSorterSetEvalsWithParams
                     evalCompName 
-                    (WorkspaceParamsAttrs.generationIsGte GaWsParamKeys.generation_current minGen)
+                    (WorkspaceParamsAttrs.generationIsGte ShcWsParamKeys.generation_current minGen)
             return!
                 compTupes 
                 |> List.map (fun (ssEval, wsPram) -> 
@@ -216,7 +218,7 @@ module Reporting =
             let! compTupes = 
                 fsRunReader.GetAllSpeedSetBinsWithParams 
                     perfBinCompName
-                    (WorkspaceParamsAttrs.generationIsGte GaWsParamKeys.generation_current minGen)
+                    (WorkspaceParamsAttrs.generationIsGte ShcWsParamKeys.generation_current minGen)
             return!
                 compTupes 
                 |> List.map (fun (ssBins, wsPram) -> 
@@ -228,17 +230,17 @@ module Reporting =
     let paramGroup (genBinSz:generation) 
                    (wsPram:workspaceParams)  =
         result {
-            let! gen = wsPram |> WorkspaceParamsAttrs.getGeneration GaWsParamKeys.generation_current
+            let! gen = wsPram |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
                               |> Result.map(Generation.binnedValue (genBinSz |> Generation.value))
-            let! mr = wsPram |> WorkspaceParamsAttrs.getMutationRate GaWsParamKeys.mutationRate
-            let! nf = wsPram |> WorkspaceParamsAttrs.getNoiseFraction GaWsParamKeys.noiseFraction
-            let! order = wsPram |> WorkspaceParamsAttrs.getOrder GaWsParamKeys.order
-            let! runId = wsPram |> WorkspaceParamsAttrs.getRunId GaWsParamKeys.runId
-            let! sct = wsPram |> WorkspaceParamsAttrs.getSorterCount GaWsParamKeys.sorterCount
-            let! scM = wsPram |> WorkspaceParamsAttrs.getSorterCount GaWsParamKeys.sorterCountMutated
-            let! sLen = wsPram |> WorkspaceParamsAttrs.getSorterCount GaWsParamKeys.sorterLength
-            let! stw = wsPram |> WorkspaceParamsAttrs.getStageWeight GaWsParamKeys.stageWeight
-            let! sgm = wsPram |> WorkspaceParamsAttrs.getSwitchGenMode GaWsParamKeys.switchGenMode
+            let! mr = wsPram |> WorkspaceParamsAttrs.getMutationRate ShcWsParamKeys.mutationRate
+            let! nf = wsPram |> WorkspaceParamsAttrs.getNoiseFraction ShcWsParamKeys.noiseFraction
+            let! order = wsPram |> WorkspaceParamsAttrs.getOrder ShcWsParamKeys.order
+            let! runId = wsPram |> WorkspaceParamsAttrs.getRunId ShcWsParamKeys.runId
+            let! sct = wsPram |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterCount
+            let! scM = wsPram |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterCountMutated
+            let! sLen = wsPram |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterLength
+            let! stw = wsPram |> WorkspaceParamsAttrs.getStageWeight ShcWsParamKeys.stageWeight
+            let! sgm = wsPram |> WorkspaceParamsAttrs.getSwitchGenMode ShcWsParamKeys.switchGenMode
             return [
                         gen :> obj; 
                         mr :> obj; 

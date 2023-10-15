@@ -6,18 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Dto\GaRunCfgDto.fs" />
-    <Compile Include="Dto\GaReportCfgDto.fs" />
-    <Compile Include="Dto\ShcRunCfgDto.fs" />
-    <Compile Include="Dto\ShcReportCfgDto.fs" />
+    <Compile Include="FolderParams.fs" />
     <Compile Include="Old\RunCfgDto.fs" />
     <Compile Include="Old\RunCfgSetDto.fs" />
     <Compile Include="Old\RunScript.fs" />
     <Compile Include="ReportCfgDto.fs" />
     <Compile Include="KlinkScript.fs" />
     <Compile Include="KlinkScriptDto.fs" />
+    <Compile Include="ScriptFileRun.fs" />
+    <Compile Include="ScriptFileMake.fs" />
     <Compile Include="Experiments\Order16\Exp1Cfg.fs" />
-    <Compile Include="Experiments\Order16\StageSymmetricCfg.fs" />
+    <Compile Include="Experiments\Order16\O16_StageRflCfg.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -25,6 +24,7 @@
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
     <ProjectReference Include="..\Klink.Report\Klink.Report.fsproj" />
+    <ProjectReference Include="..\Klink.RunCfgDataConvert\Klink.RunCfgDataConvert.fsproj" />
     <ProjectReference Include="..\Klink.RunCfg\Klink.RunCfg.fsproj" />
     <ProjectReference Include="..\Klink.Run\Klink.Run.fsproj" />
   </ItemGroup>

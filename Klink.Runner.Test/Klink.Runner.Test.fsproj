@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="KlinkScriptFixture.fs" />
     <Compile Include="ShcCfgFixture.fs" />
     <Compile Include="RunScriptFixture.fs" />
     <Compile Include="WorkspaceFixture.fs" />

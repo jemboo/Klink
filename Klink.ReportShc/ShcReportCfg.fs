@@ -32,7 +32,7 @@ module ShcReportEvalsCfg =
         result {
             return! 
                 runDirs 
-                |> List.map(Reporting.reportEvals
+                |> List.map(ShcReporting.reportEvals
                                 reportWriter 
                                 forEvalsReader
                                 reportCfg.reportFileName 
@@ -56,11 +56,12 @@ module ShcReportBinsCfgs =
 
     let reportAllBins
         (projectFolderPath:string)
-        (workspaceFileStoreF: string -> IWorkspaceStore)
+        (forEvalsReader: string -> IWorkspaceStore)
+        (forReportWriter: string -> IWorkspaceStore)
         (reportCfg:shcReportBinsCfg)
         =
         let reportPath = Path.Combine(projectFolderPath, "Reports")
-        let fsReporter =  workspaceFileStoreF reportPath
+        let reportWriter =  forReportWriter reportPath
 
         let runDirs = reportCfg.runIds
                         |> Array.map(RunId.value >> string)
@@ -70,9 +71,9 @@ module ShcReportBinsCfgs =
         result {
             return! 
                 runDirs 
-                |> List.map(Reporting.reportBins 
-                                fsReporter 
-                                workspaceFileStoreF
+                |> List.map(ShcReporting.reportBins 
+                                reportWriter 
+                                forEvalsReader
                                 reportCfg.reportFileName 
                                 reportCfg.genMin)
                 |> Result.sequence
@@ -95,5 +96,6 @@ module ShcReportCfg =
         =
             match shcReportCfg with
             | Evals a -> ()
+               // ShcReportEvalsCfg.reportAllEvals
 
             | Bins b -> ()

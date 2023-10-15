@@ -1,11 +1,11 @@
 ﻿namespace global
 open System
 
-module StageSymmetricCfg =
+module O16_StageRflCfg =
 
     open CommonParams
 
-    let nf_ShcInitRunCfgPlex =
+    let runCfgPlex =
         {
             shcCfgPlex.orders = [|16 |> Order.createNr |]
             mutationRates = [|mr0;mr2;mr4|];
@@ -25,5 +25,30 @@ module StageSymmetricCfg =
                 initScriptName
                 baseGenerationCount 
                 baseReportFilter 
-                nf_ShcInitRunCfgPlex
+                runCfgPlex
 
+    
+    let baseDir = $"c:\Klink"
+
+    let projectFolder  = $"o16\StageRfl"
+
+    let initScripts (maxRunsPerScript:int) = 
+            KlinkScript.createInitRunScriptsFromRunCfgPlex 
+                baseGenerationCount
+                baseReportFilter
+                initScriptName
+                maxRunsPerScript
+                runCfgPlex
+
+
+
+    let reportGenMin = 0 |> Generation.create
+    let reportFileName = "reportBinsReport"
+
+    let reportAllScripts (maxRunsPerScript:int) = 
+            KlinkScript.createInitRunScriptsFromRunCfgPlex 
+                baseGenerationCount
+                baseReportFilter
+                initScriptName
+                maxRunsPerScript
+                runCfgPlex

@@ -171,6 +171,23 @@ module RunCfgSet =
             gaCfgPlex |> continueGaRunFromPlex newGenerations runSetName
 
 
+
+
+    let reportAllFromPlex 
+            (newGenerations:generation)
+            (runSetName:string)
+            (plex:runCfgPlex)
+        =
+        match plex with
+        | Shc shcCfgPlex -> 
+            shcCfgPlex |> continueShcRunFromPlex newGenerations runSetName
+        | Ga gaCfgPlex -> 
+            gaCfgPlex |> continueGaRunFromPlex newGenerations runSetName
+
+
+
+
+
     //let reportAllFromPlex 
     //        (genMin:generation)
     //        (genMax:generation)

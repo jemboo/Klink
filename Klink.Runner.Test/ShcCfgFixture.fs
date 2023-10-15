@@ -2,35 +2,10 @@ namespace Klink.Runner.Test
 
 open System
 open Microsoft.VisualStudio.TestTools.UnitTesting
+open CommonParams
 
 [<TestClass>]
 type ShcCfgFixture () =
-
-    [<TestMethod>]
-    member this.shcInitRunCfgDtos () =
-        let maxRunsPerScript = 24
-
-        let initScriptSet = StageSymmetricCfg.initScriptSet_nf
-        let scriptFiles = 
-                InitScriptSet.createScriptFiles 
-                    maxRunsPerScript
-                    initScriptSet
-
-        scriptFiles |> Array.iter(
-            fun (fn, fc) ->
-                TextIO.writeToFileOverwrite 
-                        "txt" 
-                        ($"c:\Klink\Test\scripts" |> Some) 
-                        "toDo" 
-                        fn 
-                        fc
-                |> ignore
-             )
-
-        Assert.AreEqual (1, 1);
-
-
-
 
 
     [<TestMethod>]
@@ -39,8 +14,23 @@ type ShcCfgFixture () =
         let genFilter = { modGenerationFilter.modulus = 1}
                             |> generationFilter.ModF
         let runSetName = "continueRun"
+
+        let testShcInitRunCfgPlex =
+            {
+                shcCfgPlex.orders = [|16 |> Order.createNr |]
+                mutationRates = [|mr0;mr2;mr4|];
+                noiseFractions = [|nf0;nf3|];
+                rngGens = rndGens 0 3 ;
+                tupSorterSetSizes = [|ssz4_5|];
+                sorterSetPruneMethods = [|sspm1; sspm2|];
+                stageWeights = [|sw0; sw1|];
+                switchGenModes = [|switchGenMode.StageSymmetric|];
+            } |> runCfgPlex.Shc
+
+
+
         let shcRunCfgSet = 
-            Exp1Cfg.testShcInitRunCfgPlex 
+            testShcInitRunCfgPlex 
                |> RunCfgSet.continueRunFromPlex newGens runSetName
 
         let cereal = shcRunCfgSet |> RunCfgSetDto.toJson

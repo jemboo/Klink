@@ -131,7 +131,7 @@ module GaRunCfg =
             match runCfg with
             | InitRun irc -> 
                 irc |> GaInitRunCfg.toWorkspaceParams up
-                    |> InterGenWsOps.startGenLoops projectFolderPath workspaceFileStoreF
+                    |> InterGenWsOps.runGenLoops projectFolderPath workspaceFileStoreF
             | Continue crc ->
                  InterGenWsOps.continueGenLoops 
                         projectFolderPath 

@@ -52,7 +52,7 @@ module GaReportEvalsCfg =
         result {
             return! 
                 runDirs 
-                |> List.map(Reporting.reportEvals
+                |> List.map(GaReporting.reportEvals
                                 reportWriter 
                                 forEvalsReader
                                 reportCfg.reportFileName 
@@ -61,8 +61,6 @@ module GaReportEvalsCfg =
                 |> Result.sequence
                 |> Result.map(ignore)
         }
-
-
 
 
 
@@ -78,11 +76,12 @@ module GaReportBinsCfgs =
 
         let reportAllBins
             (projectFolderPath:string)
-            (workspaceFileStoreF: string -> IWorkspaceStore)
+            (forEvalsReader: string -> IWorkspaceStore)
+            (forReportWriter: string -> IWorkspaceStore)
             (reportCfg:gaReportBinsCfg)
             =
             let reportPath = Path.Combine(projectFolderPath, "Reports")
-            let fsReporter =  workspaceFileStoreF reportPath
+            let reportWriter =  forReportWriter reportPath
 
             let runDirs = reportCfg.runIds
                             |> Array.map(RunId.value >> string)
@@ -92,9 +91,9 @@ module GaReportBinsCfgs =
             result {
                 return! 
                     runDirs 
-                    |> List.map(Reporting.reportBins 
-                                    fsReporter 
-                                    workspaceFileStoreF
+                    |> List.map(GaReporting.reportBins 
+                                    reportWriter 
+                                    forEvalsReader
                                     reportCfg.reportFileName 
                                     reportCfg.genMin)
                     |> Result.sequence

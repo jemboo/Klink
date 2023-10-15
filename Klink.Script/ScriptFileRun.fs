@@ -39,6 +39,18 @@ module ScriptFileRun =
         }
 
 
+
+    let getNextKlinkScript (projectFolderPath:string) =
+        result {
+            let! (filePath, contents) = 
+                    getNextScript projectFolderPath
+            
+            let! cfgSet = contents |> KlinkScriptDto.fromJson
+
+            return (filePath, cfgSet)
+        }
+
+
     let finishScript (scriptFileName:string) (projectFolderPath:string) =
         let scriptRunningFolder = FolderParams.runningFolder projectFolderPath
         let scriptRunningPath = Path.Combine(scriptRunningFolder, scriptFileName)

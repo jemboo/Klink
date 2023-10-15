@@ -48,7 +48,7 @@ module KlinkScript =
 
     let getScriptItems (ks:klinkScript) = ks.items
 
-    let private _runName 
+    let private _scriptFileName 
                     (prefix:string) 
                     (maxChunk:int) 
                     (dex:int) 
@@ -60,16 +60,17 @@ module KlinkScript =
             (projectFolderPath:string)
             (up:useParallel)
             (workspaceFileStoreF: string -> IWorkspaceStore)
-            (klinkScript:klinkScript) =
-
+            (klinkScript:klinkScript) 
+        =
         klinkScript.items 
             |> Array.iter(ScriptItem.procScriptItem projectFolderPath up workspaceFileStoreF)
+
 
 
     let createInitRunScriptsFromRunCfgPlex
             (generations:generation)
             (reportFilter:generationFilter)
-            (runSetPfx:string)
+            (scriptFileNamePfx:string)
             (maxRunCountPerScript:int)
             (plex:runCfgPlex)
         =
@@ -93,7 +94,7 @@ module KlinkScript =
             fun dex cfgs -> 
                     { 
                         klinkScript.name = 
-                            _runName runSetPfx maxRunCountPerScript dex
+                            _scriptFileName scriptFileNamePfx maxRunCountPerScript dex
                             |> ScriptName.create
                         items = cfgs |> Array.map(scriptItem.Run)
                     }
@@ -101,45 +102,105 @@ module KlinkScript =
 
 
 
-    let createReportScriptsFromRunCfgPlex
-            (generations:generation)
+    let createContinueRunScriptsFromRunCfgPlex
+            (nreGenerations:generation)
+            (scriptFileNamePfx:string)
+            (maxRunCountPerScript:int)
+            (plex:runCfgPlex)
+        =
+        let runCfgs = 
+            match plex with
+            | runCfgPlex.Shc shcCfgPlex ->
+                shcCfgPlex |>
+                ShcCfgPlex.toContinueRunCfgs nreGenerations
+                      |> Seq.map(shcRunCfg.Continue >> runCfg.Shc)
+                      |> Seq.chunkBySize maxRunCountPerScript
+                      |> Seq.toArray
+            | runCfgPlex.Ga gaCfgPlex ->
+                gaCfgPlex |>
+                GaCfgPlex.toContinueRunCfgs nreGenerations
+                      |> Seq.map(gaRunCfg.Continue >> runCfg.Ga)
+                      |> Seq.chunkBySize maxRunCountPerScript
+                      |> Seq.toArray
+
+
+        runCfgs |> Array.mapi(
+            fun dex cfgs -> 
+                    { 
+                        klinkScript.name = 
+                            _scriptFileName scriptFileNamePfx maxRunCountPerScript dex
+                            |> ScriptName.create
+                        items = cfgs |> Array.map(scriptItem.Run)
+                    }
+                )
+
+
+
+    let createReportEvalsScriptFromRunCfgPlex
+            (genMin:generation)
+            (genMax:generation)
+            (evalCompName:wsComponentName)
             (reportFilter:generationFilter)
+            (reportFileName:string)
+            (scriptFileName:string)
+            (plex:runCfgPlex)
+        =
+        let scriptItem = 
+            match plex with
+            | runCfgPlex.Shc shcCfgPlex ->
+                let runIds = shcCfgPlex |>  ShcCfgPlex.toRunIds |> Seq.toArray
+                {
+                    shcReportEvalsCfg.reportFileName = reportFileName
+                    runIds = runIds
+                    genMin = genMin
+                    genMax = genMax
+                    evalCompName = evalCompName
+                    reportFilter = reportFilter
+                } |> shcReportCfg.Evals |> reportCfg.Shc |> scriptItem.Report
+
+            | runCfgPlex.Ga gaCfgPlex ->
+                let runIds = gaCfgPlex |> GaCfgPlex.toRunIds |> Seq.toArray
+                {
+                    gaReportEvalsCfg.reportFileName = reportFileName
+                    runIds = runIds
+                    genMin = genMin
+                    genMax = genMax
+                    evalCompName = evalCompName
+                    reportFilter = reportFilter
+                } |> gaReportCfg.Evals |> reportCfg.Ga  |> scriptItem.Report
+        {
+            klinkScript.name = reportFileName |> ScriptName.create
+            items = [| scriptItem |]
+        }
+
+
+
+    let createReportBinsScriptFromRunCfgPlex
+            (genMin:generation)
+            (genMax:generation)
             (reportFileName:string)
             (plex:runCfgPlex)
         =
+        let scriptItem = 
+            match plex with
+            | runCfgPlex.Shc shcCfgPlex ->
+                let runIds = shcCfgPlex |> ShcCfgPlex.toRunIds |> Seq.toArray
+                {
+                    shcReportBinsCfg.reportFileName = reportFileName
+                    runIds = runIds
+                    genMin = genMin
+                    genMax = genMax
+                } |> shcReportCfg.Bins |> reportCfg.Shc |> scriptItem.Report
 
-
-        ()
-
-    //let createReportScriptsFromRunCfgPlex
-    //        (generations:generation)
-    //        (reportFilter:generationFilter)
-    //        (runSetPfx:string)
-    //        (maxRunCountPerScript:int)
-    //        (plex:runCfgPlex)
-    //    =
-    //    let runCfgs = 
-    //        match plex with
-    //        | runCfgPlex.Shc shcCfgPlex ->
-    //            shcCfgPlex |>
-    //            ShcCfgPlex.toContinueRunCfgs generations (Some reportFilter)
-    //                  |> Seq.map(shcRunCfg.InitRun >> runCfg.Shc)
-    //                  |> Seq.chunkBySize maxRunCountPerScript
-    //                  |> Seq.toArray
-    //        | runCfgPlex.Ga gaCfgPlex ->
-    //            gaCfgPlex |>
-    //            GaCfgPlex.toInitRunCfgs generations (Some reportFilter)
-    //                  |> Seq.map(gaRunCfg.InitRun >> runCfg.Ga)
-    //                  |> Seq.chunkBySize maxRunCountPerScript
-    //                  |> Seq.toArray
-
-
-    //    runCfgs |> Array.mapi(
-    //        fun dex cfgs -> 
-    //                { 
-    //                    klinkScript.name = 
-    //                        _runName runSetPfx maxRunCountPerScript dex
-    //                        |> ScriptName.create
-    //                    items = cfgs |> Array.map(scriptItem.Run)
-    //                }
-    //            )
+            | runCfgPlex.Ga gaCfgPlex ->
+                let runIds = gaCfgPlex |> GaCfgPlex.toRunIds |> Seq.toArray
+                {
+                    gaReportBinsCfg.reportFileName = reportFileName
+                    runIds = runIds
+                    genMin = genMin
+                    genMax = genMax
+                } |> gaReportCfg.Bins |> reportCfg.Ga  |> scriptItem.Report
+        {
+            klinkScript.name = reportFileName |> ScriptName.create
+            items = [| scriptItem |]
+        }

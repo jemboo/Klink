@@ -10,9 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="FolderParams.fs" />
-    <Compile Include="ScriptFileRun.fs" />
     <Compile Include="CliArguments.fs" />
+    <Compile Include="OldScript.fs" />
     <None Include="App.config" />
     <Compile Include="Program.fs" />
   </ItemGroup>
