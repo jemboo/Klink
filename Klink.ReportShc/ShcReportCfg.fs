@@ -90,12 +90,21 @@ module ShcReportCfg =
 
     let procReportCfg 
             (projectFolderPath:string)
-            (up:useParallel)
+            (useParallel:useParallel)
             (workspaceFileStoreF: string -> IWorkspaceStore)
             (shcReportCfg:shcReportCfg)
         =
             match shcReportCfg with
-            | Evals a -> ()
-               // ShcReportEvalsCfg.reportAllEvals
+            | Evals shcReportEvalsCfg ->
+                ShcReportEvalsCfg.reportAllEvals
+                    projectFolderPath
+                    workspaceFileStoreF
+                    workspaceFileStoreF
+                    shcReportEvalsCfg
 
-            | Bins b -> ()
+            | Bins shcReportBinsCfg -> 
+                ShcReportBinsCfgs.reportAllBins
+                    projectFolderPath
+                    workspaceFileStoreF
+                    workspaceFileStoreF
+                    shcReportBinsCfg

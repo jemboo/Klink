@@ -20,35 +20,38 @@ module O16_StageRflCfg =
     let baseGenerationCount = 500 |> Generation.create
     let baseReportFilter = CommonParams.modulusFilter 5
     let initScriptName = "nf"
-    let initScriptSet_nf = 
-            InitScriptSet.make 
-                initScriptName
-                baseGenerationCount 
-                baseReportFilter 
-                runCfgPlex
+    //let initScriptSet_nf = 
+    //        InitScriptSet.make 
+    //            initScriptName
+    //            baseGenerationCount 
+    //            baseReportFilter 
+    //            runCfgPlex
 
     
     let baseDir = $"c:\Klink"
-
     let projectFolder  = $"o16\StageRfl"
+    let itemSplicer = Some (1,2)
 
-    let initScripts (maxRunsPerScript:int) = 
+    let writeInitScripts (maxRunsPerScript:int) = 
             KlinkScript.createInitRunScriptsFromRunCfgPlex 
                 baseGenerationCount
                 baseReportFilter
                 initScriptName
                 maxRunsPerScript
+                itemSplicer
                 runCfgPlex
-
+            |> Array.map(ScriptFileMake.writeScript baseDir projectFolder)
 
 
     let reportGenMin = 0 |> Generation.create
     let reportFileName = "reportBinsReport"
+    let scriptFileName = "reportBinsReportScript"
+    let evalScriptComponent = ("sorterSetEvalParent" |> WsComponentName.create)
 
     let reportAllScripts (maxRunsPerScript:int) = 
-            KlinkScript.createInitRunScriptsFromRunCfgPlex 
+            KlinkScript.createReportEvalsScriptFromRunCfgPlex 
+                reportGenMin
                 baseGenerationCount
+                evalScriptComponent
                 baseReportFilter
-                initScriptName
-                maxRunsPerScript
-                runCfgPlex
+                reportFileName

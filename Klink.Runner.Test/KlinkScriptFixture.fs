@@ -39,7 +39,6 @@ type KlinkScriptFixture () =
         let baseDir = $"c:\Klink"
         let maxRunsPerScript = 24
 
-        let klinkScripts = O16_StageRflCfg.initScripts maxRunsPerScript
-        klinkScripts |> Array.map(ScriptFileMake.writeScript O16_StageRflCfg.baseDir O16_StageRflCfg.projectFolder)
-            |> ignore
+        let klinkScripts = O16_StageRflCfg.writeInitScripts maxRunsPerScript
+
         Assert.AreEqual (1, 1);

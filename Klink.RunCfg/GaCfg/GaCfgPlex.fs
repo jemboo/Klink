@@ -25,25 +25,29 @@ module GaCfgPlex =
                      rngGen -> (sorterCount*sorterCount) -> 
                      switchGenMode -> stageWeight -> 
                      noiseFraction -> mutationRate -> sorterSetPruneMethod -> 'a)
+            (seqSplicer: (int*int) option)
             =
-        seq {
-        for order in plex.orders do
-            for rngGen in plex.rngGens do
-                for tupSorterSetSize in plex.tupSorterSetSizes do
-                    for switchGenMode in plex.switchGenModes do
-                        for stageWeight in plex.stageWeights do
-                            for noiseFraction in plex.noiseFractions do
-                                for mutationRate in plex.mutationRates do
-                                    for sorterSetPruneMethod in plex.sorterSetPruneMethods do
-                                        yield
-                                            daFunc 
-                                                order newGenerations 
-                                                reportFilter rngGen 
-                                                tupSorterSetSize switchGenMode 
-                                                stageWeight noiseFraction
-                                                mutationRate sorterSetPruneMethod
-        }
-
+        let preSpliced =
+            seq {
+                for order in plex.orders do
+                    for rngGen in plex.rngGens do
+                        for tupSorterSetSize in plex.tupSorterSetSizes do
+                            for switchGenMode in plex.switchGenModes do
+                                for stageWeight in plex.stageWeights do
+                                    for noiseFraction in plex.noiseFractions do
+                                        for mutationRate in plex.mutationRates do
+                                            for sorterSetPruneMethod in plex.sorterSetPruneMethods do
+                                                yield
+                                                    daFunc 
+                                                        order newGenerations 
+                                                        reportFilter rngGen 
+                                                        tupSorterSetSize switchGenMode 
+                                                        stageWeight noiseFraction
+                                                        mutationRate sorterSetPruneMethod
+                    }
+        match seqSplicer with
+        | Some (skp, tk) -> preSpliced |> Seq.skip skp |> Seq.take tk
+        | None -> preSpliced 
 
 
     let _fromFunc2<'a>
@@ -52,27 +56,32 @@ module GaCfgPlex =
                      rngGen -> (sorterCount*sorterCount) -> 
                      switchGenMode -> stageWeight -> 
                      noiseFraction -> mutationRate -> sorterSetPruneMethod -> 'a)
-            =
-        seq {
-        for order in plex.orders do
-            for rngGen in plex.rngGens do
-                for tupSorterSetSize in plex.tupSorterSetSizes do
-                    for switchGenMode in plex.switchGenModes do
-                        for stageWeight in plex.stageWeights do
-                            for noiseFraction in plex.noiseFractions do
-                                for mutationRate in plex.mutationRates do
-                                    for sorterSetPruneMethod in plex.sorterSetPruneMethods do
-                                        yield
-                                            daFunc 
-                                                order 
-                                                rngGen 
-                                                tupSorterSetSize 
-                                                switchGenMode 
-                                                stageWeight
-                                                noiseFraction
-                                                mutationRate 
-                                                sorterSetPruneMethod
-        }
+            (seqSplicer: (int*int) option)
+        =
+        let preSpliced =
+            seq {
+            for order in plex.orders do
+                for rngGen in plex.rngGens do
+                    for tupSorterSetSize in plex.tupSorterSetSizes do
+                        for switchGenMode in plex.switchGenModes do
+                            for stageWeight in plex.stageWeights do
+                                for noiseFraction in plex.noiseFractions do
+                                    for mutationRate in plex.mutationRates do
+                                        for sorterSetPruneMethod in plex.sorterSetPruneMethods do
+                                            yield
+                                                daFunc 
+                                                    order 
+                                                    rngGen 
+                                                    tupSorterSetSize 
+                                                    switchGenMode 
+                                                    stageWeight
+                                                    noiseFraction
+                                                    mutationRate 
+                                                    sorterSetPruneMethod
+            }
+        match seqSplicer with
+        | Some (skp, tk) -> preSpliced |> Seq.skip skp |> Seq.take tk
+        | None -> preSpliced 
 
 
 
@@ -80,6 +89,7 @@ module GaCfgPlex =
     let toInitRunCfgs
             (newGenerations:generation)
             (reportFilter:generationFilter option)
+            (seqSplicer: (int*int) option)
             (plex:gaCfgPlex)
         =
 
@@ -104,12 +114,14 @@ module GaCfgPlex =
                     reportFilter = reportFilter
                 }
 
-        _fromFunc newGenerations reportFilter plex _toIr
+        _fromFunc newGenerations reportFilter plex _toIr seqSplicer
 
 
 
 
-    let toRunIds (plex:gaCfgPlex)
+    let toRunIds 
+            (seqSplicer: (int*int) option)
+            (plex:gaCfgPlex)
         =
         let _toIr order rngGen 
                   tupSorterSetSize switchGenMode stageWeight 
@@ -128,12 +140,13 @@ module GaCfgPlex =
                     (SwitchCount.orderTo999SwitchCount order)
                     switchGenMode
 
-        _fromFunc2 plex _toIr
+        _fromFunc2 plex _toIr seqSplicer
 
 
 
     let toContinueRunCfgs
             (newGenerations:generation)
+            (seqSplicer: (int*int) option)
             (plex:gaCfgPlex)
         =
 
@@ -142,8 +155,8 @@ module GaCfgPlex =
                     gaContinueRunCfg.runId = runId;
                     newGenerations = newGenerations
                 }
-        toRunIds plex
-        |> Seq.map(_toCrc )
+        toRunIds seqSplicer plex
+        |> Seq.map(_toCrc)
 
 
 

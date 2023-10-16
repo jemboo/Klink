@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <Compile Include="CliArguments.fs" />
-    <Compile Include="OldScript.fs" />
     <None Include="App.config" />
     <Compile Include="Program.fs" />
   </ItemGroup>

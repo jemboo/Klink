@@ -28,15 +28,15 @@ module ScriptFileRun =
 
 
 
-    let getNextRunCfgSet (projectFolderPath:string) =
-        result {
-            let! (filePath, contents) = 
-                    getNextScript projectFolderPath
+    //let getNextRunCfgSet (projectFolderPath:string) =
+    //    result {
+    //        let! (filePath, contents) = 
+    //                getNextScript projectFolderPath
             
-            let! cfgSet = contents |> RunCfgSetDto.fromJson
+    //        let! cfgSet = contents |> RunCfgSetDto.fromJson
 
-            return (filePath, cfgSet)
-        }
+    //        return (filePath, cfgSet)
+    //    }
 
 
 

@@ -7,9 +7,7 @@
 
   <ItemGroup>
     <Compile Include="FolderParams.fs" />
-    <Compile Include="Old\RunCfgDto.fs" />
-    <Compile Include="Old\RunCfgSetDto.fs" />
-    <Compile Include="Old\RunScript.fs" />
+    <Compile Include="RunCfgDto.fs" />
     <Compile Include="ReportCfgDto.fs" />
     <Compile Include="KlinkScript.fs" />
     <Compile Include="KlinkScriptDto.fs" />

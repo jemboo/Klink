@@ -72,7 +72,7 @@ type gaReportBinsCfg =
         genMax:generation
     }
 
-module GaReportBinsCfgs =
+module GaReportBinsCfg =
 
         let reportAllBins
             (projectFolderPath:string)
@@ -113,11 +113,21 @@ module GaReportCfg =
 
     let procReportCfg 
             (projectFolderPath:string)
-            (up:useParallel)
+            (useParallel:useParallel)
             (workspaceFileStoreF: string -> IWorkspaceStore)
             (gaReportCfg:gaReportCfg)
         =
             match gaReportCfg with
-            | Evals a -> ()
+            | Evals gaReportEvalsCfg -> 
+                GaReportEvalsCfg.reportAllEvals
+                    projectFolderPath
+                    workspaceFileStoreF
+                    workspaceFileStoreF
+                    gaReportEvalsCfg
 
-            | Bins b -> ()
+            | Bins gaReportBinsCfg ->
+                GaReportBinsCfg.reportAllBins
+                    projectFolderPath
+                    workspaceFileStoreF
+                    workspaceFileStoreF
+                    gaReportBinsCfg

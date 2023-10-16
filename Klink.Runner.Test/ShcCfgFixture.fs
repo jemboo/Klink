@@ -27,19 +27,19 @@ type ShcCfgFixture () =
                 switchGenModes = [|switchGenMode.StageSymmetric|];
             } |> runCfgPlex.Shc
 
+        //let seqSplicer = None
 
+        //let shcRunCfgSet = 
+        //    testShcInitRunCfgPlex 
+        //       |> RunCfgSet.continueRunFromPlex newGens runSetName seqSplicer
 
-        let shcRunCfgSet = 
-            testShcInitRunCfgPlex 
-               |> RunCfgSet.continueRunFromPlex newGens runSetName
+        //let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
 
-        let cereal = shcRunCfgSet |> RunCfgSetDto.toJson
+        //TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
+        //|> ignore
 
-        TextIO.writeToFileOverwrite "txt" ($"c:\Klink\ShcT\scripts" |> Some) "toDo" runSetName cereal
-        |> ignore
-
-        let yabba = cereal |> RunCfgSetDto.fromJson
-                           |> Result.ExtractOrThrow
+        //let yabba = cereal |> RunCfgSetDto.fromJson
+        //                   |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);
 

@@ -8,33 +8,40 @@ type runCfgPlex =
 module RunCfgPlex =
 
    let toInitRunCfgs
-            (newGenerations:generation)
+            (generations:generation)
             (reportFilter:generationFilter option)
+            (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
         match plex with
         | Ga gcp -> 
-            GaCfgPlex.toInitRunCfgs newGenerations reportFilter gcp
+            GaCfgPlex.toInitRunCfgs generations reportFilter seqSplicer gcp
             |> Seq.map(gaRunCfg.InitRun >> runCfg.Ga)
         | Shc scp ->  
-            ShcCfgPlex.toInitRunCfgs newGenerations reportFilter scp
+            ShcCfgPlex.toInitRunCfgs generations reportFilter seqSplicer scp
             |> Seq.map(shcRunCfg.InitRun >> runCfg.Shc)
 
         
 
    let toContinueRunCfgs
             (newGenerations:generation)
+            (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
         match plex with
         | Ga gcp -> 
-            GaCfgPlex.toContinueRunCfgs newGenerations gcp
+            GaCfgPlex.toContinueRunCfgs newGenerations seqSplicer gcp 
             |> Seq.map(gaRunCfg.Continue >> runCfg.Ga)
         | Shc scp ->  
-            ShcCfgPlex.toContinueRunCfgs newGenerations scp
+            ShcCfgPlex.toContinueRunCfgs newGenerations seqSplicer scp
             |> Seq.map(shcRunCfg.Continue >> runCfg.Shc)
 
         
+   let yab (boink: 'a seq) (wonk: ('a seq -> 'a seq) option) =
+       match wonk with
+       | Some fla -> boink |> fla
+       | None -> boink 
+       
 
    //let toReportEvalsCfg
    //         (genMin:generation)

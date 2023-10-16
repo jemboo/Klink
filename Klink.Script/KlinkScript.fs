@@ -66,28 +66,23 @@ module KlinkScript =
             |> Array.iter(ScriptItem.procScriptItem projectFolderPath up workspaceFileStoreF)
 
 
-
+    
     let createInitRunScriptsFromRunCfgPlex
             (generations:generation)
             (reportFilter:generationFilter)
             (scriptFileNamePfx:string)
             (maxRunCountPerScript:int)
+            (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
         let runCfgs = 
-            match plex with
-            | runCfgPlex.Shc shcCfgPlex ->
-                shcCfgPlex |>
-                ShcCfgPlex.toInitRunCfgs generations (Some reportFilter)
-                      |> Seq.map(shcRunCfg.InitRun >> runCfg.Shc)
-                      |> Seq.chunkBySize maxRunCountPerScript
-                      |> Seq.toArray
-            | runCfgPlex.Ga gaCfgPlex ->
-                gaCfgPlex |>
-                GaCfgPlex.toInitRunCfgs generations (Some reportFilter)
-                      |> Seq.map(gaRunCfg.InitRun >> runCfg.Ga)
-                      |> Seq.chunkBySize maxRunCountPerScript
-                      |> Seq.toArray
+            RunCfgPlex.toInitRunCfgs
+                generations
+                (Some reportFilter)
+                seqSplicer
+                plex
+            |> Seq.chunkBySize maxRunCountPerScript
+            |> Seq.toArray
 
 
         runCfgs |> Array.mapi(
@@ -101,27 +96,20 @@ module KlinkScript =
                 )
 
 
-
     let createContinueRunScriptsFromRunCfgPlex
-            (nreGenerations:generation)
+            (newGenerations:generation)
             (scriptFileNamePfx:string)
             (maxRunCountPerScript:int)
+            (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
         let runCfgs = 
-            match plex with
-            | runCfgPlex.Shc shcCfgPlex ->
-                shcCfgPlex |>
-                ShcCfgPlex.toContinueRunCfgs nreGenerations
-                      |> Seq.map(shcRunCfg.Continue >> runCfg.Shc)
-                      |> Seq.chunkBySize maxRunCountPerScript
-                      |> Seq.toArray
-            | runCfgPlex.Ga gaCfgPlex ->
-                gaCfgPlex |>
-                GaCfgPlex.toContinueRunCfgs nreGenerations
-                      |> Seq.map(gaRunCfg.Continue >> runCfg.Ga)
-                      |> Seq.chunkBySize maxRunCountPerScript
-                      |> Seq.toArray
+            RunCfgPlex.toContinueRunCfgs
+                newGenerations
+                seqSplicer
+                plex
+            |> Seq.chunkBySize maxRunCountPerScript
+            |> Seq.toArray
 
 
         runCfgs |> Array.mapi(
@@ -142,13 +130,13 @@ module KlinkScript =
             (evalCompName:wsComponentName)
             (reportFilter:generationFilter)
             (reportFileName:string)
-            (scriptFileName:string)
+            (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
         let scriptItem = 
             match plex with
             | runCfgPlex.Shc shcCfgPlex ->
-                let runIds = shcCfgPlex |>  ShcCfgPlex.toRunIds |> Seq.toArray
+                let runIds = shcCfgPlex |>  ShcCfgPlex.toRunIds seqSplicer |> Seq.toArray
                 {
                     shcReportEvalsCfg.reportFileName = reportFileName
                     runIds = runIds
@@ -159,7 +147,7 @@ module KlinkScript =
                 } |> shcReportCfg.Evals |> reportCfg.Shc |> scriptItem.Report
 
             | runCfgPlex.Ga gaCfgPlex ->
-                let runIds = gaCfgPlex |> GaCfgPlex.toRunIds |> Seq.toArray
+                let runIds = gaCfgPlex |> GaCfgPlex.toRunIds seqSplicer |> Seq.toArray
                 {
                     gaReportEvalsCfg.reportFileName = reportFileName
                     runIds = runIds
@@ -179,12 +167,13 @@ module KlinkScript =
             (genMin:generation)
             (genMax:generation)
             (reportFileName:string)
+            (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
         let scriptItem = 
             match plex with
             | runCfgPlex.Shc shcCfgPlex ->
-                let runIds = shcCfgPlex |> ShcCfgPlex.toRunIds |> Seq.toArray
+                let runIds = shcCfgPlex |> ShcCfgPlex.toRunIds seqSplicer |> Seq.toArray
                 {
                     shcReportBinsCfg.reportFileName = reportFileName
                     runIds = runIds
@@ -193,7 +182,7 @@ module KlinkScript =
                 } |> shcReportCfg.Bins |> reportCfg.Shc |> scriptItem.Report
 
             | runCfgPlex.Ga gaCfgPlex ->
-                let runIds = gaCfgPlex |> GaCfgPlex.toRunIds |> Seq.toArray
+                let runIds = gaCfgPlex |> GaCfgPlex.toRunIds seqSplicer |> Seq.toArray
                 {
                     gaReportBinsCfg.reportFileName = reportFileName
                     runIds = runIds
