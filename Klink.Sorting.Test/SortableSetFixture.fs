@@ -60,6 +60,18 @@ type SortableSetFixture() =
         Assert.IsTrue(srtIntsRI32.Length > 0)
 
 
+
+    [<TestMethod>]
+    member this.makeIntMergeTestSet() =
+        let ssRecId = Guid.NewGuid() |> SortableSetId.create
+        let order = Order.createNr 16
+        let targetLength = (order |> Order.value) / 2 + 1
+        let ssMts =
+            SortableSet.makeIntMergeTestSet ssRecId order |> Result.ExtractOrThrow
+        let avs = ssMts |> SortableSet.getRollout |> Rollout.toIntArrays |> Seq.toArray
+        Assert.IsTrue(avs.Length = targetLength)
+
+
     [<TestMethod>]
     member this.makeSortedStacks() =
         let ord = Order.createNr 16

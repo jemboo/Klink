@@ -20,4 +20,10 @@ module Program =
 
         let yow = klinkScript |> KlinkScript.procScript projectFolderPath useParallel _makeFileStore
 
+        let fr = scriptFileName |> ScriptFileRun.finishScript projectFolderPath
+        match fr with
+        | Ok _ -> Console.WriteLine($"Script finished: {scriptFileName}")
+        | Error m -> Console.WriteLine($"Error finishing {scriptFileName} : {m}")
+
+
         0

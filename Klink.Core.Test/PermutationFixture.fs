@@ -33,6 +33,17 @@ type PermutationFixture() =
         Assert.AreEqual(arA.Length, 16)
 
 
+
+    [<TestMethod>]
+    member this.Permutation_stackedSource() =
+        let ord = Order.createNr 16
+        let stackedSources = 
+            [|0 .. (ord |> Order.value) / 2|]
+            |> Array.map (Permutation.stackedSource ord )
+
+        Assert.AreEqual(stackedSources.Length, (ord |> Order.value) / 2 + 1)
+
+
     [<TestMethod>]
     member this.Permutation_PowerDist() =
         let seed = RandomSeed.fromNow ()

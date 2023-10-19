@@ -165,6 +165,15 @@ module SortableSet =
         fromSortableIntArrays sortableSetId order symbolSetSize sortableInts
 
 
+    let makeIntMergeTestSet
+            (sortableSetId: sortableSetId)
+            (order: order) 
+            =
+        let symbolSetSize = order |> Order.value |> uint64 |> SymbolSetSize.createNr
+        let sortableInts = SortableIntArray.makeIntMergeTestSet order
+        fromSortableIntArrays sortableSetId order symbolSetSize sortableInts
+
+
     let makeSortedStacks 
             (sortableSetId: sortableSetId) 
             (rolloutFormat: rolloutFormat) 

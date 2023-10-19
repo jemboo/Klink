@@ -51,7 +51,7 @@ module ScriptFileRun =
         }
 
 
-    let finishScript (scriptFileName:string) (projectFolderPath:string) =
+    let finishScript (projectFolderPath:string) (scriptFileName:string)  =
         let scriptRunningFolder = FolderParams.runningFolder projectFolderPath
         let scriptRunningPath = Path.Combine(scriptRunningFolder, scriptFileName)
         let scriptCompletedFolder = FolderParams.completedFolder projectFolderPath

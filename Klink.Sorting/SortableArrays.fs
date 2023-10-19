@@ -59,6 +59,19 @@ module SortableIntArray =
               symbolSetSize = symbolSetSize })
 
 
+    // test set for the merge sort (merge two sorted sets of order/2)
+    let makeIntMergeTestSet (order: order) =
+        let hov = (order |> Order.value) / 2
+        let symbolSetSize = order |> Order.value |> uint64 |> SymbolSetSize.createNr
+        [|0 .. hov|]
+        |> Array.map (
+            fun dex ->
+                { sortableIntArray.values = Permutation.stackedSource order dex 
+                  order = order
+                  symbolSetSize = symbolSetSize }
+            )
+
+
     let makeRandomPermutation (order: order) (randy: IRando) =
         let symbolSetSize = order |> Order.value |> uint64 |> SymbolSetSize.createNr
 

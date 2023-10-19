@@ -26,6 +26,9 @@ module Permutation =
     let getArray (perm: permutation) = perm.values
 
     let getOrder (perm: permutation) = Order.createNr perm.values.Length
+    
+    let identity (order: order) =
+        { values = CollectionProps.identity (Order.value order) }
 
     let makeMonoCycle (order: order) (aDex: int) (bDex: int) =
         { values =
@@ -66,16 +69,40 @@ module Permutation =
 
         permSeq |> Seq.map (fun vs -> { permutation.values = vs })
 
+
+    let fullRotationGroup (order: order) =
+        let r1 = rotate order 1
+        powers None r1 |> Seq.toArray
+
+    // {stackedSource(0) .. stackedSource(order/2)} creates a complete
+    // test set for the merge sort (merge two sorted sets of order/2)
+    let stackedSource (order: order) (index:int) =
+        let ov = (order |> Order.value)
+        let hov = ov / 2
+        let retVal = CollectionProps.identity (hov * 2)
+        let mutable dex = 0
+        while dex < hov do 
+            if (index = hov) then
+                retVal.[dex] <- hov + dex
+                retVal.[hov + dex] <- dex
+             // the result is identity for index=0
+            else if (index > 0) then
+                if (dex < hov - index) then
+                    retVal.[dex] <- index + dex
+                else
+                    retVal.[dex] <- hov + dex
+
+                if (dex < index) then
+                    retVal.[hov + dex] <- dex
+                else
+                    retVal.[hov + dex] <- hov + dex - index
+            dex <- dex + 1
+        retVal
+
     let conjugate (conj: permutation) (pA: permutation) =
         let a_out = Array.zeroCreate (conj|> getOrder |> Order.value)
         CollectionOps.conjIntArrays (pA |> getArray) (conj |> getArray) a_out
 
-    let cyclicGroup (order: order) =
-        let r1 = rotate order 1
-        powers None r1 |> Seq.toArray
-
-    let identity (order: order) =
-        { values = CollectionProps.identity (Order.value order) }
 
     let toIntSet (perm: permutation) = { intSet.values = perm.values }
 
