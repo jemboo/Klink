@@ -6,8 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="SortingCfg\SortableSetCfg.fs" />
-    <Compile Include="SortingCfg\SorterSetRndCfg.fs" />
     <Compile Include="Workspace\GaWsParamKeys.fs" />
     <Compile Include="Workspace\CauseAddWsComponent.fs" />
     <Compile Include="Workspace\CauseMakeWsComponent.fs" />
@@ -22,6 +20,7 @@
     <ProjectReference Include="..\KIink.DataStore\KIink.DataStore.fsproj" />
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
+    <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />

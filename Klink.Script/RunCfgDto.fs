@@ -22,18 +22,6 @@ module RunCfgDto =
                     cereal = cCfg |> ShcContinueRunCfgDto.toJson
                 }
 
-            //| shcRunCfg.Report cRpt ->
-            //    match cRpt with
-            //    | shcReportCfg.Evals arc ->
-            //        {
-            //            duType = "Report_All_shc"
-            //            cereal = arc |> ShcReportAllCfgDto.toJson
-            //        }
-            //    | shcReportCfg.Bins brc ->
-            //        {
-            //            duType = "Report_Bins_shc"
-            //            cereal = brc |> ShcReportBinsCfgDto.toJson
-            //        }
         | runCfg.Ga gaRc ->
             match gaRc with
             | gaRunCfg.InitRun rCfg -> 
@@ -47,20 +35,6 @@ module RunCfgDto =
                     duType = "Continue_ga"
                     cereal = cCfg |> GaContinueRunCfgDto.toJson
                 }
-
-            //| gaRunCfg.Report cRpt ->
-            //    match cRpt with
-            //    | gaReportCfg.Evals arc ->
-            //        {
-            //            duType = "Report_All_ga"
-            //            cereal = arc |> GaReportAllCfgDto.toJson
-            //        }
-            //    | gaReportCfg.Bins brc ->
-            //        {
-            //            duType = "Report_Bins_ga"
-            //            cereal = brc |> GaReportBinsCfgDto.toJson
-            //        }
-
 
     let toJson (cfg:runCfg) =
         cfg |> toDto |> Json.serialize
@@ -76,14 +50,6 @@ module RunCfgDto =
             dto.cereal |> ShcContinueRunCfgDto.fromJson 
                        |> Result.map(shcRunCfg.Continue)
                        |> Result.map(runCfg.Shc)
-        //| "Report_All_shc" -> 
-        //    dto.cereal |> ShcReportAllCfgDto.fromJson 
-        //               |> Result.map(shcReportCfg.Evals >> shcRunCfg.Report)
-        //               |> Result.map(runCfg.Shc)
-        //| "Report_Bins_shc" -> 
-        //    dto.cereal |> ShcReportBinsCfgDto.fromJson 
-        //               |> Result.map(shcReportCfg.Bins >> shcRunCfg.Report)
-        //               |> Result.map(runCfg.Shc)
 
         | "Run_ga" ->
             dto.cereal |> GaInitRunCfgDto.fromJson 
@@ -93,14 +59,6 @@ module RunCfgDto =
             dto.cereal |> GaContinueRunCfgDto.fromJson 
                        |> Result.map(gaRunCfg.Continue)                       
                        |> Result.map(runCfg.Ga)
-        //| "Report_All_ga" -> 
-        //    dto.cereal |> GaReportAllCfgDto.fromJson 
-        //               |> Result.map(gaReportCfg.Evals >> gaRunCfg.Report)
-        //               |> Result.map(runCfg.Ga)
-        //| "Report_Bins_ga" -> 
-        //    dto.cereal |> GaReportBinsCfgDto.fromJson 
-        //               |> Result.map(gaReportCfg.Bins >> gaRunCfg.Report)
-        //               |> Result.map(runCfg.Ga)
 
         | _ -> $"{dto.duType} not handled in ShcCfgDto.fromDto" |> Error
 

@@ -60,7 +60,7 @@ module SorterSetRndCfg =
         result {
             let ssRet =
                 match rdsg.switchGenMode with
-                | switchGenMode.Switch -> 
+                | switchGenMode.switch -> 
                     SorterSet.createRandomSwitches
                         rdsg.sorterSetId
                         rdsg.sorterCount
@@ -69,7 +69,7 @@ module SorterSetRndCfg =
                         rdsg.switchCount
                         rndGenF
                         |> Ok
-                | switchGenMode.Stage -> 
+                | switchGenMode.stage -> 
                     SorterSet.createRandomStages2
                         rdsg.sorterSetId
                         rdsg.sorterCount
@@ -79,7 +79,7 @@ module SorterSetRndCfg =
                         rndGenF
                         |> Ok
 
-                | switchGenMode.StageSymmetric -> 
+                | switchGenMode.stageSymmetric -> 
                     SorterSet.createRandomSymmetric
                         rdsg.sorterSetId
                         rdsg.sorterCount

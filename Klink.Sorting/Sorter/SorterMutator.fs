@@ -136,12 +136,13 @@ module SorterUniformMutator =
             (mutRate: mutationRate) 
         =
         match switchGenMode with
-        | Switch ->
+        | switchGenMode.switch ->
             _create switchGenMode mutRate switchCtPrefix switchCountFinal (_makeMutant (_switchMutator mutRate) switchCtPrefix switchCountFinal)
-        | Stage ->
+        | switchGenMode.stage ->
             _create switchGenMode mutRate switchCtPrefix switchCountFinal (_makeMutant (_stageMutator mutRate) switchCtPrefix switchCountFinal)
-        | StageSymmetric ->
+        | switchGenMode.stageSymmetric ->
             _create switchGenMode mutRate switchCtPrefix switchCountFinal (_makeMutant (_stageRflMutator mutRate) switchCtPrefix switchCountFinal)
+        | _ -> failwith $"{switchGenMode} not matched in SorterUniformMutator.create"
 
 
 type sorterMutator = 

@@ -3,9 +3,9 @@
 open System
 
 type switchGenMode =
-    | Switch = 0
-    | Stage = 1
-    | StageSymmetric = 2
+    | switch = 0
+    | stage = 1
+    | stageSymmetric = 2
 
 
 type sorter =

@@ -50,7 +50,7 @@ type SorterSetFixture() =
 
       let sorterMutator = 
         SorterUniformMutator.create 
-             None None switchGenMode.Stage mutationRate
+             None None switchGenMode.stage mutationRate
         |> sorterMutator.Uniform
 
 

@@ -138,13 +138,3 @@ module GaRunCfg =
                         crc.runId 
                         crc.newGenerations
                         workspaceFileStoreF
-            //| Report rrc -> ()
-            //    //match rrc with
-            //    //| Evals rac ->
-            //    //    GaReportEvalsCfg.reportAllEvals 
-            //    //            projectFolderPath 
-            //    //            rac
-            //    //| Bins rbc ->
-            //    //    GaReportBinsCfgs.reportAllBins
-            //    //            projectFolderPath 
-            //    //            rbc

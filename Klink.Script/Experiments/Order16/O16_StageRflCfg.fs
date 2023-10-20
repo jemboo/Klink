@@ -14,7 +14,7 @@ module O16_StageRflCfg =
             tupSorterSetSizes = [|ssz7_8|];
             sorterSetPruneMethods = [|sspm1; sspm2|];
             stageWeights = [|sw0; sw1|];
-            switchGenModes = [|switchGenMode.StageSymmetric|];
+            switchGenModes = [|switchGenMode.stageSymmetric|];
         } |> runCfgPlex.Shc
 
     let baseGenerationCount = 500 |> Generation.create

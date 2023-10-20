@@ -48,8 +48,6 @@ module GaId =
     let create dex = GaId dex
 
 
-//type reporter<'R> = 'R -> unit
-
 type ga<'T> = 
     private
         {

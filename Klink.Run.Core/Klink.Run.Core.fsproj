@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="SortingCfg\SortableSetCfg.fs" />
+    <Compile Include="SortingCfg\SorterSetRndCfg.fs" />
     <Compile Include="CommonParams.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

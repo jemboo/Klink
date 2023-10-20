@@ -24,7 +24,7 @@ type ShcCfgFixture () =
                 tupSorterSetSizes = [|ssz4_5|];
                 sorterSetPruneMethods = [|sspm1; sspm2|];
                 stageWeights = [|sw0; sw1|];
-                switchGenModes = [|switchGenMode.StageSymmetric|];
+                switchGenModes = [|switchGenMode.stageSymmetric|];
             } |> runCfgPlex.Shc
 
         //let seqSplicer = None

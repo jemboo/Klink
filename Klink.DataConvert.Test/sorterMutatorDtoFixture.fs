@@ -11,7 +11,7 @@ type sorterMutatorDtoFixture() =
             SorterUniformMutator.create
                 None
                 (1 |> SwitchCount.create |> Some)
-                switchGenMode.StageSymmetric
+                switchGenMode.stageSymmetric
                 (0.15 |> MutationRate.create)
            |> sorterMutator.Uniform
 

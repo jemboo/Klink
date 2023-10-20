@@ -24,7 +24,6 @@
     <ProjectReference Include="..\Klink.Report\Klink.Report.fsproj" />
     <ProjectReference Include="..\Klink.RunCfgDataConvert\Klink.RunCfgDataConvert.fsproj" />
     <ProjectReference Include="..\Klink.RunCfg\Klink.RunCfg.fsproj" />
-    <ProjectReference Include="..\Klink.Run\Klink.Run.fsproj" />
   </ItemGroup>
 
 </Project>

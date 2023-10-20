@@ -157,37 +157,3 @@ module ShcCfgPlex =
         |> Seq.map(_toCrc newGenerations)
 
 
-
-
-    //let toReportEvalsCfg
-    //        (genMin:generation)
-    //        (genMax:generation)
-    //        (evalCompName:wsComponentName)
-    //        (reportFilter:generationFilter)
-    //        (reportFileName:string)
-    //        (plex:shcCfgPlex)
-    //    =
-    //    {
-    //        shcReportEvalsCfg.reportFileName = reportFileName
-    //        runIds = toRunIds plex |> Seq.toArray
-    //        genMin = genMin
-    //        genMax = genMax
-    //        evalCompName = evalCompName
-    //        reportFilter = reportFilter
-    //    }
-
-
-
-
-    //let toReportBinsCfg
-    //        (genMin:generation)
-    //        (genMax:generation)
-    //        (reportFileName:string)
-    //        (plex:shcCfgPlex)
-    //    =
-    //    {
-    //        shcReportBinsCfg.reportFileName = reportFileName
-    //        runIds = toRunIds plex |> Seq.toArray
-    //        genMin = genMin
-    //        genMax = genMax
-    //    }

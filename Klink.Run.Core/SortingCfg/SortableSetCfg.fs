@@ -90,13 +90,13 @@ module SortableSetCertainCfg =
                 rolloutFormat.RfBs64
                 o
 
-        | All_Bits_Reduced (o, sa) -> 
+        | All_Bits_Reduced (o, switchArray) -> 
             result {
                 let sorterId = Guid.Empty |> SorterId.create
                 let sorter = Sorter.fromSwitches 
                                 sorterId 
                                 o
-                                sa
+                                switchArray
                 let! refinedSortableSet =
                         switchReduceBits o sorter
 
@@ -116,10 +116,11 @@ module SortableSetCertainCfg =
         =
         if (stagesReduced |> StageCount.value) > 1 then
             failwith "StageReduction gt 1"
-        let sws = TwoCycle.evenMode order 
+        let switchArray = 
+            TwoCycle.evenMode order 
                     |> Switch.fromTwoCycle
                     |> Seq.toArray
-        sortableSetCertainCfg.All_Bits_Reduced (order, sws)
+        sortableSetCertainCfg.All_Bits_Reduced (order, switchArray)
 
 
 
