@@ -6,10 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="ShcCfg\ShcWsParamKeys.fs" />
     <Compile Include="ShcCfg\ShcRunCfg.fs" />
     <Compile Include="ShcCfg\ShcCfgPlex.fs" />
-    <Compile Include="GaCfg\GaWsParamKeys.fs" />
     <Compile Include="GaCfg\GaRunCfg.fs" />
     <Compile Include="GaCfg\GaCfgPlex.fs" />
     <Compile Include="AllCfg\RunCfg.fs" />
