@@ -53,11 +53,12 @@ module CommonParams =
     let nf0 = 0.001 |> NoiseFraction.create
     let nf1 = 0.025 |> NoiseFraction.create
     let nf2 = 0.050 |> NoiseFraction.create
-    let nf3 = 0.100 |> NoiseFraction.create
-    let nf4 = 0.250 |> NoiseFraction.create
-    let nf5 = 0.500 |> NoiseFraction.create
-    let nf6 = 1.000 |> NoiseFraction.create
-    let nf7 = 2.000 |> NoiseFraction.create
+    let nf3 = 0.075 |> NoiseFraction.create
+    let nf4 = 0.100 |> NoiseFraction.create
+    let nf5 = 0.250 |> NoiseFraction.create
+    let nf6 = 0.500 |> NoiseFraction.create
+    let nf7 = 1.000 |> NoiseFraction.create
+    let nf8 = 2.000 |> NoiseFraction.create
 
         
     let sw0 = 0.05 |> StageWeight.create

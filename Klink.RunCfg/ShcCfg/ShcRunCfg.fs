@@ -5,6 +5,8 @@ open System.IO
 
 type shcInitRunCfg =
     {
+        runId:runId
+        sortableSetCfgType:sortableSetCfgType
         mutationRate:mutationRate
         newGenerations:generation
         noiseFraction:noiseFraction
@@ -26,6 +28,7 @@ module ShcInitRunCfg =
 
 
     let getRunId2 
+            (sortableSetCfgType:sortableSetCfgType)
             (mutationRate:mutationRate) 
             (noiseFraction:noiseFraction) 
             (order:order) 
@@ -39,6 +42,7 @@ module ShcInitRunCfg =
             (switchGenMode:switchGenMode)
         =
         [
+            sortableSetCfgType :> obj
             mutationRate |> MutationRate.value :> obj;
             noiseFraction |> NoiseFraction.value :> obj;
             order |> Order.value :> obj;
@@ -56,6 +60,7 @@ module ShcInitRunCfg =
 
     let getRunId (cfg:shcInitRunCfg) =
         getRunId2 
+            cfg.sortableSetCfgType
             cfg.mutationRate
             cfg.noiseFraction
             cfg.order
@@ -72,36 +77,37 @@ module ShcInitRunCfg =
 
     let toWorkspaceParams 
             (useParallel:useParallel)
-            (gaCfg:shcInitRunCfg)
+            (shcInitRunCfg:shcInitRunCfg)
         =
         let _nextRngGen rng =
             rng
             |> Rando.fromRngGen
             |> Rando.toRngGen
 
-        let rngGenCreate = (_nextRngGen gaCfg.rngGen)
+        let rngGenCreate = (_nextRngGen shcInitRunCfg.rngGen)
         let rngGenMutate = (_nextRngGen rngGenCreate)
         let rngGenPrune = (_nextRngGen rngGenMutate)
 
         WorkspaceParams.make Map.empty
-        |> WorkspaceParamsAttrs.setRunId ShcWsParamKeys.runId (gaCfg |> getRunId)
+        |> WorkspaceParamsAttrs.setRunId ShcWsParamKeys.runId (shcInitRunCfg |> getRunId)
+        |> WorkspaceParamsAttrs.setSortableSetCfgType ShcWsParamKeys.sortableSetCfgType (shcInitRunCfg.sortableSetCfgType)
         |> WorkspaceParamsAttrs.setGeneration ShcWsParamKeys.generation_current (0 |> Generation.create)
-        |> WorkspaceParamsAttrs.setGeneration ShcWsParamKeys.generation_max (gaCfg.newGenerations)
+        |> WorkspaceParamsAttrs.setGeneration ShcWsParamKeys.generation_max (shcInitRunCfg.newGenerations)
         |> WorkspaceParamsAttrs.setRngGen ShcWsParamKeys.rngGenCreate rngGenCreate
         |> WorkspaceParamsAttrs.setRngGen ShcWsParamKeys.rngGenMutate rngGenMutate
         |> WorkspaceParamsAttrs.setRngGen ShcWsParamKeys.rngGenPrune rngGenPrune
-        |> WorkspaceParamsAttrs.setMutationRate ShcWsParamKeys.mutationRate gaCfg.mutationRate
-        |> WorkspaceParamsAttrs.setNoiseFraction ShcWsParamKeys.noiseFraction (Some gaCfg.noiseFraction)
-        |> WorkspaceParamsAttrs.setOrder ShcWsParamKeys.order gaCfg.order
-        |> WorkspaceParamsAttrs.setSorterCount ShcWsParamKeys.sorterCount gaCfg.sorterCount
-        |> WorkspaceParamsAttrs.setSorterCount ShcWsParamKeys.sorterCountMutated gaCfg.sorterCountMutated
-        |> WorkspaceParamsAttrs.setSorterEvalMode ShcWsParamKeys.sorterEvalMode gaCfg.sorterEvalMode
-        |> WorkspaceParamsAttrs.setStageCount ShcWsParamKeys.stagesSkipped gaCfg.stagesSkipped
-        |> WorkspaceParamsAttrs.setStageWeight ShcWsParamKeys.stageWeight gaCfg.stageWeight
-        |> WorkspaceParamsAttrs.setSwitchCount ShcWsParamKeys.sorterLength gaCfg.switchCount
-        |> WorkspaceParamsAttrs.setSwitchGenMode ShcWsParamKeys.switchGenMode gaCfg.switchGenMode
-        |> WorkspaceParamsAttrs.setSorterSetPruneMethod ShcWsParamKeys.sorterSetPruneMethod gaCfg.sorterSetPruneMethod
-        |> WorkspaceParamsAttrs.setGenerationFilter ShcWsParamKeys.generation_filter (gaCfg.reportFilter |> Option.get )
+        |> WorkspaceParamsAttrs.setMutationRate ShcWsParamKeys.mutationRate shcInitRunCfg.mutationRate
+        |> WorkspaceParamsAttrs.setNoiseFraction ShcWsParamKeys.noiseFraction (Some shcInitRunCfg.noiseFraction)
+        |> WorkspaceParamsAttrs.setOrder ShcWsParamKeys.order shcInitRunCfg.order
+        |> WorkspaceParamsAttrs.setSorterCount ShcWsParamKeys.sorterCount shcInitRunCfg.sorterCount
+        |> WorkspaceParamsAttrs.setSorterCount ShcWsParamKeys.sorterCountMutated shcInitRunCfg.sorterCountMutated
+        |> WorkspaceParamsAttrs.setSorterEvalMode ShcWsParamKeys.sorterEvalMode shcInitRunCfg.sorterEvalMode
+        |> WorkspaceParamsAttrs.setStageCount ShcWsParamKeys.stagesSkipped shcInitRunCfg.stagesSkipped
+        |> WorkspaceParamsAttrs.setStageWeight ShcWsParamKeys.stageWeight shcInitRunCfg.stageWeight
+        |> WorkspaceParamsAttrs.setSwitchCount ShcWsParamKeys.sorterLength shcInitRunCfg.switchCount
+        |> WorkspaceParamsAttrs.setSwitchGenMode ShcWsParamKeys.switchGenMode shcInitRunCfg.switchGenMode
+        |> WorkspaceParamsAttrs.setSorterSetPruneMethod ShcWsParamKeys.sorterSetPruneMethod shcInitRunCfg.sorterSetPruneMethod
+        |> WorkspaceParamsAttrs.setGenerationFilter ShcWsParamKeys.generation_filter (shcInitRunCfg.reportFilter |> Option.get )
         |> WorkspaceParamsAttrs.setUseParallel ShcWsParamKeys.useParallel useParallel
 
 

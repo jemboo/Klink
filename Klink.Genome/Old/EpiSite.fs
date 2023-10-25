@@ -102,14 +102,14 @@ module Activated =
         avs |> Seq.filter(fun av -> actFun (av |> getParam))
 
     let mutatePayload av mutator rate (randy:IRando) =
-        if ( randy.NextFloat < (rate |> MutationRate.value)) then
+        if ( (randy.NextFloat ()) < (rate |> MutationRate.value)) then
            { payload = mutator av.payload; activationParam = av.activationParam }
            else
            { payload = av.payload; activationParam = av.activationParam }
 
 
     let mutateParameter av mutator rate (randy:IRando) =
-        if ( randy.NextFloat < (rate |> MutationRate.value)) then
+        if ( (randy.NextFloat ()) < (rate |> MutationRate.value)) then
            { payload = av.payload; activationParam = mutator av.activationParam }
            else
            { payload = av.payload; activationParam = av.activationParam }
@@ -136,7 +136,7 @@ module PermutationChromo
         (pc:permutationChromo)
         =
         let _mutate rndy p =
-            if ( randy.NextFloat < (rate |> MutationRate.value)) then
+            if ( (randy.NextFloat ()) < (rate |> MutationRate.value)) then
                 p |> Permutation.mutate rndy
                 else p
         {

@@ -241,6 +241,20 @@ module SorterEval =
                     | sorterPerf.SortedSetSize _ -> false
 
 
+    let failedForSure
+        (sorterEvl:sorterEval)
+        : bool =
+        if (sorterEvl.errorMessage |> Option.isSome)
+            then true
+        else
+            match sorterEvl.sorterPrf with  
+            | None -> false
+            | Some perf -> 
+                match perf with
+                | IsSuccessful sOrf -> not sOrf
+                | sorterPerf.SortedSetSize _ -> false
+
+
     let evalSorterWithSortableSet 
             (sorterPerfEvalMod: sorterEvalMode) 
             (sortableSt: sortableSet) 

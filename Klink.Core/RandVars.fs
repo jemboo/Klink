@@ -9,13 +9,13 @@ module RandVars =
         Seq.initInfinite(fun _ -> RndGuid.nextGuid rndGud)
 
     let rndBitsUint64 (order: order) (rnd: IRando) =
-        rnd.NextULong &&& (order |> Order.bitMaskUint64)
+        (rnd.NextULong ()) &&& (order |> Order.bitMaskUint64)
 
     // For making a 2d Gaussian distribution
     let polarBoxMullerDist meanX stdDevX meanY stdDevY (rnd: IRando) =
         let rec getRands () =
-            let u = (2.0 * rnd.NextFloat) - 1.0
-            let v = (2.0 * rnd.NextFloat) - 1.0
+            let u = (2.0 * (rnd.NextFloat())) - 1.0
+            let v = (2.0 * (rnd.NextFloat())) - 1.0
             let w = u * u + v * v
             if w >= 1.0 then getRands () else u, v, w
 
@@ -37,16 +37,16 @@ module RandVars =
 
 
     let randOneOrZero (pctOnes: float) (rnd: IRando) (len: int) =
-        Seq.init len (fun _ -> if (rnd.NextFloat > pctOnes) then 0 else 1)
+        Seq.init len (fun _ -> if ((rnd.NextFloat ()) > pctOnes) then 0 else 1)
 
 
     let randBits (pctTrue: float) (rnd: IRando) (len: int) =
-        Seq.init len (fun _ -> if (rnd.NextFloat > pctTrue) then false else true)
+        Seq.init len (fun _ -> if ((rnd.NextFloat ()) > pctTrue) then false else true)
 
 
     let randSymbols (symbolCount: symbolSetSize) (rnd: IRando) (len: int) =
         let sc = symbolCount |> SymbolSetSize.value |> int
-        Seq.init len (fun _ -> (rnd.NextPositiveInt % sc))
+        Seq.init len (fun _ -> (rnd.NextPositiveInt ()) % sc)
 
 
     let drawTwoWithoutRep 
@@ -54,11 +54,11 @@ module RandVars =
         (rnd: IRando) 
         =
         let sc = symbolCount |> SymbolSetSize.value |> int
-        let aBit = rnd.NextPositiveInt % sc
-        let mutable bBit = rnd.NextPositiveInt % sc
+        let aBit = (rnd.NextPositiveInt ()) % sc
+        let mutable bBit = (rnd.NextPositiveInt ()) % sc
 
         while aBit = bBit do
-            bBit <- rnd.NextPositiveInt % sc
+            bBit <- (rnd.NextPositiveInt ()) % sc
 
         if aBit < bBit then aBit, bBit else bBit, aBit
 
@@ -67,7 +67,7 @@ module RandVars =
         let bins = items |> Array.map (weightFunction) |> CollectionProps.asCumulative 0.0
 
         let _nextBin () =
-            let nextSamp = rnd.NextFloat * bins.[bins.Length - 1]
+            let nextSamp = (rnd.NextFloat ()) * bins.[bins.Length - 1]
             let nextIndex = bins |> Array.findIndexBack (fun av -> av < nextSamp)
             nextIndex
 
@@ -80,7 +80,7 @@ module RandVars =
     // returns a sequence of draws from initialList without replacement.
     // Does not change initialList
     let fisherYatesShuffle (rnd: IRando) (initialList: array<'a>) =
-        let rndmx max = rnd.NextUInt % max
+        let rndmx max = (rnd.NextUInt ()) % max
         let availableFlags = Array.init initialList.Length (fun i -> (i, true))
 
         let nextItem nLeft =
@@ -106,7 +106,7 @@ module RandVars =
         let len = initialList.Length
         let order = len |> Order.createNr
 
-        let rndmx max = rnd.NextUInt % max
+        let rndmx max = (rnd.NextUInt ()) % max
         let availableFlags = Array.init initialList.Length (fun i -> (i, true))
 
         let nextItem nLeft =
@@ -177,7 +177,7 @@ module RandVars =
 
 
     let binomial (rnd: IRando) (freq: float) (numDraws: int) =
-            let _draw (randy: IRando) = if randy.NextFloat < freq then 1 else 0
+            let _draw (randy: IRando) = if (randy.NextFloat ()) < freq then 1 else 0
             let mutable i = 0
             let mutable successCount = 0
             while (i < numDraws) do
@@ -199,7 +199,7 @@ module RndChoice =
                (rndChoic:rndChoice) 
                (a:'a) 
                (b:'a) =
-        if (value rndChoic) > randy.NextFloat then a else b
+        if (value rndChoic) > (randy.NextFloat ()) then a else b
 
 
     let delta (rndChoic:rndChoice) (amt:float) =
@@ -212,12 +212,12 @@ module RndChoice =
     let mutate (randy:IRando) 
                (rndChoic:rndChoice) 
                (amt:float) =
-        if (0.5) > randy.NextFloat then (delta rndChoic amt) else 
+        if (0.5) > (randy.NextFloat ()) then (delta rndChoic amt) else 
             (delta rndChoic ( -1.0 * amt))
 
 
     let randomSeq (randy:IRando) =
-        Seq.initInfinite (fun _ -> create randy.NextFloat)
+        Seq.initInfinite (fun _ -> create (randy.NextFloat ()))
 
 
    

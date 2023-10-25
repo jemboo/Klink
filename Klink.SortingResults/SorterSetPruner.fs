@@ -162,6 +162,7 @@ module SorterSetPruner =
             let sorterEvalsWithFitness = 
                 sorterEvalsToPrune 
                 |> Array.filter(SorterEval.getSorterSpeed >> Option.isSome)
+                |> Array.filter(SorterEval.failedForSure >> not)
                 |> Array.map(fun sEv -> 
                      ( sEv,
                        sEv |> SorterEval.getSorterSpeed |> Option.get |> SorterFitness.fromSpeed stageWgt

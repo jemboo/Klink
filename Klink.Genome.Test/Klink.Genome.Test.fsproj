@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="GaBinFixture.fs" />
     <Compile Include="GaFixture.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

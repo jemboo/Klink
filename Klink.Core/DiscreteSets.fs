@@ -67,7 +67,7 @@ module BitSet =
     let createRandom (order: order) (rando: IRando) =
         let perm =
             Array.init (Order.value order) (fun _ ->
-                let q = rando.NextFloat
+                let q = rando.NextFloat ()
                 if (q > 0.5) then true else false)
 
         { bitSet.values = perm }

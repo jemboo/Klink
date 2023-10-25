@@ -107,7 +107,7 @@ module Switch =
         let maxDex = maxSwitchIndexForOrder order
         seq {
             while true do
-                let p = (int (rnd.NextUInt % maxDex))
+                let p = (int ((rnd.NextUInt ()) % maxDex))
                 let sw = fromIndex p
                 if (sw.low <> sw.hi) then
                     yield sw
@@ -118,7 +118,7 @@ module Switch =
         let maxDex = maxSwitchIndexForOrder order
         seq {
             while true do
-                let p = (int (rnd.NextUInt % maxDex))
+                let p = (int ((rnd.NextUInt ()) % maxDex))
                 yield fromIndex p
         }
 
@@ -137,9 +137,9 @@ module Switch =
         let mDex = uint32 ((Order.value order) * (Order.value order + 1) / 2)
 
         let mutateSwitch (switch: switch) =
-            match rnd.NextFloat with
+            match (rnd.NextFloat ()) with
             | k when k < (MutationRate.value mutationRate)
-                        -> fromIndex (int (rnd.NextUInt % mDex))
+                        -> fromIndex (int ((rnd.NextUInt ()) % mDex))
             | _ -> switch
 
         switches |> Seq.map (fun sw -> mutateSwitch sw)

@@ -11,6 +11,7 @@ module GaWsParamKeys =
     let mutationRate = "mutationRate" |> WorkspaceParamsKey.create
     let noiseFraction = "noiseFraction" |> WorkspaceParamsKey.create
     let order = "order" |> WorkspaceParamsKey.create
+    let sortableSetCfgType = "sortableSetCfgType" |> WorkspaceParamsKey.create
     let sorterCount = "sorterCount" |> WorkspaceParamsKey.create
     let sorterCountMutated = "sorterCountMutated" |> WorkspaceParamsKey.create
     let sorterEvalMode = "sorterEvalMode" |> WorkspaceParamsKey.create

@@ -33,10 +33,11 @@ module RngGen =
 type IRando =
     abstract member Count: int
     abstract member Seed: randomSeed
-    abstract member NextUInt: uint32
-    abstract member NextPositiveInt: int32
-    abstract member NextULong: uint64
-    abstract member NextFloat: float
+    abstract member NextInt: int -> int
+    abstract member NextUInt: unit -> uint32
+    abstract member NextPositiveInt: unit -> int32
+    abstract member NextULong: unit -> uint64
+    abstract member NextFloat: unit -> float
     abstract member rngType: rngType
 
 
@@ -49,19 +50,25 @@ type randomNet(seed: randomSeed) =
         member this.Seed = seed
         member this.Count = _count
 
-        member this.NextUInt =
+        member this.NextUInt () =
             _count <- _count + 2
             let vv = (uint32 (rnd.Next()))
             vv + (uint32 (rnd.Next()))
 
-        member this.NextPositiveInt = rnd.Next()
+        member this.NextPositiveInt () = 
+            _count <- _count + 1
+            rnd.Next()
 
-        member this.NextULong =
+        member this.NextInt (modulus:int) =
             let r = this :> IRando
-            let vv = (uint64 r.NextUInt)
-            (vv <<< 32) + (uint64 r.NextUInt)
+            (r.NextPositiveInt()) % modulus
 
-        member this.NextFloat =
+        member this.NextULong () =
+            let r = this :> IRando
+            let vv = (uint64 (r.NextUInt()))
+            (vv <<< 32) + (uint64 (r.NextUInt()))
+
+        member this.NextFloat () =
             _count <- _count + 1
             rnd.NextDouble()
 
@@ -93,10 +100,12 @@ type randomLcg(seed: randomSeed) =
     interface IRando with
         member this.Seed = this.Seed
         member this.Count = _count
-        member this.NextUInt = this.NextUInt
-        member this.NextPositiveInt = int (this.NextUInt >>> 1)
-        member this.NextULong = this.NextULong
-        member this.NextFloat = this.NextFloat
+        member this.NextUInt () = this.NextUInt
+        member this.NextPositiveInt () = int (this.NextUInt >>> 1)
+        member this.NextInt (modulus:int) =
+            ( int (this.NextUInt >>> 1)) % modulus
+        member this.NextULong () = this.NextULong
+        member this.NextFloat () = this.NextFloat
         member this.rngType = rngType.Lcg
 
 
@@ -111,10 +120,10 @@ module Rando =
     let fromRngGen (rg: rngGen) = create rg.rngType rg.seed
 
     let nextRando (randy: IRando) =
-        create randy.rngType (RandomSeed.create randy.NextPositiveInt)
+        create randy.rngType (RandomSeed.create (randy.NextPositiveInt ()))
 
     let toRngGen (randy: IRando) =
-        RngGen.create randy.rngType (RandomSeed.create randy.NextPositiveInt)
+        RngGen.create randy.rngType (RandomSeed.create (randy.NextPositiveInt ()))
 
     let nextRngGen (rg: rngGen) =
         rg |> fromRngGen |> toRngGen
@@ -166,8 +175,8 @@ module RndGuid =
 
     let nextGuid (rndGud:rndGuid) =
         GuidUtils.fromUint32s 
-            rndGud.r1.NextUInt rndGud.r2.NextUInt
-            rndGud.r3.NextUInt rndGud.r4.NextUInt
+            (rndGud.r1.NextUInt ()) (rndGud.r2.NextUInt ())
+            (rndGud.r3.NextUInt ()) (rndGud.r4.NextUInt ())
 
 
 

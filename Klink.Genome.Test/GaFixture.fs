@@ -15,7 +15,7 @@ type TestClass () =
         let mutable errorRept = ""
 
         let gaCounter = 
-                Ga.create
+                GaOld.create
                     (fun c -> c |> Counter.getId)
                     ctr
                     (Counter.update maxCounterValue)
@@ -23,7 +23,7 @@ type TestClass () =
                     (Counter.archive)
 
 
-        let res = Ga.update gaCounter (fun m -> errorRept <- m)
+        let res = GaOld.update gaCounter (fun m -> errorRept <- m)
 
         Assert.IsTrue(true);
 

@@ -1,47 +1,54 @@
 ﻿namespace global
 open System
 
-module O16_StageRflCfg =
+module O128_StageRflCfg =
 
     open CommonParams
-
-    //let runCfgPlex =
-    //    {
-    //        shcCfgPlex.orders = [| 16 |> Order.createNr |]
-    //        sortableSetCfgs =  [| (sortableSetCfgType.All_Bits_Reduced, 1 |> StageCount.create) |]
-    //        mutationRates = [|mr0;mr2;mr4|];
-    //        noiseFractions = [|nf0;nf2;nf4;nf6|];
-    //        rngGens = rndGens 0 4 ;
-    //        tupSorterSetSizes = [|ssz7_8|];
-    //        sorterSetPruneMethods = [|sspm1; sspm2|];
-    //        stageWeights = [|sw0; sw1|];
-    //        switchGenModes = [|switchGenMode.stageSymmetric|];
-    //    } |> runCfgPlex.Shc
-
 
     let runCfgPlex =
         {
             shcCfgPlex.orders = [| 128 |> Order.createNr |]
             sortableSetCfgs =  
-                [| 
-                    (   sortableSetCfgType.MergeWithInts, 
-                        0 |> StageCount.create, 
-                        sorterEvalMode.DontCheckSuccess
-                    )
-                |]
-            mutationRates = [|mr0;mr1;mr2|];
-            noiseFractions = [|nf0;nf1;nf2;|];
-            rngGens = rndGens 0 2 ;
+                    [| 
+                        (
+                            sortableSetCfgType.MergeWithInts, 
+                            0 |> StageCount.create,
+                            sorterEvalMode.CheckSuccess
+                        )
+                    |]
+            mutationRates = [|mr1;|];
+            noiseFractions = [|nf0;nf1;nf2;nf3|];
+            rngGens = rndGens 0 4 ;
             tupSorterSetSizes = [|ssz5_6|];
             sorterSetPruneMethods = [|sspm1;|];
             stageWeights = [|sw0; sw1|];
             switchGenModes = [|switchGenMode.stageSymmetric|];
         } |> runCfgPlex.Shc
 
+    //let runCfgPlex =
+    //    {
+    //        shcCfgPlex.orders = [| 128 |> Order.createNr |]
+    //        sortableSetCfgs =  
+    //                [| 
+    //                    (
+    //                        sortableSetCfgType.MergeWithInts, 
+    //                        0 |> StageCount.create,
+    //                        sorterEvalMode.CheckSuccess
+    //                    )
+    //                |]
+    //        mutationRates = [|mr1;|];
+    //        noiseFractions = [|nf3;|];
+    //        rngGens = rndGens 0 2 ;
+    //        tupSorterSetSizes = [|ssz5_6|];
+    //        sorterSetPruneMethods = [|sspm1;|];
+    //        stageWeights = [|sw0; sw1|];
+    //        switchGenModes = [|switchGenMode.stageSymmetric|];
+    //    } |> runCfgPlex.Shc
+
 
     let baseGenerationCount = 25000 |> Generation.create
     let baseReportFilter = CommonParams.modulusFilter 25
-    let initScriptName = "initScript"
+    let initScriptName = "patchScript"
 
     let baseDir = $"c:\Klink"
     let projectFolder  = $"o128\StageRfl"

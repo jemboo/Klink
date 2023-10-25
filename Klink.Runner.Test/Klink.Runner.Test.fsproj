@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Compile Include="KlinkScriptFixture.fs" />
-    <Compile Include="ShcCfgFixture.fs" />
     <Compile Include="WorkspaceFixture.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

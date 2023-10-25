@@ -22,10 +22,13 @@ module CauseSets =
                 let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode ShcWsParamKeys.sorterEvalMode
                 let! useParallel = wsParams |> WorkspaceParamsAttrs.getUseParallel ShcWsParamKeys.useParallel
                 let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount ShcWsParamKeys.stagesSkipped
+                let! sortableSetCfgType = wsParams |> WorkspaceParamsAttrs.getSortableSetCfgType ShcWsParamKeys.sortableSetCfgType
 
                 let sortableSetCfg = 
-                    SortableSetCertainCfg.makeAllBitsReducedOneStage stagesSkipped order
-                           |> sortableSetCfg.Certain
+                        SortableSetCfg.make
+                            sortableSetCfgType
+                            order
+                            None
 
                 let wsParamsWithSortableSet = 
                     wsParams |> WorkspaceParamsAttrs.setSortableSetId ShcWsParamKeys.sortableSetId
@@ -87,27 +90,6 @@ module CauseSets =
                             ],
                      wsParamsWithSortableSet )
             }
-
-
-    //let addResetSpeedBinsCauses
-    //        (wnSorterSpeedBinSet:wsComponentName)
-    //        (wsParams:workspaceParams)
-    //        (history:history)
-    //        =
-    //        result {
-
-    //            let causeAddSorterSpeedBinSet =
-    //                new causeAddSorterSpeedBinSet(wsParams, wnSorterSpeedBinSet)
-
-    //            return
-    //               history 
-    //                    |> History.addCauses 
-    //                        [
-    //                            causeAddSorterSpeedBinSet;
-    //                        ]
-    //        }
-
-
 
 
     let addMutantsAndPruneCauses

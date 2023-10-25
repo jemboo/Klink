@@ -57,7 +57,7 @@ module SwitchRfl =
 
     //makes reflective pairs to fill up order slots.
     let rndReflectivePairs (order: order) (rnd: IRando) =
-        let _rndmx max = (int rnd.NextPositiveInt) % max
+        let _rndmx max = (int (rnd.NextPositiveInt ())) % max
         let _reflectD (dex: int) = dex |> Order.reflect order
 
         let _flagedArray = Array.init (Order.value order) (fun i -> (i, true))

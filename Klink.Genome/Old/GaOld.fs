@@ -48,7 +48,7 @@ module GaId =
     let create dex = GaId dex
 
 
-type ga<'T> = 
+type gaOld<'T> = 
     private
         {
             lastSavedAncestorId:gaId
@@ -59,7 +59,7 @@ type ga<'T> =
         }
 
 
-module Ga =
+module GaOld =
     let create<'T>
             (ider:'T->gaId)
             (current: 'T)
@@ -75,20 +75,20 @@ module Ga =
             archiver = archiver
         }
 
-    let getLastSavedAncestorId (ga:ga<'T> ) =
+    let getLastSavedAncestorId (ga:gaOld<'T> ) =
         ga.lastSavedAncestorId
 
-    let getCurrent (ga:ga<'T> ) =
+    let getCurrent (ga:gaOld<'T> ) =
         ga.current
 
-    let getUpdater (ga:ga<'T> ) =
+    let getUpdater (ga:gaOld<'T> ) =
         ga.updater
 
-    let getTerminator (ga:ga<'T> ) =
+    let getTerminator (ga:gaOld<'T> ) =
         ga.terminator
 
     let update
-        (ga:ga<'T> )
+        (ga:gaOld<'T> )
         (errorRep: string -> unit)
         =
         let mutable keepGoing = true

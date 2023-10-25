@@ -2,9 +2,31 @@
 
 open System
 
+
+type sortableSetCfgType =
+    | All_Bits
+    | All_Bits_Reduced
+    | MergeWithBits
+    | MergeWithInts
+    | Orbit
+
+
+module SortableSetCfgType =
+    let fromString (cereal:string) =
+        match cereal with
+        | "All_Bits" -> sortableSetCfgType.All_Bits
+        | "All_Bits_Reduced" -> sortableSetCfgType.All_Bits_Reduced
+        | "MergeWithBits" -> sortableSetCfgType.MergeWithBits
+        | "MergeWithInts" -> sortableSetCfgType.MergeWithInts
+        | "Orbit" -> sortableSetCfgType.Orbit
+        | _ -> failwith $"{cereal}: not matched in SortableSetCfgType.fromString"
+
+
 type sortableSetCertainCfg =
     | All_Bits of order
     | All_Bits_Reduced of order*array<switch>
+    | MergeWithBits of order
+    | MergeWithInts of order
     | Orbit of permutation
 
 
@@ -16,21 +38,17 @@ module SortableSetCertainCfg =
         match sscc with
         | All_Bits o -> o
         | All_Bits_Reduced (o, _) -> o
+        | MergeWithBits o -> o
+        | MergeWithInts o -> o
         | Orbit p -> p |> Permutation.getOrder
 
 
     let getId (cfg:sortableSetCertainCfg) 
         = 
-        [| "sortableSetCertainCfg" :> obj;
-            cfg :> obj|] |> GuidUtils.guidFromObjs
+        [| "sortableSetCertainCfg" :> obj; cfg :> obj|] 
+        |> GuidUtils.guidFromObjs
         |> SortableSetId.create
     
-
-    let getFileName
-            (sscc:sortableSetCertainCfg) 
-        =
-        sscc |> getId |> SortableSetId.value |> string
-
 
     let getConfigName 
             (sscc:sortableSetCertainCfg) 
@@ -40,16 +58,29 @@ module SortableSetCertainCfg =
                 sprintf "%s_%d"
                     "All"
                     (sscc |> getOrder |> Order.value)
+
             | All_Bits_Reduced (o, a) ->
                 sprintf "%s_%d_%d"
                     "Reduced"
                     (sscc |> getOrder |> Order.value)
+
                     (a.Length)
+            | MergeWithBits o -> 
+                sprintf "%s_%d"
+                    "MergeWithBits"
+                    (sscc |> getOrder |> Order.value)
+
+            | MergeWithInts o -> 
+                sprintf "%s_%d"
+                    "MergeWithInts"
+                    (sscc |> getOrder |> Order.value)
+
             | Orbit perm ->
                 sprintf "%s_%d_%d"
                     "Orbit"
                     (sscc |> getOrder |> Order.value)
                     (perm |> Permutation.powers None |> Seq.length)
+
 
 
     let switchReduceBits
@@ -92,9 +123,8 @@ module SortableSetCertainCfg =
 
         | All_Bits_Reduced (o, switchArray) -> 
             result {
-                let sorterId = Guid.Empty |> SorterId.create
                 let sorter = Sorter.fromSwitches 
-                                sorterId 
+                                (Guid.Empty |> SorterId.create) 
                                 o
                                 switchArray
                 let! refinedSortableSet =
@@ -103,6 +133,19 @@ module SortableSetCertainCfg =
                 return refinedSortableSet
             }
 
+        | MergeWithBits o ->
+            let hOrder = (( o |> Order.value ) / 2 ) |> Order.createNr
+            SortableSet.makeSortedStacks
+                (sscc |> getId)
+                rolloutFormat.RfBs64
+                [|hOrder; hOrder|]
+
+
+        | MergeWithInts o ->
+            SortableSet.makeMergeSortTestWithInts
+                (sscc |> getId)
+                o
+
         | Orbit perm -> 
                 SortableSet.makeOrbits
                     (sscc |> getId)
@@ -110,12 +153,11 @@ module SortableSetCertainCfg =
                     perm
 
 
-    let makeAllBitsReducedOneStage 
-            (stagesReduced:stageCount)
+    let makeAllBitsReducedOneStage
             (order:order) 
         =
-        if (stagesReduced |> StageCount.value) > 1 then
-            failwith "StageReduction gt 1"
+        //if (stagesReduced |> StageCount.value) > 1 then
+        //    failwith "StageReduction gt 1"
         let switchArray = 
             TwoCycle.evenMode order 
                     |> Switch.fromTwoCycle
@@ -145,6 +187,7 @@ module SortableSetCfg =
         | Certain cCfg -> 
             cCfg |> SortableSetCertainCfg.makeSortableSet
 
+
     let getOrder
             (ssCfg: sortableSetCfg) 
         = 
@@ -160,26 +203,27 @@ module SortableSetCfg =
         | Certain cCfg -> 
             cCfg |> SortableSetCertainCfg.getConfigName
 
-
-    let getFileName
-            (ssCfg: sortableSetCfg) 
+    let make 
+            (sortableSetCfgType:sortableSetCfgType)
+            (order:order)
+            (permutation: permutation option)
         =
-        match ssCfg with
-        | Certain cCfg -> 
-            cCfg |> SortableSetCertainCfg.getFileName
-
-
-    let getSortableSet             
-            (sortableSetSave: string -> sortableSet -> Result<bool, string>)
-            (sortableSetLookup: string -> Result<sortableSet, string>)
-            (cfg:sortableSetCfg) =
-        result {
-            let fileName = (cfg |> getFileName)
-            let loadRes = sortableSetLookup fileName
-            match loadRes with
-            | Ok ss -> return ss
-            | Error _ ->
-                let! sortableSet = makeSortableSet cfg
-                let! saveRes = sortableSetSave fileName sortableSet
-                return sortableSet
-        }
+        match sortableSetCfgType with
+        | sortableSetCfgType.All_Bits ->
+            sortableSetCertainCfg.All_Bits order
+            |> sortableSetCfg.Certain
+        | sortableSetCfgType.All_Bits_Reduced ->
+            SortableSetCertainCfg.makeAllBitsReducedOneStage order
+            |> sortableSetCfg.Certain
+        | sortableSetCfgType.MergeWithBits ->
+            sortableSetCertainCfg.MergeWithBits order
+            |> sortableSetCfg.Certain
+        | sortableSetCfgType.MergeWithInts ->
+            sortableSetCertainCfg.MergeWithInts order
+            |> sortableSetCfg.Certain
+        | sortableSetCfgType.Orbit ->
+            match permutation with
+            | Some p ->
+                sortableSetCertainCfg.Orbit p
+                |> sortableSetCfg.Certain
+            | None -> failwith $"permuation not specified in SortableSetCfg.make"

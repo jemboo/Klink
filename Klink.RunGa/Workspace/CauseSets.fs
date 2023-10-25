@@ -21,10 +21,13 @@ module CauseSets =
                 let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode GaWsParamKeys.sorterEvalMode
                 let! useParallel = wsParams |> WorkspaceParamsAttrs.getUseParallel GaWsParamKeys.useParallel
                 let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount GaWsParamKeys.stagesSkipped
+                let! sortableSetCfgType = wsParams |> WorkspaceParamsAttrs.getSortableSetCfgType GaWsParamKeys.sortableSetCfgType
 
                 let sortableSetCfg = 
-                    SortableSetCertainCfg.makeAllBitsReducedOneStage stagesSkipped order
-                           |> sortableSetCfg.Certain
+                        SortableSetCfg.make
+                            sortableSetCfgType
+                            order
+                            None
 
                 let wsParamsWithSortableSet = 
                     wsParams |> WorkspaceParamsAttrs.setSortableSetId GaWsParamKeys.sortableSetId

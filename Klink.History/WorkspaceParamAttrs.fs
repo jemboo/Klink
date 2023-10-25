@@ -163,6 +163,23 @@ module WorkspaceParamsAttrs =
         workspaceParams |> WorkspaceParams.addItem key (value |> RunId.value |> string)
 
 
+
+    let getSortableSetCfgType
+            (key:workspaceParamsKey) 
+            (workspaceParams:workspaceParams) 
+        =
+        result {
+          let! cereal = WorkspaceParams.getItem key workspaceParams
+          return cereal |> SortableSetCfgType.fromString
+        }
+    let setSortableSetCfgType
+            (key:workspaceParamsKey) 
+            (sortableSetCfgType:sortableSetCfgType)
+            (workspaceParams:workspaceParams) 
+        =
+        workspaceParams |> WorkspaceParams.addItem key (sortableSetCfgType |> string)
+
+
     let getSortableSetId
             (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 

@@ -9,9 +9,9 @@ type KlinkScriptFixture () =
 
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let maxRunsPerScript = 24
+        let maxRunsPerScript = 2
 
-        let klinkScripts = O16_StageRflCfg.writeInitScripts maxRunsPerScript
+        let klinkScripts = O128_StageRflCfg.writeInitScripts maxRunsPerScript
 
         Assert.AreEqual (1, 1);
 
@@ -32,7 +32,7 @@ type KlinkScriptFixture () =
     [<TestMethod>]
     member this.shcReportEvalCfgDtos () =
 
-        let klinkScript2 = O16_StageRflCfg.writeReportEvalsScript (Some (0,24))
+        let klinkScript2 = O128_StageRflCfg.writeReportEvalsScript (Some (0,32))
 
         Assert.AreEqual (1, 1);
 

@@ -175,8 +175,6 @@ module ShcReporting =
 
 
 
-
-
     let reportEvals 
                  (fsReporter:IWorkspaceStore) 
                  (forEvalsReaderF: string -> IWorkspaceStore)

@@ -5,6 +5,7 @@ open System.IO
 
 type gaInitRunCfg =
     {
+        sortableSetCfgType:sortableSetCfgType
         mutationRate:mutationRate
         newGenerations:generation
         noiseFraction:noiseFraction
@@ -26,6 +27,7 @@ module GaInitRunCfg =
 
 
     let getRunId2 
+            (sortableSetCfgType:sortableSetCfgType)
             (mutationRate:mutationRate) 
             (noiseFraction:noiseFraction) 
             (order:order) 
@@ -39,6 +41,7 @@ module GaInitRunCfg =
             (switchGenMode:switchGenMode)
         =
         [
+            sortableSetCfgType :> obj
             mutationRate |> MutationRate.value :> obj;
             noiseFraction |> NoiseFraction.value :> obj;
             order |> Order.value :> obj;
@@ -56,6 +59,7 @@ module GaInitRunCfg =
 
     let getRunId (cfg:gaInitRunCfg) =
         getRunId2 
+            cfg.sortableSetCfgType
             cfg.mutationRate
             cfg.noiseFraction
             cfg.order
@@ -72,36 +76,37 @@ module GaInitRunCfg =
 
     let toWorkspaceParams 
             (useParallel:useParallel)
-            (gaCfg:gaInitRunCfg)
+            (gaInitRunCfg:gaInitRunCfg)
         =
         let _nextRngGen rng =
             rng
             |> Rando.fromRngGen
             |> Rando.toRngGen
 
-        let rngGenCreate = (_nextRngGen gaCfg.rngGen)
+        let rngGenCreate = (_nextRngGen gaInitRunCfg.rngGen)
         let rngGenMutate = (_nextRngGen rngGenCreate)
         let rngGenPrune = (_nextRngGen rngGenMutate)
 
         WorkspaceParams.make Map.empty
-        |> WorkspaceParamsAttrs.setRunId GaWsParamKeys.runId (gaCfg |> getRunId)
+        |> WorkspaceParamsAttrs.setRunId GaWsParamKeys.runId (gaInitRunCfg |> getRunId)
+        |> WorkspaceParamsAttrs.setSortableSetCfgType ShcWsParamKeys.sortableSetCfgType (gaInitRunCfg.sortableSetCfgType)
         |> WorkspaceParamsAttrs.setGeneration GaWsParamKeys.generation_current (0 |> Generation.create)
-        |> WorkspaceParamsAttrs.setGeneration GaWsParamKeys.generation_max (gaCfg.newGenerations)
+        |> WorkspaceParamsAttrs.setGeneration GaWsParamKeys.generation_max (gaInitRunCfg.newGenerations)
         |> WorkspaceParamsAttrs.setRngGen GaWsParamKeys.rngGenCreate rngGenCreate
         |> WorkspaceParamsAttrs.setRngGen GaWsParamKeys.rngGenMutate rngGenMutate
         |> WorkspaceParamsAttrs.setRngGen GaWsParamKeys.rngGenPrune rngGenPrune
-        |> WorkspaceParamsAttrs.setMutationRate GaWsParamKeys.mutationRate gaCfg.mutationRate
-        |> WorkspaceParamsAttrs.setNoiseFraction GaWsParamKeys.noiseFraction (Some gaCfg.noiseFraction)
-        |> WorkspaceParamsAttrs.setOrder GaWsParamKeys.order gaCfg.order
-        |> WorkspaceParamsAttrs.setSorterCount GaWsParamKeys.sorterCount gaCfg.sorterCount
-        |> WorkspaceParamsAttrs.setSorterCount GaWsParamKeys.sorterCountMutated gaCfg.sorterCountMutated
-        |> WorkspaceParamsAttrs.setSorterEvalMode GaWsParamKeys.sorterEvalMode gaCfg.sorterEvalMode
-        |> WorkspaceParamsAttrs.setStageCount GaWsParamKeys.stagesSkipped gaCfg.stagesSkipped
-        |> WorkspaceParamsAttrs.setStageWeight GaWsParamKeys.stageWeight gaCfg.stageWeight
-        |> WorkspaceParamsAttrs.setSwitchCount GaWsParamKeys.sorterLength gaCfg.switchCount
-        |> WorkspaceParamsAttrs.setSwitchGenMode GaWsParamKeys.switchGenMode gaCfg.switchGenMode
-        |> WorkspaceParamsAttrs.setSorterSetPruneMethod GaWsParamKeys.sorterSetPruneMethod gaCfg.sorterSetPruneMethod
-        |> WorkspaceParamsAttrs.setGenerationFilter GaWsParamKeys.generation_filter (gaCfg.reportFilter |> Option.get )
+        |> WorkspaceParamsAttrs.setMutationRate GaWsParamKeys.mutationRate gaInitRunCfg.mutationRate
+        |> WorkspaceParamsAttrs.setNoiseFraction GaWsParamKeys.noiseFraction (Some gaInitRunCfg.noiseFraction)
+        |> WorkspaceParamsAttrs.setOrder GaWsParamKeys.order gaInitRunCfg.order
+        |> WorkspaceParamsAttrs.setSorterCount GaWsParamKeys.sorterCount gaInitRunCfg.sorterCount
+        |> WorkspaceParamsAttrs.setSorterCount GaWsParamKeys.sorterCountMutated gaInitRunCfg.sorterCountMutated
+        |> WorkspaceParamsAttrs.setSorterEvalMode GaWsParamKeys.sorterEvalMode gaInitRunCfg.sorterEvalMode
+        |> WorkspaceParamsAttrs.setStageCount GaWsParamKeys.stagesSkipped gaInitRunCfg.stagesSkipped
+        |> WorkspaceParamsAttrs.setStageWeight GaWsParamKeys.stageWeight gaInitRunCfg.stageWeight
+        |> WorkspaceParamsAttrs.setSwitchCount GaWsParamKeys.sorterLength gaInitRunCfg.switchCount
+        |> WorkspaceParamsAttrs.setSwitchGenMode GaWsParamKeys.switchGenMode gaInitRunCfg.switchGenMode
+        |> WorkspaceParamsAttrs.setSorterSetPruneMethod GaWsParamKeys.sorterSetPruneMethod gaInitRunCfg.sorterSetPruneMethod
+        |> WorkspaceParamsAttrs.setGenerationFilter GaWsParamKeys.generation_filter (gaInitRunCfg.reportFilter |> Option.get )
         |> WorkspaceParamsAttrs.setUseParallel GaWsParamKeys.useParallel useParallel
 
 

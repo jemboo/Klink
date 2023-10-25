@@ -230,7 +230,7 @@ module Stage =
         
         seq {
             while true do
-                let bread = perms.[rnd.NextPositiveInt %  perms.Length]
+                let bread = perms.[(rnd.NextPositiveInt ()) %  perms.Length]
                 yield { switches = 
                             TwoCycle.conjugate bread coreTc
                             |> Switch.fromTwoCycle
@@ -253,7 +253,7 @@ module Stage =
 
 
     let randomMutate (rnd: IRando) (mutationRate: mutationRate) (stage: stage) =
-        match rnd.NextFloat with
+        match (rnd.NextFloat ()) with
         | k when k < (MutationRate.value mutationRate) ->
             let symbolSetSize = stage.order |> Order.value |> uint64 |> SymbolSetSize.createNr
             let tcp = RandVars.drawTwoWithoutRep symbolSetSize rnd
@@ -262,7 +262,7 @@ module Stage =
 
 
     let randomReflMutate (rnd: IRando) (mutationRate: mutationRate) (stage: stage) =
-        match rnd.NextFloat with
+        match (rnd.NextFloat ()) with
         | k when k < (MutationRate.value mutationRate) ->
             let sc = stage.order |> Order.value |> uint64 |> SymbolSetSize.createNr
 
@@ -380,7 +380,7 @@ module IndexedSelector =
 
         let _choose (rando: IRando) (items: 'T[]) =
             if (items.Length > 0) then
-                Some items.[rando.NextPositiveInt % items.Length]
+                Some items.[(rando.NextPositiveInt ()) % items.Length]
             else
                 None
 

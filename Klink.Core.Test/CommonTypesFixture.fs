@@ -53,7 +53,7 @@ type CommonTypesFixture() =
         let mutable i = 0
 
         while i < 100 do
-            let nuRnd = randy.NextULong
+            let nuRnd = (randy.NextULong ())
             let leftDex = nuRnd.leftmost_index
             let bv = nuRnd.get (leftDex + 0)
             let bvS = nuRnd.get (leftDex + 1)

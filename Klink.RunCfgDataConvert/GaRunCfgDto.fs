@@ -5,6 +5,7 @@ open System
 type gaInitRunCfgDto =
     {
         newGenerations:int
+        sortableSetCfgType:sortableSetCfgType
         mutationRate:float
         noiseFraction:float
         order:int
@@ -26,6 +27,7 @@ module GaInitRunCfgDto =
     let toDto (cfg:gaInitRunCfg) =
         {
             newGenerations = cfg.newGenerations |> Generation.value
+            sortableSetCfgType = cfg.sortableSetCfgType
             mutationRate = cfg.mutationRate |> MutationRate.value
             noiseFraction = cfg.noiseFraction |> NoiseFraction.value
             order = cfg.order |> Order.value
@@ -53,6 +55,7 @@ module GaInitRunCfgDto =
             return
                 {
                     gaInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create
+                    sortableSetCfgType = cfg.sortableSetCfgType
                     mutationRate = cfg.mutationRate |> MutationRate.create
                     noiseFraction = cfg.noiseFraction |> NoiseFraction.create
                     order = cfg.order |> Order.createNr

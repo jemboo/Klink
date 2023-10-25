@@ -4,7 +4,9 @@ open System
 
 type shcInitRunCfgDto =
     {
+        runId:Guid
         newGenerations:int
+        sortableSetCfgType:sortableSetCfgType
         mutationRate:float
         noiseFraction:float
         order:int
@@ -25,7 +27,9 @@ module ShcInitRunCfgDto =
 
     let toDto (cfg:shcInitRunCfg) =
         {
+            runId = cfg.runId |> RunId.value
             newGenerations = cfg.newGenerations |> Generation.value
+            sortableSetCfgType = cfg.sortableSetCfgType
             mutationRate = cfg.mutationRate |> MutationRate.value
             noiseFraction = cfg.noiseFraction |> NoiseFraction.value
             order = cfg.order |> Order.value
@@ -52,7 +56,9 @@ module ShcInitRunCfgDto =
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
             return
                 {
-                    shcInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create
+                    shcInitRunCfg.runId = cfg.runId |> RunId.create
+                    newGenerations = cfg.newGenerations |> Generation.create
+                    sortableSetCfgType = cfg.sortableSetCfgType
                     mutationRate = cfg.mutationRate |> MutationRate.create
                     noiseFraction = cfg.noiseFraction |> NoiseFraction.create
                     order = cfg.order |> Order.createNr

@@ -15,7 +15,7 @@ type SwitchFixture() =
         let sw1Dex = Switch.toIndex sw2
         let dd = sw1Dex |> uint16
         for i = 0 to 100 do
-            let swDex = rndy.NextPositiveInt % 100000
+            let swDex = (rndy.NextPositiveInt ()) % 100000
             let swtch = Switch.fromIndex swDex
             let swDexBack = Switch.toIndex swtch
             Assert.AreEqual(swDex, swDexBack)

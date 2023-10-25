@@ -6,9 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="SorterGenome.fs" />
-    <Compile Include="SorterGenomeOld.fs" />
-    <Compile Include="Ga.fs" />
+    <Compile Include="GaBin.fs" />
+    <Compile Include="Old\SorterGenomeOld.fs" />
+    <Compile Include="Old\EpiSite.fs" />
+    <Compile Include="Old\GaOld.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
