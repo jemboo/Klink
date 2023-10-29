@@ -15,6 +15,7 @@ type shcInitRunCfgDto =
         sorterCount:int
         sorterCountMutated:int
         sorterSetPruneMethod:sorterSetPruneMethod
+        maxPhenotypeForPrune: int option
         stagesSkipped:int
         stageWeight:float
         switchCount:int
@@ -38,6 +39,7 @@ module ShcInitRunCfgDto =
             sorterCount = cfg.sorterCount |> SorterCount.value
             sorterCountMutated = cfg.sorterCountMutated |> SorterCount.value
             sorterSetPruneMethod = cfg.sorterSetPruneMethod
+            maxPhenotypeForPrune = cfg.maxPhenotypeForPrune |> Option.map(SorterCount.value)
             stagesSkipped = cfg.stagesSkipped |> StageCount.value
             stageWeight = cfg.stageWeight |> StageWeight.value
             switchCount = cfg.switchCount |> SwitchCount.value
@@ -54,6 +56,10 @@ module ShcInitRunCfgDto =
     let fromDto (cfg:shcInitRunCfgDto) =
         result {
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
+            let maxPt = 
+                match cfg.maxPhenotypeForPrune with
+                | None -> None
+                | Some v -> v |> SorterCount.create |> Some
             return
                 {
                     shcInitRunCfg.runId = cfg.runId |> RunId.create
@@ -67,6 +73,7 @@ module ShcInitRunCfgDto =
                     sorterCount = cfg.sorterCount |> SorterCount.create
                     sorterCountMutated = cfg.sorterCountMutated |> SorterCount.create
                     sorterSetPruneMethod = cfg.sorterSetPruneMethod
+                    maxPhenotypeForPrune = maxPt
                     stagesSkipped = cfg.stagesSkipped |> StageCount.create
                     stageWeight = cfg.stageWeight |> StageWeight.create
                     switchCount = cfg.switchCount |> SwitchCount.create

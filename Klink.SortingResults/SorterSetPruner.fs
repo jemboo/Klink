@@ -24,9 +24,11 @@ type sorterSetPruner =
             stageWeight:stageWeight;
         }
 
+
 type sorterSetPruneMethod = 
     | Whole = 1
-    | Shc = 2
+    | PhenotypeCap = 2
+    | Shc = 3
 
 
 module SorterSetPruner =
@@ -153,6 +155,7 @@ module SorterSetPruner =
             yab |> Array.map(fun ((sEv, sFt), npFt) -> sEv)
 
 
+
     let runWholePrune
             (sorterSetPruner:sorterSetPruner)
             (rngGen:rngGen)
@@ -186,6 +189,51 @@ module SorterSetPruner =
             rankedSorters
             |> CollectionOps.takeUpto (sorterSetPruner.prunedCount |> SorterCount.value)
             |> Seq.toArray
+
+
+
+
+    let runWholeCappedPrune
+            (sorterSetPruner:sorterSetPruner)
+            (maxPhenotypes:int)
+            (rngGen:rngGen)
+            (sorterEvalsToPrune:sorterEval[])
+         =
+            let stageWgt = getStageWeight sorterSetPruner
+            let sorterEvalsWithFitness = 
+                sorterEvalsToPrune
+                |> Array.filter(SorterEval.getSorterSpeed >> Option.isSome)
+                |> Array.filter(SorterEval.failedForSure >> not)
+                |> CollectionOps.getItemsUpToMaxTimes 
+                            (SorterEval.getSortrPhenotypeId)
+                            maxPhenotypes
+                |> Seq.toArray
+                |> Array.map(fun sEv -> 
+                     ( sEv,
+                       sEv |> SorterEval.getSorterSpeed |> Option.get |> SorterFitness.fromSpeed stageWgt
+                     )
+                   )
+            let rankedSorters =
+                if (sorterEvalsWithFitness.Length = 0) then
+                    [||]
+                elif sorterSetPruner.noiseFraction |> Option.isSome then
+                    getSigmaSelection 
+                        sorterEvalsWithFitness 
+                        (sorterSetPruner.noiseFraction |> NoiseFraction.toFloat) 
+                        rngGen
+
+                else
+                    let yab = sorterEvalsWithFitness 
+                              |> Array.map(fun (srtrEval, srtrFit) -> ((srtrEval, srtrFit), (srtrFit |> SorterFitness.value)))
+                              |> Array.sortByDescending(snd)
+                    yab |> Array.map(fun ((sEv, sFt), npFt) -> sEv)
+
+            rankedSorters
+            |> CollectionOps.takeUpto (sorterSetPruner.prunedCount |> SorterCount.value)
+            |> Seq.toArray
+
+
+
 
 
     let runShcPrune

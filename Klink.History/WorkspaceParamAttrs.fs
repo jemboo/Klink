@@ -212,6 +212,28 @@ module WorkspaceParamsAttrs =
         workspaceParams |> WorkspaceParams.addItem key (value |> SorterCount.value |> string)
 
 
+    let getSorterCountOption
+            (key:workspaceParamsKey) 
+            (workspaceParams:workspaceParams) 
+        =
+        result {
+          let! cereal = WorkspaceParams.getItem key workspaceParams
+          if cereal = "None" then
+             return None
+          else return Convert.ToInt32(cereal) |> SorterCount.create |> Some
+        }
+    let setSorterCountOption
+            (key:workspaceParamsKey) 
+            (value:sorterCount option)
+            (workspaceParams:workspaceParams) 
+        =
+        match value with
+        | Some sc ->
+            workspaceParams |> WorkspaceParams.addItem key (sc |> SorterCount.value |> string)
+        | None -> 
+            workspaceParams |> WorkspaceParams.addItem key "None"
+
+
     let getSorterEvalMode
             (key:workspaceParamsKey) 
             (workspaceParams:workspaceParams) 

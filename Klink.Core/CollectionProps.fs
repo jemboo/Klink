@@ -229,19 +229,6 @@ module CollectionProps =
         _cont
 
 
-    // returns a sequence of items that occur more than once
-    let itemsOccuringMoreThanOnce items =
-        seq {
-            let d = System.Collections.Generic.Dictionary()
-            for i in items do
-                match d.TryGetValue(i) with
-                | false, _ -> d.[i] <- false // first observance
-                | true, false ->
-                    d.[i] <- true
-                    yield i // second observance
-                | true, true -> () // already seen at least twice
-        }
-
     let unsortednessSquared_uL (a: array<uint64>) =
         distanceSquared_uL a [| 0uL .. ((uint64 a.Length) - 1uL) |]
 

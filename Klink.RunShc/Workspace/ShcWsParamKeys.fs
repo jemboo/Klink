@@ -8,6 +8,7 @@ module ShcWsParamKeys =
     let rngGenCreate = "rngGenCreate" |> WorkspaceParamsKey.create
     let rngGenMutate = "rngGenMutate" |> WorkspaceParamsKey.create
     let rngGenPrune = "rngGenPrune" |> WorkspaceParamsKey.create
+    let maxPrunedPhenotypeCount = "maxPrunedPhenotypeCount" |> WorkspaceParamsKey.create
     let mutationRate = "mutationRate" |> WorkspaceParamsKey.create
     let noiseFraction = "noiseFraction" |> WorkspaceParamsKey.create
     let order = "order" |> WorkspaceParamsKey.create

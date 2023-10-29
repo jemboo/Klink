@@ -8,7 +8,7 @@ type shcCfgPlex =
         noiseFractions:noiseFraction[]
         rngGens:rngGen[]
         tupSorterSetSizes:(sorterCount*sorterCount)[]
-        sorterSetPruneMethods:sorterSetPruneMethod[]
+        sorterSetPruneMethods:(sorterSetPruneMethod * (sorterCount option))[]
         stageWeights:stageWeight[]
         switchGenModes:switchGenMode[]
     }
@@ -33,7 +33,7 @@ module ShcCfgPlex =
                      stageWeight -> 
                      noiseFraction -> 
                      mutationRate ->
-                     sorterSetPruneMethod -> 
+                     sorterSetPruneMethod * (sorterCount option) -> 
                      'a)
             (seqSplicer: (int*int) option)
             =
@@ -82,7 +82,7 @@ module ShcCfgPlex =
                 stageWeight -> 
                 noiseFraction -> 
                 mutationRate -> 
-                sorterSetPruneMethod -> 
+                sorterSetPruneMethod * (sorterCount option) -> 
                 'a)
             (seqSplicer: (int*int) option)
         =
@@ -137,7 +137,7 @@ module ShcCfgPlex =
                 stageWeight 
                 noiseFraction 
                 mutationRate 
-                sorterSetPruneMethod
+                (sorterSetPruneMethod, sorterCountOpt)
             =
                 let runId = 
                     ShcInitRunCfg.getRunId2
@@ -150,6 +150,7 @@ module ShcCfgPlex =
                         (fst tupSorterSetSize)
                         (snd tupSorterSetSize)
                         sorterSetPruneMethod
+                        sorterCountOpt
                         stageWeight
                         (SwitchCount.orderTo999SwitchCount order)
                         switchGenMode
@@ -168,6 +169,7 @@ module ShcCfgPlex =
                             sorterCount = fst tupSorterSetSize
                             sorterCountMutated = snd tupSorterSetSize
                             sorterSetPruneMethod = sorterSetPruneMethod;
+                            maxPhenotypeForPrune = sorterCountOpt
                             stagesSkipped = stagesSkipped
                             stageWeight = stageWeight
                             switchCount = (SwitchCount.orderTo999SwitchCount order)
@@ -194,7 +196,8 @@ module ShcCfgPlex =
                   stageWeight 
                   noiseFraction 
                   mutationRate 
-                  sorterSetPruneMethod =
+                 (sorterSetPruneMethod, sorterCountOpt)
+            =
 
                 ShcInitRunCfg.getRunId2
                     sortableSetCfgType
@@ -206,6 +209,7 @@ module ShcCfgPlex =
                     (fst tupSorterSetSize)
                     (snd tupSorterSetSize)
                     sorterSetPruneMethod
+                    sorterCountOpt
                     stageWeight
                     (SwitchCount.orderTo999SwitchCount order)
                     switchGenMode

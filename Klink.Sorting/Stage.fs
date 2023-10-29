@@ -84,7 +84,7 @@ module Stage =
             for stage in stages do
                 yield! stage.switches
         }
-        |> CollectionProps.itemsOccuringMoreThanOnce
+        |> CollectionOps.itemsOccuringMoreThanOnce
 
 
     let fromSwitches (order: order) (switches: seq<switch>) =

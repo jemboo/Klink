@@ -1,21 +1,28 @@
 ﻿namespace global
 open System
 
-module O16_StageRflCfg =
+module O128_Stage_PhenoPrune =
 
     open CommonParams
 
     //let runCfgPlex =
     //    {
-    //        shcCfgPlex.orders = [| 16 |> Order.createNr |]
-    //        sortableSetCfgs =  [| (sortableSetCfgType.All_Bits_Reduced, 1 |> StageCount.create) |]
-    //        mutationRates = [|mr0;mr2;mr4|];
-    //        noiseFractions = [|nf0;nf2;nf4;nf6|];
-    //        rngGens = rndGens 0 4 ;
-    //        tupSorterSetSizes = [|ssz7_8|];
-    //        sorterSetPruneMethods = [|sspm1; sspm2|];
-    //        stageWeights = [|sw0; sw1|];
-    //        switchGenModes = [|switchGenMode.stageSymmetric|];
+    //        shcCfgPlex.orders = [| 128 |> Order.createNr |]
+    //        sortableSetCfgs =  
+    //                [| 
+    //                    (
+    //                        sortableSetCfgType.MergeWithInts, 
+    //                        0 |> StageCount.create,
+    //                        sorterEvalMode.CheckSuccess
+    //                    )
+    //                |]
+    //        mutationRates = [|mr1;|];
+    //        noiseFractions = [|nf1;|];
+    //        rngGens = rndGens 0 1 ;
+    //        tupSorterSetSizes = [|ssz4_5|];
+    //        sorterSetPruneMethods = [|(sspm2, 2 |> SorterCount.create |> Some); (sspm1, None);|];
+    //        stageWeights = [|sw0;|];
+    //        switchGenModes = [|switchGenMode.stage|];
     //    } |> runCfgPlex.Shc
 
 
@@ -23,28 +30,34 @@ module O16_StageRflCfg =
         {
             shcCfgPlex.orders = [| 128 |> Order.createNr |]
             sortableSetCfgs =  
-                [| 
-                    (   sortableSetCfgType.MergeWithInts, 
-                        0 |> StageCount.create, 
-                        sorterEvalMode.DontCheckSuccess
-                    )
-                |]
-            mutationRates = [|mr0;mr1;mr2|];
-            noiseFractions = [|nf0;nf1;nf2;|];
+                    [| 
+                        (
+                            sortableSetCfgType.MergeWithInts, 
+                            0 |> StageCount.create,
+                            sorterEvalMode.CheckSuccess
+                        )
+                    |]
+            mutationRates = [|mr1;|];
+            noiseFractions = [|nf3;|];
             rngGens = rndGens 0 2 ;
             tupSorterSetSizes = [|ssz5_6|];
-            sorterSetPruneMethods = [|(sspm1, None);|];
-            stageWeights = [|sw0; sw1|];
-            switchGenModes = [|switchGenMode.stageSymmetric|];
+            sorterSetPruneMethods = 
+                [|
+                  (sspm2, 1 |> SorterCount.create |> Some);
+                  (sspm2, 2 |> SorterCount.create |> Some);
+                  (sspm2, 4 |> SorterCount.create |> Some);
+                |];
+            stageWeights = [|sw0;|];
+            switchGenModes = [|switchGenMode.stage|];
         } |> runCfgPlex.Shc
 
 
     let baseGenerationCount = 25000 |> Generation.create
     let baseReportFilter = CommonParams.modulusFilter 25
-    let initScriptName = "initScript"
+    let initScriptName = "initScriptB"
 
     let baseDir = $"c:\Klink"
-    let projectFolder  = $"o128\StageRfl"
+    let projectFolder  = $"o128\StagePhenoPrune2"
 
     let writeInitScripts (maxRunsPerScript:int) = 
             KlinkScript.createInitRunScriptsFromRunCfgPlex 

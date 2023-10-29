@@ -6,7 +6,7 @@ module Program =
 
     let [<EntryPoint>] main argv =
         
-        let projectFolderPath = IO.Path.Combine(O16_StageRflCfg.baseDir, O16_StageRflCfg.projectFolder)
+        let projectFolderPath = IO.Path.Combine(O128_Stage_PhenoPrune.baseDir, O128_Stage_PhenoPrune.projectFolder)
 
         let (scriptFileName, klinkScript) = 
                 ScriptFileRun.getNextKlinkScript projectFolderPath

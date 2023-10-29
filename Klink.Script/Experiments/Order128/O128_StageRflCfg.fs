@@ -1,7 +1,7 @@
 ﻿namespace global
 open System
 
-module O128_StageRflCfg =
+module O128_StageCfg =
 
     open CommonParams
 
@@ -16,42 +16,22 @@ module O128_StageRflCfg =
                             sorterEvalMode.CheckSuccess
                         )
                     |]
-            mutationRates = [|mr1;|];
-            noiseFractions = [|nf0;nf1;nf2;nf3|];
+            mutationRates = [|mr1; mr2; mr3;|]
+            noiseFractions = [|nf1; nf2; nf3|];
             rngGens = rndGens 0 4 ;
-            tupSorterSetSizes = [|ssz5_6|];
-            sorterSetPruneMethods = [|sspm1;|];
+            tupSorterSetSizes = [|ssz4_5|];
+            sorterSetPruneMethods = [|(sspm1, None);|];
             stageWeights = [|sw0; sw1|];
-            switchGenModes = [|switchGenMode.stageSymmetric|];
+            switchGenModes = [|switchGenMode.stage|];
         } |> runCfgPlex.Shc
 
-    //let runCfgPlex =
-    //    {
-    //        shcCfgPlex.orders = [| 128 |> Order.createNr |]
-    //        sortableSetCfgs =  
-    //                [| 
-    //                    (
-    //                        sortableSetCfgType.MergeWithInts, 
-    //                        0 |> StageCount.create,
-    //                        sorterEvalMode.CheckSuccess
-    //                    )
-    //                |]
-    //        mutationRates = [|mr1;|];
-    //        noiseFractions = [|nf3;|];
-    //        rngGens = rndGens 0 2 ;
-    //        tupSorterSetSizes = [|ssz5_6|];
-    //        sorterSetPruneMethods = [|sspm1;|];
-    //        stageWeights = [|sw0; sw1|];
-    //        switchGenModes = [|switchGenMode.stageSymmetric|];
-    //    } |> runCfgPlex.Shc
 
-
-    let baseGenerationCount = 25000 |> Generation.create
-    let baseReportFilter = CommonParams.modulusFilter 25
-    let initScriptName = "patchScript"
+    let baseGenerationCount = 5000 |> Generation.create
+    let baseReportFilter = CommonParams.modulusFilter 10
+    let initScriptName = "initScript"
 
     let baseDir = $"c:\Klink"
-    let projectFolder  = $"o128\StageRfl"
+    let projectFolder  = $"o128\Stage"
 
     let writeInitScripts (maxRunsPerScript:int) = 
             KlinkScript.createInitRunScriptsFromRunCfgPlex 

@@ -128,6 +128,7 @@ module CauseSets =
                 let! order = wsParams |> WorkspaceParamsAttrs.getOrder GaWsParamKeys.order
                 let! sorterCount = wsParams |> WorkspaceParamsAttrs.getSorterCount GaWsParamKeys.sorterCount
                 let! sorterCountMutated = wsParams |> WorkspaceParamsAttrs.getSorterCount GaWsParamKeys.sorterCountMutated
+                let! maxPrunedPhenotypeCount = wsParams |> WorkspaceParamsAttrs.getSorterCountOption GaWsParamKeys.maxPrunedPhenotypeCount
                 let! sorterSetPruneMethod = wsParams |> WorkspaceParamsAttrs.getSorterSetPruneMethod GaWsParamKeys.sorterSetPruneMethod
                 let! stageWeight = wsParams |> WorkspaceParamsAttrs.getStageWeight GaWsParamKeys.stageWeight
                 let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode GaWsParamKeys.sorterEvalMode
@@ -197,6 +198,23 @@ module CauseSets =
                                 noiseFraction,
                                 stageWeight
                                 ) :> ICause |> Ok
+
+
+                    | sorterSetPruneMethod.PhenotypeCap ->
+                        new causePruneSorterSetsMaxPhenotype(
+                                wnSorterSetParent,
+                                wnSorterSetMutated,
+                                wnSorterSetEvalParent,
+                                wnSorterSetEvalMutated,
+                                wnSorterSetPruned,
+                                wnSorterSetEvalPruned,
+                                rngGenPrune,
+                                sorterCount,
+                                maxPrunedPhenotypeCount,
+                                noiseFraction,
+                                stageWeight
+                                ) :> ICause |> Ok
+
 
                     | sorterSetPruneMethod.Shc ->
                         new causePruneSorterSetsShc(

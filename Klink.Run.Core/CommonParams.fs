@@ -82,4 +82,5 @@ module CommonParams =
     let mr8 =    0.0400 |> MutationRate.create
 
     let sspm1 = sorterSetPruneMethod.Whole
-    let sspm2 = sorterSetPruneMethod.Shc
+    let sspm2 = sorterSetPruneMethod.PhenotypeCap
+    let sspm3 = sorterSetPruneMethod.Shc

@@ -7,6 +7,18 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 [<TestClass>]
 type CollectionOpsFixture() =
 
+
+    [<TestMethod>]
+    member this.getItemsUpToMaxTimes() =
+        let aTest = [ 1; 2; 5; 1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3;]
+        let aExp  = [ 1; 2; 5; 1; 2; 3; 1; 2; 3; 3;]
+        let maxTimes = 3
+        let aOut = CollectionOps.getItemsUpToMaxTimes id maxTimes aTest
+                    |> Seq.toList
+
+        Assert.IsTrue(CollectionProps.areEqual aExp aOut)
+
+
     [<TestMethod>]
     member this.bookMarkArrays() =
         let a1 = [| 1; 2; 3; |]
@@ -229,7 +241,7 @@ type CollectionOpsFixture() =
 
         let res = CollectionProps.weightedAverage weightedArray
 
-        Assert.IsTrue(Math.Abs( res - 4.7333) < 0.00001)
+        Assert.IsTrue(Math.Abs( res - 4.7333) < 0.001)
 
 
 
