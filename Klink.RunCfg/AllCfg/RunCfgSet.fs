@@ -137,13 +137,14 @@ module RunCfgSet =
 
     let continueShcRunFromPlex 
             (newGenerations:generation)
+            (reportGenFilter:generationFilter)
             (runSetName:string)
             (seqSplicer: (int*int) option)
             (plex:shcCfgPlex)
         =
         let runCfgs = 
             plex |>
-            ShcCfgPlex.toContinueRunCfgs newGenerations seqSplicer
+            ShcCfgPlex.toContinueRunCfgs newGenerations reportGenFilter seqSplicer
                   |> Seq.map(shcRunCfg.Continue >> runCfg.Shc)
                   |> Seq.toArray
 
@@ -153,13 +154,14 @@ module RunCfgSet =
 
     let continueGaRunFromPlex 
             (newGenerations:generation)
+            (reportGenFilter:generationFilter)
             (runSetName:string)
             (seqSplicer: (int*int) option)
             (plex:gaCfgPlex)
         =
         let runCfgs = 
             plex |>
-            GaCfgPlex.toContinueRunCfgs newGenerations seqSplicer
+            GaCfgPlex.toContinueRunCfgs newGenerations reportGenFilter seqSplicer
                   |> Seq.map(gaRunCfg.Continue >> runCfg.Ga)
                   |> Seq.toArray
 
@@ -169,30 +171,41 @@ module RunCfgSet =
 
     let continueRunFromPlex 
             (newGenerations:generation)
+            (reportGenFilter:generationFilter)
             (runSetName:string)
             (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
         match plex with
         | Shc shcCfgPlex -> 
-            shcCfgPlex |> continueShcRunFromPlex newGenerations runSetName seqSplicer
+            shcCfgPlex |> 
+                    continueShcRunFromPlex 
+                            newGenerations 
+                            reportGenFilter 
+                            runSetName 
+                            seqSplicer
         | Ga gaCfgPlex -> 
-            gaCfgPlex |> continueGaRunFromPlex newGenerations runSetName seqSplicer
+            gaCfgPlex |> 
+                    continueGaRunFromPlex 
+                            newGenerations 
+                            reportGenFilter 
+                            runSetName 
+                            seqSplicer
 
 
 
 
-    let reportAllFromPlex 
-            (newGenerations:generation)
-            (runSetName:string)
-            (seqSplicer: (int*int) option)
-            (plex:runCfgPlex)
-        =
-        match plex with
-        | Shc shcCfgPlex -> 
-            shcCfgPlex |> continueShcRunFromPlex newGenerations runSetName seqSplicer
-        | Ga gaCfgPlex -> 
-            gaCfgPlex |> continueGaRunFromPlex newGenerations runSetName seqSplicer
+    //let reportAllFromPlex 
+    //        (newGenerations:generation)
+    //        (runSetName:string)
+    //        (seqSplicer: (int*int) option)
+    //        (plex:runCfgPlex)
+    //    =
+    //    match plex with
+    //    | Shc shcCfgPlex -> 
+    //        shcCfgPlex |> continueShcRunFromPlex newGenerations runSetName seqSplicer
+    //    | Ga gaCfgPlex -> 
+    //        gaCfgPlex |> continueGaRunFromPlex newGenerations runSetName seqSplicer
 
 
 

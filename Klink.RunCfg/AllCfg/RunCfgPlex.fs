@@ -24,13 +24,14 @@ module RunCfgPlex =
         
    let toContinueRunCfgs
             (newGenerations:generation)
+            (reportGenFilter:generationFilter)
             (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
         match plex with
         | Ga gcp -> 
-            GaCfgPlex.toContinueRunCfgs newGenerations seqSplicer gcp 
+            GaCfgPlex.toContinueRunCfgs newGenerations reportGenFilter seqSplicer gcp 
             |> Seq.map(gaRunCfg.Continue >> runCfg.Ga)
         | Shc scp ->  
-            ShcCfgPlex.toContinueRunCfgs newGenerations seqSplicer scp
+            ShcCfgPlex.toContinueRunCfgs newGenerations reportGenFilter seqSplicer scp
             |> Seq.map(shcRunCfg.Continue >> runCfg.Shc)

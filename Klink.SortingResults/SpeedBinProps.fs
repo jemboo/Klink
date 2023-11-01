@@ -206,6 +206,11 @@ module SpeedBinProps
                     |> Seq.concat |> Seq.toArray
         yab |> Combinatorics.entropyOfInts
 
+
+
+
+
+
     
     let getAllProps =
         [

@@ -95,15 +95,16 @@ type shcContinueRunCfgDto =
     {
         runId:string
         newGenerations:int
+        reportGenFilter:generationFilterDto
     }
 
 module ShcContinueRunCfgDto =
 
     let toDto (cfg:shcContinueRunCfg) =
         {
-            runId = cfg.runId |> RunId.value |> string
+            shcContinueRunCfgDto.runId = cfg.runId |> RunId.value |> string
             newGenerations = cfg.newGenerations |> Generation.value
-
+            reportGenFilter = cfg.reportGenFilter |> GenerationFilterDto.toDto
         }
 
     let toJson (cfg:shcContinueRunCfg) =
@@ -111,14 +112,19 @@ module ShcContinueRunCfgDto =
 
 
     let fromDto (cfg:shcContinueRunCfgDto) =
-        {
-            shcContinueRunCfg.runId = cfg.runId |> Guid.Parse |> RunId.create
-            newGenerations = cfg.newGenerations |> Generation.create
+        result {
+            let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
+            return
+                {
+                    shcContinueRunCfg.runId = cfg.runId |> Guid.Parse |> RunId.create
+                    newGenerations = cfg.newGenerations |> Generation.create
+                    reportGenFilter = reportFilter
+                }
         }
 
 
     let fromJson (cereal:string) =
         result {
             let! dto = Json.deserialize<shcContinueRunCfgDto> cereal
-            return fromDto dto
+            return! fromDto dto
         }

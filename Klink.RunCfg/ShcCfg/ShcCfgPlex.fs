@@ -220,13 +220,15 @@ module ShcCfgPlex =
 
     let toContinueRunCfgs
             (newGenerations:generation)
+            (reportGenFilter:generationFilter)
             (seqSplicer: (int*int) option)
             (plex:shcCfgPlex)
         =
         let _toCrc newGenerations (runId:runId) =
                 { 
                     shcContinueRunCfg.runId = runId;
-                    newGenerations = newGenerations
+                    newGenerations = newGenerations;
+                    reportGenFilter = reportGenFilter
                 }
         toRunIds seqSplicer plex
         |> Seq.map(_toCrc newGenerations)

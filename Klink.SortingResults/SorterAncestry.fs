@@ -118,7 +118,7 @@ module SorterAncestryP =
         }
 
 
-type sorterSetAncestryP =
+type sorterSetAncestry =
         private {
             id: sorterSetAncestryId;
             generation:generation;
@@ -127,16 +127,19 @@ type sorterSetAncestryP =
         }
 
 
-module SorterSetAncestryP =
+module SorterSetAncestry =
 
-    let getId (sa:sorterSetAncestryP) =
+    let getId (sa:sorterSetAncestry) =
         sa.id
 
-    let getGeneration (sa:sorterSetAncestryP) =
+    let getGeneration (sa:sorterSetAncestry) =
         sa.generation
 
-    let getAncestorMap (sa:sorterSetAncestryP) =
+    let getAncestorMap (sa:sorterSetAncestry) =
         sa.ancestorMap
+
+    let getTag (sa:sorterSetAncestry) =
+        sa.tag
 
     let load (id:sorterSetAncestryId) 
              (generation:generation)
@@ -148,7 +151,7 @@ module SorterSetAncestryP =
                 |> Array.map(fun am -> (am.sorterId, am))
                 |> Map.ofArray
         {
-            sorterSetAncestryP.id = id;
+            sorterSetAncestry.id = id;
             generation = generation;
             ancestorMap = ancestorMap
             tag = tag
@@ -191,7 +194,7 @@ module SorterSetAncestryP =
             (stageWeight:stageWeight)
             (sorterSetEval:sorterSetEval)
             (parentMap:Map<sorterId, sorterParentId>)
-            (sorterSetAncestry:sorterSetAncestryP)
+            (sorterSetAncestry:sorterSetAncestry)
         =
         let newId = SorterSetAncestryId.fromTag sorterSetAncestry.tag generation
 

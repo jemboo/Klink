@@ -117,6 +117,7 @@ type gaContinueRunCfg =
     {
         runId:runId
         newGenerations:generation
+        reportGenFilter:generationFilter
     }
 
 
@@ -142,4 +143,5 @@ module GaRunCfg =
                         projectFolderPath 
                         crc.runId 
                         crc.newGenerations
+                        crc.reportGenFilter
                         workspaceFileStoreF

@@ -12,7 +12,7 @@
     <Compile Include="SorterFitness.fs" />
     <Compile Include="SpeedBinProps.fs" />
     <Compile Include="SorterSetPruner.fs" />
-    <Compile Include="SorterAncestryP.fs" />
+    <Compile Include="SorterAncestry.fs" />
   </ItemGroup>
 
   <ItemGroup>

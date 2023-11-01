@@ -144,11 +144,18 @@ module InterGenWsOps =
             (projectDir:string)
             (runId:runId)
             (newGenerations:generation)
+            (newGenerationFilter:generationFilter)
             (workspaceFileStoreF: string -> IWorkspaceStore)
         =
         let res = setupGenLoopContinue projectDir runId newGenerations workspaceFileStoreF
         match res with
         | Ok (curgen, maxGen, curParams, curWorkspace, workplaceFileStore) ->
-            let msg = runLoops curgen maxGen curParams curWorkspace workplaceFileStore
-            Console.WriteLine($"error in runLoops: {msg}")
-        | Error m -> Console.Write($"error in setupGenLoopContinue: {m}")
+            let newWorkspaceParams = 
+                curParams 
+                        |> WorkspaceParamsAttrs.setGenerationFilter 
+                                ShcWsParamKeys.generation_filter 
+                                newGenerationFilter
+            let msg = runLoops curgen maxGen newWorkspaceParams curWorkspace workplaceFileStore
+            if ((String.IsNullOrEmpty msg) |> ``not`` ) then
+                Console.WriteLine($"error in continueGenLoops.runLoops: {msg}")
+        | Error m -> Console.Write($"error in continueGenLoops: {m}")

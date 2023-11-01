@@ -121,6 +121,7 @@ type shcContinueRunCfg =
     {
         runId:runId
         newGenerations:generation
+        reportGenFilter:generationFilter
     }
 
 
@@ -141,9 +142,10 @@ module ShcRunCfg =
             | InitRun irc -> 
                 irc |> ShcInitRunCfg.toWorkspaceParams up
                     |> InterGenWsOps.runGenLoops projectFolderPath workspaceFileStoreF
-            | Continue crc -> 
+            | Continue shcContinueRunCfg -> 
                 InterGenWsOps.continueGenLoops
                     projectFolderPath
-                    crc.runId
-                    crc.newGenerations
+                    shcContinueRunCfg.runId
+                    shcContinueRunCfg.newGenerations
+                    shcContinueRunCfg.reportGenFilter
                     workspaceFileStoreF

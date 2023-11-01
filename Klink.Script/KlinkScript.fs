@@ -98,6 +98,7 @@ module KlinkScript =
 
     let createContinueRunScriptsFromRunCfgPlex
             (newGenerations:generation)
+            (reportGenFilter:generationFilter)
             (scriptFileNamePfx:string)
             (maxRunCountPerScript:int)
             (seqSplicer: (int*int) option)
@@ -106,6 +107,7 @@ module KlinkScript =
         let runCfgs = 
             RunCfgPlex.toContinueRunCfgs
                 newGenerations
+                reportGenFilter
                 seqSplicer
                 plex
             |> Seq.chunkBySize maxRunCountPerScript

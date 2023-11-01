@@ -26,20 +26,20 @@ module ShcReporting =
             |> List.fold(fun st t -> sprintf "%s\t%s" st yab.[t]) ""
 
 
-    let speedBinProps =
-        [
-            sorterEvalProps.ErrorMsg;
-            sorterEvalProps.Phenotype;
-            sorterEvalProps.SortedSetSize;
-            sorterEvalProps.SorterId;
-            sorterEvalProps.StageCount;
-            sorterEvalProps.Success;
-            sorterEvalProps.SwitchCount;
-        ]
+    //let speedBinProps =
+    //    [
+    //        sorterEvalProps.ErrorMsg;
+    //        sorterEvalProps.Phenotype;
+    //        sorterEvalProps.SortedSetSize;
+    //        sorterEvalProps.SorterId;
+    //        sorterEvalProps.StageCount;
+    //        sorterEvalProps.Success;
+    //        sorterEvalProps.SwitchCount;
+    //    ]
 
-    let standardSpeedBinHeaders () = 
-        speedBinProps
-            |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
+    //let standardSpeedBinHeaders () = 
+    //    speedBinProps
+    //        |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
 
 
     let paramPropsSorterEval =
@@ -52,7 +52,8 @@ module ShcReporting =
             ShcWsParamKeys.sortableSetId;
             ShcWsParamKeys.sorterCount;
             ShcWsParamKeys.sorterCountMutated;
-            ShcWsParamKeys.sorterSetPruneMethod;
+            ShcWsParamKeys.sorterSetPruneMethod
+            ShcWsParamKeys.maxPrunedPhenotypeCount;
             ShcWsParamKeys.stageWeight;
             ShcWsParamKeys.sorterLength;
             ShcWsParamKeys.switchGenMode;
@@ -70,11 +71,11 @@ module ShcReporting =
             ShcWsParamKeys.sorterCount;
             ShcWsParamKeys.sorterCountMutated;
             ShcWsParamKeys.sorterSetPruneMethod;
+            ShcWsParamKeys.maxPrunedPhenotypeCount;
             ShcWsParamKeys.stageWeight;
             ShcWsParamKeys.sorterLength;
             ShcWsParamKeys.switchGenMode;
         ]
-        
 
 
     let standardParamValues (wsps:workspaceParams) =
@@ -92,6 +93,7 @@ module ShcReporting =
             ShcWsParamKeys.sortableSetId;
             ShcWsParamKeys.sorterCount;
             ShcWsParamKeys.sorterCountMutated;
+            ShcWsParamKeys.maxPrunedPhenotypeCount;
             ShcWsParamKeys.stageWeight;
             ShcWsParamKeys.sorterLength;
             ShcWsParamKeys.switchGenMode;
@@ -119,9 +121,11 @@ module ShcReporting =
 
     let reportHeaderSpeedBins () =
         sprintf "%s%s" 
-            (paramPropsSpeedBins
+            (
+            paramPropsSpeedBins
               |> List.map(WorkspaceParamsKey.value) 
-              |> List.reduce(fun st t -> sprintf "%s\t%s" st t))
+              |> List.reduce(fun st t -> sprintf "%s\t%s" st t)
+            )
             (SpeedBinProps.getHeader())
 
 

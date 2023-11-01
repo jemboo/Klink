@@ -195,6 +195,7 @@ module GaCfgPlex =
 
     let toContinueRunCfgs
             (newGenerations:generation)
+            (reportGenFilter:generationFilter)
             (seqSplicer: (int*int) option)
             (plex:gaCfgPlex)
         =
@@ -202,7 +203,8 @@ module GaCfgPlex =
         let _toCrc (runId:runId) =
                 { 
                     gaContinueRunCfg.runId = runId;
-                    newGenerations = newGenerations
+                    newGenerations = newGenerations;
+                    reportGenFilter = reportGenFilter
                 }
         toRunIds seqSplicer plex
         |> Seq.map(_toCrc)

@@ -44,7 +44,7 @@ module WorkspaceComponentDescr
 type workspaceComponent =
     | SortableSet of sortableSet
     | SorterSet of sorterSet
-    | SorterSetAncestry of sorterSetAncestryP
+    | SorterSetAncestry of sorterSetAncestry
     | SorterSetConcatMap of sorterSetConcatMap
     | SorterSetEval of sorterSetEval
     | SorterSetMutator of sorterSetMutator
@@ -108,7 +108,7 @@ module WorkspaceComponent =
                 |> SorterSet.getId |> SorterSetId.value
         | SorterSetAncestry sorterSetAncestry -> 
             sorterSetAncestry 
-                |> SorterSetAncestryP.getId |> SorterSetAncestryId.value
+                |> SorterSetAncestry.getId |> SorterSetAncestryId.value
         | SorterSetConcatMap sorterSetConcatMap -> 
             sorterSetConcatMap 
                 |> SorterSetConcatMap.getId |> SorterSetConcatMapId.value

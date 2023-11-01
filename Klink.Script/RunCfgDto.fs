@@ -46,9 +46,9 @@ module RunCfgDto =
             dto.cereal |> ShcInitRunCfgDto.fromJson 
                        |> Result.map(shcRunCfg.InitRun)
                        |> Result.map(runCfg.Shc)
-        | "Continue_shc" -> 
+        | "Continue_shc" ->
             dto.cereal |> ShcContinueRunCfgDto.fromJson 
-                       |> Result.map(shcRunCfg.Continue)
+                       |> Result.map (shcRunCfg.Continue)
                        |> Result.map(runCfg.Shc)
 
         | "Run_ga" ->

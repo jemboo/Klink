@@ -72,6 +72,10 @@ type WorkspaceFileStore (wsRootDir:string) =
                     this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetDto.fromJson)
                     |> Result.map(workspaceComponent.SorterSet)
+                | workspaceComponentType.SorterSetAncestry ->
+                    this.readAllText (Some wsCompType) fileName
+                    |> Result.bind(SorterSetAncestryDto.fromJson)
+                    |> Result.map(workspaceComponent.SorterSetAncestry)
                 | workspaceComponentType.SorterSetMutator ->
                     this.readAllText (Some wsCompType) fileName
                     |> Result.bind(SorterSetMutatorDto.fromJson)

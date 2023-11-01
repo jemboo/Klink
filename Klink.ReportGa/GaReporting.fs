@@ -26,20 +26,20 @@ module GaReporting =
             |> List.fold(fun st t -> sprintf "%s\t%s" st yab.[t]) ""
 
 
-    let speedBinProps =
-        [
-            sorterEvalProps.ErrorMsg;
-            sorterEvalProps.Phenotype;
-            sorterEvalProps.SortedSetSize;
-            sorterEvalProps.SorterId;
-            sorterEvalProps.StageCount;
-            sorterEvalProps.Success;
-            sorterEvalProps.SwitchCount;
-        ]
+    //let speedBinProps =
+    //    [
+    //        sorterEvalProps.ErrorMsg;
+    //        sorterEvalProps.Phenotype;
+    //        sorterEvalProps.SortedSetSize;
+    //        sorterEvalProps.SorterId;
+    //        sorterEvalProps.StageCount;
+    //        sorterEvalProps.Success;
+    //        sorterEvalProps.SwitchCount;
+    //    ]
 
-    let standardSpeedBinHeaders () = 
-        speedBinProps
-            |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
+    //let standardSpeedBinHeaders () = 
+    //    speedBinProps
+    //        |> List.fold(fun st t -> sprintf "%s\t%A" st t) ""
 
 
     let paramPropsSorterEval =
@@ -53,6 +53,7 @@ module GaReporting =
             GaWsParamKeys.sorterCount;
             GaWsParamKeys.sorterCountMutated;
             GaWsParamKeys.sorterSetPruneMethod;
+            GaWsParamKeys.maxPrunedPhenotypeCount;
             GaWsParamKeys.stageWeight;
             GaWsParamKeys.sorterLength;
             GaWsParamKeys.switchGenMode;
@@ -70,6 +71,7 @@ module GaReporting =
             GaWsParamKeys.sorterCount;
             GaWsParamKeys.sorterCountMutated;
             GaWsParamKeys.sorterSetPruneMethod;
+            GaWsParamKeys.maxPrunedPhenotypeCount;
             GaWsParamKeys.stageWeight;
             GaWsParamKeys.sorterLength;
             GaWsParamKeys.switchGenMode;

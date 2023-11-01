@@ -100,6 +100,7 @@ type sorterSetAncestryDto = {
         id: Guid;
         generation:int;
         ancestors:sorterAncestryDto[];
+        tag: Guid
      }
 
 module SorterSetAncestryDto =
@@ -114,7 +115,11 @@ module SorterSetAncestryDto =
                     |> Array.toList
                     |> Result.sequence
  
-           return SorterSetAncestryP.load id generation (ancestors |> List.toArray)
+           return SorterSetAncestry.load 
+                    id 
+                    generation
+                    (ancestors |> List.toArray)
+                    dto.tag
         }
 
     let fromJson (jstr: string) =
@@ -123,24 +128,26 @@ module SorterSetAncestryDto =
             return! fromDto dto
         }
 
-    let toDto (sorterSetAncestry:sorterSetAncestryP) =
+    let toDto (sorterSetAncestry:sorterSetAncestry) =
         {
             sorterSetAncestryDto.id = 
                 sorterSetAncestry 
-                |> SorterSetAncestryP.getId
+                |> SorterSetAncestry.getId
                 |> SorterSetAncestryId.value;
 
             generation = sorterSetAncestry 
-                |> SorterSetAncestryP.getGeneration
+                |> SorterSetAncestry.getGeneration
                 |> Generation.value
 
             ancestors =
                 sorterSetAncestry 
-                |> SorterSetAncestryP.getAncestorMap
+                |> SorterSetAncestry.getAncestorMap
                 |> Map.toArray
                 |> Array.map(snd)
                 |> Array.map(SorterAncestryDto.toDto)
+
+            tag = sorterSetAncestry |> SorterSetAncestry.getTag
         }
 
-    let toJson (sorterAncestry: sorterSetAncestryP) =
+    let toJson (sorterAncestry: sorterSetAncestry) =
         sorterAncestry |> toDto |> Json.serialize

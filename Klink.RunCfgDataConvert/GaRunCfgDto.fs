@@ -85,6 +85,7 @@ type gaContinueRunCfgDto =
     {
         runId:string
         newGenerations:int
+        reportGenFilter:generationFilterDto
     }
 
 module GaContinueRunCfgDto =
@@ -93,22 +94,26 @@ module GaContinueRunCfgDto =
         {
             runId = cfg.runId |> RunId.value |> string
             newGenerations = cfg.newGenerations |> Generation.value
-
+            reportGenFilter = cfg.reportGenFilter |> GenerationFilterDto.toDto
         }
 
     let toJson (cfg:gaContinueRunCfg) =
         cfg |> toDto |> Json.serialize
 
-
     let fromDto (cfg:gaContinueRunCfgDto) =
-        {
-            gaContinueRunCfg.runId = cfg.runId |> Guid.Parse |> RunId.create
-            newGenerations = cfg.newGenerations |> Generation.create
+        result {
+            let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
+            return
+                {
+                    gaContinueRunCfg.runId = cfg.runId |> Guid.Parse |> RunId.create
+                    newGenerations = cfg.newGenerations |> Generation.create
+                    reportGenFilter = reportFilter
+                }
         }
 
 
     let fromJson (cereal:string) =
         result {
             let! dto = Json.deserialize<gaContinueRunCfgDto> cereal
-            return fromDto dto
+            return! fromDto dto
         }

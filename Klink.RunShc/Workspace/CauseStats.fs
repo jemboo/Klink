@@ -124,7 +124,7 @@ type causeAddSorterSetAncestry
                         |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
 
                 let wsSorterSetAncestry = 
-                      SorterSetAncestryP.create 
+                      SorterSetAncestry.create 
                             sorterSetEvalParent
                             stageWeight
                             curGen
@@ -195,7 +195,7 @@ type causeUpdateSorterSetAncestry
 
                 let sorterSetAncestryUpdated =
                         sorterSetAncestry 
-                        |> SorterSetAncestryP.update 
+                        |> SorterSetAncestry.update 
                                     generation 
                                     stageWeight
                                     sorterSetEval
