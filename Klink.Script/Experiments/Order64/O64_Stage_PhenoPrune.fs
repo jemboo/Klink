@@ -1,7 +1,7 @@
 ﻿namespace global
 open System
 
-module O128_Stage_PhenoPrune =
+module O64_Stage_PhenoPrune =
 
     open CommonParams
 
@@ -81,7 +81,7 @@ module O128_Stage_PhenoPrune =
 
     let runCfgPlex =
         {
-            shcCfgPlex.orders = [| 128 |> Order.createNr |]
+            shcCfgPlex.orders = [| 64 |> Order.createNr |]
             sortableSetCfgs =  
                     [| 
                         (
@@ -91,12 +91,13 @@ module O128_Stage_PhenoPrune =
                         )
                     |]
             mutationRates = [|mr2;|];
-            noiseFractions = [|nf4;|];
-            rngGens = rndGens 0 1 ;
+            noiseFractions = [|nf2;nf3;nf4;|];
+            rngGens = rndGens 0 10 ;
             tupSorterSetSizes = [|ssz5_6|];
             sorterSetPruneMethodsOld = 
                 [|
-                    spc3;
+                    spc2;
+                    spc4;
                     spc6;
                 |];
             stageWeights = [|sw0;|];
@@ -105,18 +106,18 @@ module O128_Stage_PhenoPrune =
 
 
 
-    let initGenerationCount = 50 |> Generation.create
-    let continueGenerationCount = 450 |> Generation.create
+    let initGenerationCount = 5000 |> Generation.create
+    let continueGenerationCount = 49500 |> Generation.create
     let totalGenerationCount = Generation.addG initGenerationCount continueGenerationCount
 
-    let initReportFilter = CommonParams.modulusFilter 1
-    let continueReportFilter = CommonParams.modulusFilter 5
+    let initReportFilter = CommonParams.modulusFilter 10
+    let continueReportFilter = CommonParams.modulusFilter 10
 
-    let initScriptName = "initScriptLr"
+    let initScriptName = "initScriptL_mr"
     let continueScriptName = "continueScriptLr"
 
     let baseDir = $"c:\Klink"
-    let projectFolder  = $"o128\StagePhenoPruneT"
+    let projectFolder  = $"o64\StagePhenoPrune"
 
     let writeInitScripts (maxRunsPerScript:int) = 
             KlinkScript.createInitRunScriptsFromRunCfgPlex 
@@ -149,7 +150,7 @@ module O128_Stage_PhenoPrune =
     let writeReportEvalsScript (seqSplicer:(int*int) option) = 
             KlinkScript.createReportEvalsScriptFromRunCfgPlex 
                 reportGenMin
-                initGenerationCount
+                totalGenerationCount
                 evalScriptComponent
                 continueReportFilter
                 reportEvalsFileName

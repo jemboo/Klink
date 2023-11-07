@@ -86,3 +86,11 @@ module CommonParams =
     let sspm1 = sorterSetPruneMethod.Whole
     let sspm2 = sorterSetPruneMethod.PhenotypeCap
     let sspm3 = sorterSetPruneMethod.Shc
+
+    let spc1 = 1 |> SorterPhenotypeCount.create |> sorterSetPruneMethod.PhenotypeCap
+    let spc2 = 2 |> SorterPhenotypeCount.create |> sorterSetPruneMethod.PhenotypeCap
+    let spc3 = 4 |> SorterPhenotypeCount.create |> sorterSetPruneMethod.PhenotypeCap
+    let spc4 = 8 |> SorterPhenotypeCount.create |> sorterSetPruneMethod.PhenotypeCap
+    let spc5 = 16 |> SorterPhenotypeCount.create |> sorterSetPruneMethod.PhenotypeCap
+    let spc6 = 32 |> SorterPhenotypeCount.create |> sorterSetPruneMethod.PhenotypeCap
+    let spc7 = 64 |> SorterPhenotypeCount.create |> sorterSetPruneMethod.PhenotypeCap

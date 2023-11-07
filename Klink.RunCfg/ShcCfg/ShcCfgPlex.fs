@@ -8,7 +8,7 @@ type shcCfgPlex =
         noiseFractions:noiseFraction[]
         rngGens:rngGen[]
         tupSorterSetSizes:(sorterCount*sorterCount)[]
-        sorterSetPruneMethods:(sorterSetPruneMethod * (sorterCount option))[]
+        sorterSetPruneMethodsOld:sorterSetPruneMethod[]
         stageWeights:stageWeight[]
         switchGenModes:switchGenMode[]
     }
@@ -33,7 +33,7 @@ module ShcCfgPlex =
                      stageWeight -> 
                      noiseFraction -> 
                      mutationRate ->
-                     sorterSetPruneMethod * (sorterCount option) -> 
+                     sorterSetPruneMethod -> 
                      'a)
             (seqSplicer: (int*int) option)
             =
@@ -47,7 +47,7 @@ module ShcCfgPlex =
                                 for stageWeight in plex.stageWeights do
                                     for noiseFraction in plex.noiseFractions do
                                         for mutationRate in plex.mutationRates do
-                                            for sorterSetPruneMethod in plex.sorterSetPruneMethods do
+                                            for sorterSetPruneMethod in plex.sorterSetPruneMethodsOld do
                                                 yield
                                                     daFunc 
                                                         order 
@@ -82,7 +82,7 @@ module ShcCfgPlex =
                 stageWeight -> 
                 noiseFraction -> 
                 mutationRate -> 
-                sorterSetPruneMethod * (sorterCount option) -> 
+                sorterSetPruneMethod -> 
                 'a)
             (seqSplicer: (int*int) option)
         =
@@ -96,7 +96,7 @@ module ShcCfgPlex =
                                 for stageWeight in plex.stageWeights do
                                     for noiseFraction in plex.noiseFractions do
                                         for mutationRate in plex.mutationRates do
-                                            for sorterSetPruneMethod in plex.sorterSetPruneMethods do
+                                            for sorterSetPruneMethod in plex.sorterSetPruneMethodsOld do
                                                 yield
                                                     daFunc 
                                                         sortableSetCfgType
@@ -137,7 +137,7 @@ module ShcCfgPlex =
                 stageWeight 
                 noiseFraction 
                 mutationRate 
-                (sorterSetPruneMethod, sorterCountOpt)
+                sorterSetPruneMethod
             =
                 let runId = 
                     ShcInitRunCfg.getRunId2
@@ -150,7 +150,6 @@ module ShcCfgPlex =
                         (fst tupSorterSetSize)
                         (snd tupSorterSetSize)
                         sorterSetPruneMethod
-                        sorterCountOpt
                         stageWeight
                         (SwitchCount.orderTo999SwitchCount order)
                         switchGenMode
@@ -169,7 +168,6 @@ module ShcCfgPlex =
                             sorterCount = fst tupSorterSetSize
                             sorterCountMutated = snd tupSorterSetSize
                             sorterSetPruneMethod = sorterSetPruneMethod;
-                            maxPhenotypeForPrune = sorterCountOpt
                             stagesSkipped = stagesSkipped
                             stageWeight = stageWeight
                             switchCount = (SwitchCount.orderTo999SwitchCount order)
@@ -196,7 +194,7 @@ module ShcCfgPlex =
                   stageWeight 
                   noiseFraction 
                   mutationRate 
-                 (sorterSetPruneMethod, sorterCountOpt)
+                  sorterSetPruneMethod
             =
 
                 ShcInitRunCfg.getRunId2
@@ -209,7 +207,6 @@ module ShcCfgPlex =
                     (fst tupSorterSetSize)
                     (snd tupSorterSetSize)
                     sorterSetPruneMethod
-                    sorterCountOpt
                     stageWeight
                     (SwitchCount.orderTo999SwitchCount order)
                     switchGenMode

@@ -155,8 +155,7 @@ type causeMakeSorterSetEval
         member this.UseInWorkspaceId = true
 
 
-
-type causePruneSorterSetsWhole
+type causePruneSorterSets
             (
              wsnSorterSetParentName:wsComponentName,
              wsnSorterSetChildName:wsComponentName,
@@ -164,317 +163,26 @@ type causePruneSorterSetsWhole
              wsnSorterSetEvalChildName:wsComponentName,
              wsnSorterSetPrunedName:wsComponentName,
              wsnSorterSetEvalPrunedName:wsComponentName,
-             rngGen:rngGen,
-             prunedCount:sorterCount,
-             noiseFraction: noiseFraction option,
-             stageWeight:stageWeight) 
-    = 
-    member this.causeName = "causePruneSorterSetsWhole"
-    member this.sorterSetParentName = wsnSorterSetParentName
-    member this.sorterSetChildName = wsnSorterSetChildName
-    member this.sorterSetEvalParentName = wsnSorterSetEvalParentName
-    member this.sorterSetEvalChildName = wsnSorterSetEvalChildName
-    member this.sorterSetPrunedName = wsnSorterSetPrunedName
-    member this.sorterSetEvalPrunedName = wsnSorterSetEvalPrunedName
-    member this.rngGen = rngGen
-    member this.prunedCount = prunedCount
-    member this.noiseFraction = noiseFraction
-    member this.stageWeight = stageWeight
-
-    member this.updater =
-
-        fun (w: workspace) (newWorkspaceId: workspaceId) ->
-
-            result {
-
-                let! sorterSetParent = 
-                        w |> Workspace.getComponent this.sorterSetParentName
-                          |> Result.bind(WorkspaceComponent.asSorterSet)
-                let! sorterSetChild = 
-                        w |> Workspace.getComponent this.sorterSetChildName
-                          |> Result.bind(WorkspaceComponent.asSorterSet)
-                let! sorterSetEvalParent = 
-                        w |> Workspace.getComponent this.sorterSetEvalParentName
-                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
-                let! sorterSetEvalChild = 
-                        w |> Workspace.getComponent this.sorterSetEvalChildName
-                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
-
-                let rngGenProvider = 
-                        RngGenProvider.make this.rngGen
-                let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
-
-                let sorterSetEvalsAll = 
-                        (sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray)
-                                |> Array.append
-                                    (sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray)
-
-                let sorterSetPruner = 
-                    SorterSetPruner.make 
-                                this.prunedCount 
-                                this.noiseFraction 
-                                this.stageWeight
-
-                let sorterEvalsPruned = 
-                        sorterSetEvalsAll 
-                        |> SorterSetPruner.runWholePrune 
-                                sorterSetPruner 
-                                _rngGen
-
-                let mergedSorterMap = 
-                        (sorterSetParent |> SorterSet.getSorters)
-                            |> Array.append
-                                (sorterSetChild |> SorterSet.getSorters)
-                        |> Array.map(fun s -> ((s |> Sorter.getSorterId), s))
-                        |> Map.ofArray
-
-                let prunedSorters =
-                        sorterEvalsPruned 
-                        |> Array.map(fun sev -> sev |> SorterEval.getSorterId)
-                        |> Array.map(fun sid -> mergedSorterMap.[sid])
-
-                let prunedSorterSetId = 
-                    SorterSetPruner.makePrunedSorterSetId
-                        (sorterSetPruner |> SorterSetPruner.getId)
-                        (sorterSetParent |> SorterSet.getId)
-                        (sorterSetChild |> SorterSet.getId)
-                        (this.stageWeight)
-                        (this.noiseFraction)
-                        _rngGen
-
-                let prunedSorterSet = 
-                     SorterSet.load 
-                            prunedSorterSetId
-                            (sorterSetParent |> SorterSet.getOrder)
-                            prunedSorters
-
-
-                let prunedSorterSetEvalId = 
-                    SorterSetPruner.makePrunedSorterSetEvalId
-                        (sorterSetPruner |> SorterSetPruner.getId)
-                        (sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
-                        (sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
-                        _rngGen
-
-
-                let sorterSetEvalsPruned = 
-                    SorterSetEval.load
-                        prunedSorterSetEvalId
-                        prunedSorterSetId
-                        (sorterSetEvalChild |> SorterSetEval.getSortableSetId)
-                        sorterEvalsPruned
-
-
-                return
-                    w |> Workspace.addComponents
-                            newWorkspaceId
-                            this.causeName
-                            [
-                                (this.sorterSetPrunedName, prunedSorterSet |> workspaceComponent.SorterSet)
-                                (this.sorterSetEvalPrunedName, sorterSetEvalsPruned |> workspaceComponent.SorterSetEval )
-                            ]
-            }
-
-
-    member this.id =
-        [
-            this.causeName :> obj
-            this.sorterSetParentName |> WsComponentName.value  :> obj
-            this.sorterSetChildName |> WsComponentName.value  :> obj
-            this.sorterSetEvalParentName |> WsComponentName.value  :> obj
-            this.sorterSetEvalChildName |> WsComponentName.value  :> obj
-            this.sorterSetPrunedName |> WsComponentName.value  :> obj
-            this.prunedCount |> SorterCount.value  :> obj
-            this.noiseFraction :> obj
-            this.stageWeight |> StageWeight.value  :> obj
-            rngGen :> obj
-        ]
-             |> GuidUtils.guidFromObjs
-             |> CauseId.create
-    interface ICause with
-        member this.Id = this.id
-        member this.ResetId = None
-        member this.Name = this.causeName
-        member this.Updater = this.updater
-        member this.UseInWorkspaceId = true
-
-
-
-
-type causePruneSorterSetsMaxPhenotype
-            (
-             wsnSorterSetParentName:wsComponentName,
-             wsnSorterSetChildName:wsComponentName,
-             wsnSorterSetEvalParentName:wsComponentName,
-             wsnSorterSetEvalChildName:wsComponentName,
-             wsnSorterSetPrunedName:wsComponentName,
-             wsnSorterSetEvalPrunedName:wsComponentName,
-             rngGen:rngGen,
-             prunedCount:sorterCount,
-             maxPhenotypesCount:sorterCount option,
-             noiseFraction: noiseFraction option,
-             stageWeight:stageWeight) 
-    = 
-    member this.causeName = "causePruneSorterSetsMaxPhenotype"
-    member this.sorterSetParentName = wsnSorterSetParentName
-    member this.sorterSetChildName = wsnSorterSetChildName
-    member this.sorterSetEvalParentName = wsnSorterSetEvalParentName
-    member this.sorterSetEvalChildName = wsnSorterSetEvalChildName
-    member this.sorterSetPrunedName = wsnSorterSetPrunedName
-    member this.sorterSetEvalPrunedName = wsnSorterSetEvalPrunedName
-    member this.rngGen = rngGen
-    member this.prunedCount = prunedCount
-    member this.noiseFraction = noiseFraction
-    member this.stageWeight = stageWeight
-
-    member this.updater =
-
-        fun (w: workspace) (newWorkspaceId: workspaceId) ->
-
-            result {
-
-                let! _sorterSetParent = 
-                        w |> Workspace.getComponent this.sorterSetParentName
-                          |> Result.bind(WorkspaceComponent.asSorterSet)
-                let! _sorterSetChild = 
-                        w |> Workspace.getComponent this.sorterSetChildName
-                          |> Result.bind(WorkspaceComponent.asSorterSet)
-                let! _sorterSetEvalParent = 
-                        w |> Workspace.getComponent this.sorterSetEvalParentName
-                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
-                let! _sorterSetEvalChild = 
-                        w |> Workspace.getComponent this.sorterSetEvalChildName
-                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
-
-                let rngGenProvider = 
-                        RngGenProvider.make this.rngGen
-                let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
-
-                let sevsP = _sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray
-                let sevsC = _sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray
-                let sorterSetEvalsAll = sevsP |> Array.append sevsC
-
-                let sorterSetPruner = 
-                    SorterSetPruner.make 
-                                this.prunedCount 
-                                this.noiseFraction 
-                                this.stageWeight
-
-                let sorterEvalsPruned = 
-                        sorterSetEvalsAll 
-                        |> SorterSetPruner.runWholeCappedPrune 
-                                sorterSetPruner
-                                (maxPhenotypesCount |> Option.get |> SorterCount.value)
-                                _rngGen
-
-                let mergedSorterMap = 
-                        (_sorterSetParent |> SorterSet.getSorters)
-                            |> Array.append
-                                (_sorterSetChild |> SorterSet.getSorters)
-                        |> Array.map(fun s -> ((s |> Sorter.getSorterId), s))
-                        |> Map.ofArray
-
-                let prunedSorters =
-                        sorterEvalsPruned 
-                        |> Array.map(fun sev -> sev |> SorterEval.getSorterId)
-                        |> Array.map(fun sid -> mergedSorterMap.[sid])
-
-                let prunedSorterSetId = 
-                    SorterSetPruner.makePrunedSorterSetId
-                        (sorterSetPruner |> SorterSetPruner.getId)
-                        (_sorterSetParent |> SorterSet.getId)
-                        (_sorterSetChild |> SorterSet.getId)
-                        (this.stageWeight)
-                        (this.noiseFraction)
-                        _rngGen
-
-                let prunedSorterSet = 
-                     SorterSet.load 
-                            prunedSorterSetId
-                            (_sorterSetParent |> SorterSet.getOrder)
-                            prunedSorters
-
-
-                let prunedSorterSetEvalId = 
-                    SorterSetPruner.makePrunedSorterSetEvalId
-                        (sorterSetPruner |> SorterSetPruner.getId)
-                        (_sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
-                        (_sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
-                        _rngGen
-
-
-                let sorterSetEvalsPruned = 
-                    SorterSetEval.load
-                        prunedSorterSetEvalId
-                        prunedSorterSetId
-                        (_sorterSetEvalChild |> SorterSetEval.getSortableSetId)
-                        sorterEvalsPruned
-
-
-                return
-                    w |> Workspace.addComponents
-                            newWorkspaceId
-                            this.causeName
-                            [
-                                (this.sorterSetPrunedName, prunedSorterSet |> workspaceComponent.SorterSet)
-                                (this.sorterSetEvalPrunedName, sorterSetEvalsPruned |> workspaceComponent.SorterSetEval )
-                            ]
-            }
-
-
-    member this.id =
-        [
-            this.causeName :> obj
-            this.sorterSetParentName |> WsComponentName.value  :> obj
-            this.sorterSetChildName |> WsComponentName.value  :> obj
-            this.sorterSetEvalParentName |> WsComponentName.value  :> obj
-            this.sorterSetEvalChildName |> WsComponentName.value  :> obj
-            this.sorterSetPrunedName |> WsComponentName.value  :> obj
-            this.prunedCount |> SorterCount.value  :> obj
-            this.noiseFraction :> obj
-            this.stageWeight |> StageWeight.value  :> obj
-            rngGen :> obj
-        ]
-             |> GuidUtils.guidFromObjs
-             |> CauseId.create
-    interface ICause with
-        member this.Id = this.id
-        member this.ResetId = None
-        member this.Name = this.causeName
-        member this.Updater = this.updater
-        member this.UseInWorkspaceId = true
-
-
-
-
-
-
-type causePruneSorterSetsShc
-            (
-             wsnSorterSetParentName:wsComponentName,
-             wsnSorterSetChildName:wsComponentName,
-             wsnSorterSetEvalParentName:wsComponentName,
-             wsnSorterSetEvalChildName:wsComponentName,
-             sorterSetPrunedName:wsComponentName,
              wsnSorterSetParentMapName:wsComponentName,
-             wsnSorterSetEvalPrunedName:wsComponentName,
              rngGen:rngGen,
              prunedCount:sorterCount,
              noiseFraction: noiseFraction option,
-             stageWeight:stageWeight) 
+             stageWeight:stageWeight,
+             sorterSetPruneMethod:sorterSetPruneMethod) 
     = 
-    member this.causeName = "causePruneSorterSetsShc"
+    member this.causeName = "causePruneSorterSets"
     member this.sorterSetParentName = wsnSorterSetParentName
     member this.sorterSetChildName = wsnSorterSetChildName
     member this.sorterSetEvalParentName = wsnSorterSetEvalParentName
     member this.sorterSetEvalChildName = wsnSorterSetEvalChildName
-    member this.sorterSetPrunedName = sorterSetPrunedName
-    member this.sorterSetParentMapName = wsnSorterSetParentMapName
+    member this.sorterSetPrunedName = wsnSorterSetPrunedName
     member this.sorterSetEvalPrunedName = wsnSorterSetEvalPrunedName
     member this.rngGen = rngGen
     member this.prunedCount = prunedCount
     member this.noiseFraction = noiseFraction
     member this.stageWeight = stageWeight
+    member this.sorterSetParentMapName = wsnSorterSetParentMapName
+    member this.sorterSetPruneMethod = sorterSetPruneMethod
 
     member this.updater =
 
@@ -499,13 +207,14 @@ type causePruneSorterSetsShc
                           |> Result.bind(WorkspaceComponent.asSorterSetParentMap)
 
 
-                let _rngGen = RngGenProvider.make 
-                                this.rngGen |> RngGenProvider.nextRngGen
 
-                let sorterSetEvalsAll = 
-                        (_sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray)
-                                |> Array.append
-                                    (_sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray)
+                let rngGenProvider = 
+                        RngGenProvider.make this.rngGen
+                let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
+
+                let sevsP = _sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray
+                let sevsC = _sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray
+                let sorterSetEvalsAll = sevsP |> Array.append sevsC
 
                 let sorterSetPruner = 
                     SorterSetPruner.make 
@@ -515,14 +224,17 @@ type causePruneSorterSetsShc
 
                 let sorterEvalsPruned = 
                         sorterSetEvalsAll 
-                        |> SorterSetPruner.runShcPrune 
-                                sorterSetPruner 
+                        |> SorterSetPruner.runPrune
+                                this.sorterSetPruneMethod
                                 _rngGen
                                 _sorterSetParentMap
+                                sorterSetPruner 
+                                
 
                 let mergedSorterMap = 
                         (_sorterSetParent |> SorterSet.getSorters)
-                        |> Array.append (_sorterSetChild |> SorterSet.getSorters)
+                            |> Array.append
+                                (_sorterSetChild |> SorterSet.getSorters)
                         |> Array.map(fun s -> ((s |> Sorter.getSorterId), s))
                         |> Map.ofArray
 
@@ -534,6 +246,7 @@ type causePruneSorterSetsShc
                 let prunedSorterSetId = 
                     SorterSetPruner.makePrunedSorterSetId
                         (sorterSetPruner |> SorterSetPruner.getId)
+                        this.sorterSetPruneMethod
                         (_sorterSetParent |> SorterSet.getId)
                         (_sorterSetChild |> SorterSet.getId)
                         (this.stageWeight)
@@ -542,14 +255,15 @@ type causePruneSorterSetsShc
 
                 let prunedSorterSet = 
                      SorterSet.load 
-                        prunedSorterSetId
-                        (_sorterSetParent |> SorterSet.getOrder)
-                        prunedSorters
+                            prunedSorterSetId
+                            (_sorterSetParent |> SorterSet.getOrder)
+                            prunedSorters
 
 
                 let prunedSorterSetEvalId = 
                     SorterSetPruner.makePrunedSorterSetEvalId
                         (sorterSetPruner |> SorterSetPruner.getId)
+                        this.sorterSetPruneMethod
                         (_sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
                         (_sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
                         _rngGen
@@ -595,6 +309,443 @@ type causePruneSorterSetsShc
         member this.Name = this.causeName
         member this.Updater = this.updater
         member this.UseInWorkspaceId = true
+
+
+
+//type causePruneSorterSetsWhole
+//            (
+//             wsnSorterSetParentName:wsComponentName,
+//             wsnSorterSetChildName:wsComponentName,
+//             wsnSorterSetEvalParentName:wsComponentName,
+//             wsnSorterSetEvalChildName:wsComponentName,
+//             wsnSorterSetPrunedName:wsComponentName,
+//             wsnSorterSetEvalPrunedName:wsComponentName,
+//             rngGen:rngGen,
+//             prunedCount:sorterCount,
+//             noiseFraction: noiseFraction option,
+//             stageWeight:stageWeight) 
+//    = 
+//    member this.causeName = "causePruneSorterSetsWhole"
+//    member this.sorterSetParentName = wsnSorterSetParentName
+//    member this.sorterSetChildName = wsnSorterSetChildName
+//    member this.sorterSetEvalParentName = wsnSorterSetEvalParentName
+//    member this.sorterSetEvalChildName = wsnSorterSetEvalChildName
+//    member this.sorterSetPrunedName = wsnSorterSetPrunedName
+//    member this.sorterSetEvalPrunedName = wsnSorterSetEvalPrunedName
+//    member this.rngGen = rngGen
+//    member this.prunedCount = prunedCount
+//    member this.noiseFraction = noiseFraction
+//    member this.stageWeight = stageWeight
+
+//    member this.updater =
+
+//        fun (w: workspace) (newWorkspaceId: workspaceId) ->
+
+//            result {
+
+//                let! sorterSetParent = 
+//                        w |> Workspace.getComponent this.sorterSetParentName
+//                          |> Result.bind(WorkspaceComponent.asSorterSet)
+//                let! sorterSetChild = 
+//                        w |> Workspace.getComponent this.sorterSetChildName
+//                          |> Result.bind(WorkspaceComponent.asSorterSet)
+//                let! sorterSetEvalParent = 
+//                        w |> Workspace.getComponent this.sorterSetEvalParentName
+//                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
+//                let! sorterSetEvalChild = 
+//                        w |> Workspace.getComponent this.sorterSetEvalChildName
+//                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
+
+//                let rngGenProvider = 
+//                        RngGenProvider.make this.rngGen
+//                let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
+
+//                let sorterSetEvalsAll = 
+//                        (sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray)
+//                                |> Array.append
+//                                    (sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray)
+
+//                let sorterSetPruner = 
+//                    SorterSetPruner.make 
+//                                this.prunedCount 
+//                                this.noiseFraction 
+//                                this.stageWeight
+
+//                let sorterEvalsPruned = 
+//                        sorterSetEvalsAll 
+//                        |> SorterSetPruner.runWholePrune 
+//                                sorterSetPruner 
+//                                _rngGen
+
+//                let mergedSorterMap = 
+//                        (sorterSetParent |> SorterSet.getSorters)
+//                            |> Array.append
+//                                (sorterSetChild |> SorterSet.getSorters)
+//                        |> Array.map(fun s -> ((s |> Sorter.getSorterId), s))
+//                        |> Map.ofArray
+
+//                let prunedSorters =
+//                        sorterEvalsPruned 
+//                        |> Array.map(fun sev -> sev |> SorterEval.getSorterId)
+//                        |> Array.map(fun sid -> mergedSorterMap.[sid])
+
+//                let prunedSorterSetId = 
+//                    SorterSetPruner.makePrunedSorterSetId
+//                        (sorterSetPruner |> SorterSetPruner.getId)
+//                        (sorterSetParent |> SorterSet.getId)
+//                        (sorterSetChild |> SorterSet.getId)
+//                        (this.stageWeight)
+//                        (this.noiseFraction)
+//                        _rngGen
+
+//                let prunedSorterSet = 
+//                     SorterSet.load 
+//                            prunedSorterSetId
+//                            (sorterSetParent |> SorterSet.getOrder)
+//                            prunedSorters
+
+
+//                let prunedSorterSetEvalId = 
+//                    SorterSetPruner.makePrunedSorterSetEvalId
+//                        (sorterSetPruner |> SorterSetPruner.getId)
+//                        (sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
+//                        (sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
+//                        _rngGen
+
+
+//                let sorterSetEvalsPruned = 
+//                    SorterSetEval.load
+//                        prunedSorterSetEvalId
+//                        prunedSorterSetId
+//                        (sorterSetEvalChild |> SorterSetEval.getSortableSetId)
+//                        sorterEvalsPruned
+
+
+//                return
+//                    w |> Workspace.addComponents
+//                            newWorkspaceId
+//                            this.causeName
+//                            [
+//                                (this.sorterSetPrunedName, prunedSorterSet |> workspaceComponent.SorterSet)
+//                                (this.sorterSetEvalPrunedName, sorterSetEvalsPruned |> workspaceComponent.SorterSetEval )
+//                            ]
+//            }
+
+
+//    member this.id =
+//        [
+//            this.causeName :> obj
+//            this.sorterSetParentName |> WsComponentName.value  :> obj
+//            this.sorterSetChildName |> WsComponentName.value  :> obj
+//            this.sorterSetEvalParentName |> WsComponentName.value  :> obj
+//            this.sorterSetEvalChildName |> WsComponentName.value  :> obj
+//            this.sorterSetPrunedName |> WsComponentName.value  :> obj
+//            this.prunedCount |> SorterCount.value  :> obj
+//            this.noiseFraction :> obj
+//            this.stageWeight |> StageWeight.value  :> obj
+//            rngGen :> obj
+//        ]
+//             |> GuidUtils.guidFromObjs
+//             |> CauseId.create
+//    interface ICause with
+//        member this.Id = this.id
+//        member this.ResetId = None
+//        member this.Name = this.causeName
+//        member this.Updater = this.updater
+//        member this.UseInWorkspaceId = true
+
+
+
+
+//type causePruneSorterSetsMaxPhenotype
+//            (
+//             wsnSorterSetParentName:wsComponentName,
+//             wsnSorterSetChildName:wsComponentName,
+//             wsnSorterSetEvalParentName:wsComponentName,
+//             wsnSorterSetEvalChildName:wsComponentName,
+//             wsnSorterSetPrunedName:wsComponentName,
+//             wsnSorterSetEvalPrunedName:wsComponentName,
+//             rngGen:rngGen,
+//             prunedCount:sorterCount,
+//             noiseFraction: noiseFraction option,
+//             stageWeight:stageWeight) 
+//    = 
+//    member this.causeName = "causePruneSorterSetsMaxPhenotype"
+//    member this.sorterSetParentName = wsnSorterSetParentName
+//    member this.sorterSetChildName = wsnSorterSetChildName
+//    member this.sorterSetEvalParentName = wsnSorterSetEvalParentName
+//    member this.sorterSetEvalChildName = wsnSorterSetEvalChildName
+//    member this.sorterSetPrunedName = wsnSorterSetPrunedName
+//    member this.sorterSetEvalPrunedName = wsnSorterSetEvalPrunedName
+//    member this.rngGen = rngGen
+//    member this.prunedCount = prunedCount
+//    member this.noiseFraction = noiseFraction
+//    member this.stageWeight = stageWeight
+
+//    member this.updater =
+
+//        fun (w: workspace) (newWorkspaceId: workspaceId) ->
+
+//            result {
+
+//                let! _sorterSetParent = 
+//                        w |> Workspace.getComponent this.sorterSetParentName
+//                          |> Result.bind(WorkspaceComponent.asSorterSet)
+//                let! _sorterSetChild = 
+//                        w |> Workspace.getComponent this.sorterSetChildName
+//                          |> Result.bind(WorkspaceComponent.asSorterSet)
+//                let! _sorterSetEvalParent = 
+//                        w |> Workspace.getComponent this.sorterSetEvalParentName
+//                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
+//                let! _sorterSetEvalChild = 
+//                        w |> Workspace.getComponent this.sorterSetEvalChildName
+//                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
+
+//                let rngGenProvider = 
+//                        RngGenProvider.make this.rngGen
+//                let _rngGen = rngGenProvider |> RngGenProvider.nextRngGen
+
+//                let sevsP = _sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray
+//                let sevsC = _sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray
+//                let sorterSetEvalsAll = sevsP |> Array.append sevsC
+
+//                let sorterSetPruner = 
+//                    SorterSetPruner.make 
+//                                this.prunedCount 
+//                                this.noiseFraction 
+//                                this.stageWeight
+
+//                let sorterEvalsPruned = 
+//                        sorterSetEvalsAll 
+//                        |> SorterSetPruner.runWholeCappedPrune 
+//                                sorterSetPruner
+//                                (prunedCount |> SorterCount.value)
+//                                _rngGen
+
+//                let mergedSorterMap = 
+//                        (_sorterSetParent |> SorterSet.getSorters)
+//                            |> Array.append
+//                                (_sorterSetChild |> SorterSet.getSorters)
+//                        |> Array.map(fun s -> ((s |> Sorter.getSorterId), s))
+//                        |> Map.ofArray
+
+//                let prunedSorters =
+//                        sorterEvalsPruned 
+//                        |> Array.map(fun sev -> sev |> SorterEval.getSorterId)
+//                        |> Array.map(fun sid -> mergedSorterMap.[sid])
+
+//                let prunedSorterSetId = 
+//                    SorterSetPruner.makePrunedSorterSetId
+//                        (sorterSetPruner |> SorterSetPruner.getId)
+//                        (_sorterSetParent |> SorterSet.getId)
+//                        (_sorterSetChild |> SorterSet.getId)
+//                        (this.stageWeight)
+//                        (this.noiseFraction)
+//                        _rngGen
+
+//                let prunedSorterSet = 
+//                     SorterSet.load 
+//                            prunedSorterSetId
+//                            (_sorterSetParent |> SorterSet.getOrder)
+//                            prunedSorters
+
+
+//                let prunedSorterSetEvalId = 
+//                    SorterSetPruner.makePrunedSorterSetEvalId
+//                        (sorterSetPruner |> SorterSetPruner.getId)
+//                        (_sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
+//                        (_sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
+//                        _rngGen
+
+
+//                let sorterSetEvalsPruned = 
+//                    SorterSetEval.load
+//                        prunedSorterSetEvalId
+//                        prunedSorterSetId
+//                        (_sorterSetEvalChild |> SorterSetEval.getSortableSetId)
+//                        sorterEvalsPruned
+
+
+//                return
+//                    w |> Workspace.addComponents
+//                            newWorkspaceId
+//                            this.causeName
+//                            [
+//                                (this.sorterSetPrunedName, prunedSorterSet |> workspaceComponent.SorterSet)
+//                                (this.sorterSetEvalPrunedName, sorterSetEvalsPruned |> workspaceComponent.SorterSetEval )
+//                            ]
+//            }
+
+
+//    member this.id =
+//        [
+//            this.causeName :> obj
+//            this.sorterSetParentName |> WsComponentName.value  :> obj
+//            this.sorterSetChildName |> WsComponentName.value  :> obj
+//            this.sorterSetEvalParentName |> WsComponentName.value  :> obj
+//            this.sorterSetEvalChildName |> WsComponentName.value  :> obj
+//            this.sorterSetPrunedName |> WsComponentName.value  :> obj
+//            this.prunedCount |> SorterCount.value  :> obj
+//            this.noiseFraction :> obj
+//            this.stageWeight |> StageWeight.value  :> obj
+//            rngGen :> obj
+//        ]
+//             |> GuidUtils.guidFromObjs
+//             |> CauseId.create
+//    interface ICause with
+//        member this.Id = this.id
+//        member this.ResetId = None
+//        member this.Name = this.causeName
+//        member this.Updater = this.updater
+//        member this.UseInWorkspaceId = true
+
+
+//type causePruneSorterSetsShc
+//            (
+//             wsnSorterSetParentName:wsComponentName,
+//             wsnSorterSetChildName:wsComponentName,
+//             wsnSorterSetEvalParentName:wsComponentName,
+//             wsnSorterSetEvalChildName:wsComponentName,
+//             sorterSetPrunedName:wsComponentName,
+//             wsnSorterSetParentMapName:wsComponentName,
+//             wsnSorterSetEvalPrunedName:wsComponentName,
+//             rngGen:rngGen,
+//             prunedCount:sorterCount,
+//             noiseFraction: noiseFraction option,
+//             stageWeight:stageWeight) 
+//    = 
+//    member this.causeName = "causePruneSorterSetsShc"
+//    member this.sorterSetParentName = wsnSorterSetParentName
+//    member this.sorterSetChildName = wsnSorterSetChildName
+//    member this.sorterSetEvalParentName = wsnSorterSetEvalParentName
+//    member this.sorterSetEvalChildName = wsnSorterSetEvalChildName
+//    member this.sorterSetPrunedName = sorterSetPrunedName
+//    member this.sorterSetParentMapName = wsnSorterSetParentMapName
+//    member this.sorterSetEvalPrunedName = wsnSorterSetEvalPrunedName
+//    member this.rngGen = rngGen
+//    member this.prunedCount = prunedCount
+//    member this.noiseFraction = noiseFraction
+//    member this.stageWeight = stageWeight
+
+//    member this.updater =
+
+//        fun (w: workspace) (newWorkspaceId: workspaceId) ->
+
+//            result {
+
+//                let! _sorterSetParent = 
+//                        w |> Workspace.getComponent this.sorterSetParentName
+//                          |> Result.bind(WorkspaceComponent.asSorterSet)
+//                let! _sorterSetChild = 
+//                        w |> Workspace.getComponent this.sorterSetChildName
+//                          |> Result.bind(WorkspaceComponent.asSorterSet)
+//                let! _sorterSetEvalParent = 
+//                        w |> Workspace.getComponent this.sorterSetEvalParentName
+//                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
+//                let! _sorterSetEvalChild = 
+//                        w |> Workspace.getComponent this.sorterSetEvalChildName
+//                          |> Result.bind(WorkspaceComponent.asSorterSetEval)
+//                let! _sorterSetParentMap = 
+//                        w |> Workspace.getComponent this.sorterSetParentMapName
+//                          |> Result.bind(WorkspaceComponent.asSorterSetParentMap)
+
+
+//                let _rngGen = RngGenProvider.make 
+//                                this.rngGen |> RngGenProvider.nextRngGen
+
+//                let sorterSetEvalsAll = 
+//                        (_sorterSetEvalParent |> SorterSetEval.getSorterEvalsArray)
+//                                |> Array.append
+//                                    (_sorterSetEvalChild |> SorterSetEval.getSorterEvalsArray)
+
+//                let sorterSetPruner = 
+//                    SorterSetPruner.make 
+//                                this.prunedCount 
+//                                this.noiseFraction 
+//                                this.stageWeight
+
+//                let sorterEvalsPruned = 
+//                        sorterSetEvalsAll 
+//                        |> SorterSetPruner.runShcPrune 
+//                                sorterSetPruner 
+//                                _rngGen
+//                                _sorterSetParentMap
+
+//                let mergedSorterMap = 
+//                        (_sorterSetParent |> SorterSet.getSorters)
+//                        |> Array.append (_sorterSetChild |> SorterSet.getSorters)
+//                        |> Array.map(fun s -> ((s |> Sorter.getSorterId), s))
+//                        |> Map.ofArray
+
+//                let prunedSorters =
+//                        sorterEvalsPruned 
+//                        |> Array.map(fun sev -> sev |> SorterEval.getSorterId)
+//                        |> Array.map(fun sid -> mergedSorterMap.[sid])
+
+//                let prunedSorterSetId = 
+//                    SorterSetPruner.makePrunedSorterSetId
+//                        (sorterSetPruner |> SorterSetPruner.getId)
+//                        (_sorterSetParent |> SorterSet.getId)
+//                        (_sorterSetChild |> SorterSet.getId)
+//                        (this.stageWeight)
+//                        (this.noiseFraction)
+//                        _rngGen
+
+//                let prunedSorterSet = 
+//                     SorterSet.load 
+//                        prunedSorterSetId
+//                        (_sorterSetParent |> SorterSet.getOrder)
+//                        prunedSorters
+
+
+//                let prunedSorterSetEvalId = 
+//                    SorterSetPruner.makePrunedSorterSetEvalId
+//                        (sorterSetPruner |> SorterSetPruner.getId)
+//                        (_sorterSetEvalParent |> SorterSetEval.getSorterSetEvalId)
+//                        (_sorterSetEvalChild |> SorterSetEval.getSorterSetEvalId)
+//                        _rngGen
+
+
+//                let sorterSetEvalsPruned = 
+//                    SorterSetEval.load
+//                        prunedSorterSetEvalId
+//                        prunedSorterSetId
+//                        (_sorterSetEvalChild |> SorterSetEval.getSortableSetId)
+//                        sorterEvalsPruned
+
+
+//                return
+//                    w |> Workspace.addComponents
+//                            newWorkspaceId
+//                            this.causeName
+//                            [
+//                                (this.sorterSetPrunedName, prunedSorterSet |> workspaceComponent.SorterSet)
+//                                (this.sorterSetEvalPrunedName, sorterSetEvalsPruned |> workspaceComponent.SorterSetEval )
+//                            ]
+//            }
+
+
+//    member this.id =
+//        [
+//            this.causeName :> obj
+//            this.sorterSetParentName |> WsComponentName.value  :> obj
+//            this.sorterSetChildName |> WsComponentName.value  :> obj
+//            this.sorterSetEvalParentName |> WsComponentName.value  :> obj
+//            this.sorterSetEvalChildName |> WsComponentName.value  :> obj
+//            this.sorterSetPrunedName |> WsComponentName.value  :> obj
+//            this.prunedCount |> SorterCount.value  :> obj
+//            this.noiseFraction :> obj
+//            this.stageWeight |> StageWeight.value  :> obj
+//            rngGen :> obj
+//        ]
+//             |> GuidUtils.guidFromObjs
+//             |> CauseId.create
+//    interface ICause with
+//        member this.Id = this.id
+//        member this.ResetId = None
+//        member this.Name = this.causeName
+//        member this.Updater = this.updater
+//        member this.UseInWorkspaceId = true
 
 
 

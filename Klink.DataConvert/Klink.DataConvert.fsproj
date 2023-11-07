@@ -8,9 +8,10 @@
   <ItemGroup>
     <Compile Include="ComponentDto.fs" />
     <Compile Include="RolloutDto.fs" />
+    <Compile Include="RunCfgParts\GenerationFilterDto.fs" />
+    <Compile Include="RunCfgParts\SorterSetPruneMethodDto.fs" />
     <Compile Include="SorterMutatorDto.fs" />
     <Compile Include="SorterSet\SorterSetAncestryDto.fs" />
-    <Compile Include="SorterSet\GenerationFilterDto.fs" />
     <Compile Include="SorterSet\SorterSetDto.fs" />
     <Compile Include="SorterSet\SorterSetEvalDto.fs" />
     <Compile Include="SorterSet\SorterSetParentMapDto.fs" />

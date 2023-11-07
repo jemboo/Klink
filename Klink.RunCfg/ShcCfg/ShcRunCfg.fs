@@ -16,7 +16,6 @@ type shcInitRunCfg =
         sorterCount:sorterCount
         sorterCountMutated:sorterCount
         sorterSetPruneMethod:sorterSetPruneMethod
-        maxPhenotypeForPrune:sorterCount option
         stagesSkipped:stageCount
         stageWeight:stageWeight
         switchCount:switchCount
@@ -37,8 +36,7 @@ module ShcInitRunCfg =
             (sorterEvalMode:sorterEvalMode) 
             (sorterCount:sorterCount) 
             (sorterCountMutated:sorterCount) 
-            (sorterSetPruneMethod:sorterSetPruneMethod) 
-            (maxPhenotypeForPrune: sorterCount option)
+            (sorterSetPruneMethod:sorterSetPruneMethod)
             (stageWeight:stageWeight) 
             (switchCount:switchCount) 
             (switchGenMode:switchGenMode)
@@ -53,7 +51,6 @@ module ShcInitRunCfg =
             sorterCount |> SorterCount.value :> obj;
             sorterCountMutated |> SorterCount.value :> obj;
             sorterSetPruneMethod :> obj;
-            maxPhenotypeForPrune :> obj;
             stageWeight |> StageWeight.value :> obj;
             switchCount :> obj;
             switchGenMode :> obj;
@@ -72,7 +69,6 @@ module ShcInitRunCfg =
             cfg.sorterCount
             cfg.sorterCountMutated
             cfg.sorterSetPruneMethod
-            cfg.maxPhenotypeForPrune
             cfg.stageWeight
             cfg.switchCount
             cfg.switchGenMode
@@ -111,7 +107,6 @@ module ShcInitRunCfg =
         |> WorkspaceParamsAttrs.setSwitchCount ShcWsParamKeys.sorterLength shcInitRunCfg.switchCount
         |> WorkspaceParamsAttrs.setSwitchGenMode ShcWsParamKeys.switchGenMode shcInitRunCfg.switchGenMode
         |> WorkspaceParamsAttrs.setSorterSetPruneMethod ShcWsParamKeys.sorterSetPruneMethod shcInitRunCfg.sorterSetPruneMethod
-        |> WorkspaceParamsAttrs.setSorterCountOption ShcWsParamKeys.maxPrunedPhenotypeCount shcInitRunCfg.maxPhenotypeForPrune
         |> WorkspaceParamsAttrs.setGenerationFilter ShcWsParamKeys.generation_filter (shcInitRunCfg.reportFilter |> Option.get )
         |> WorkspaceParamsAttrs.setUseParallel ShcWsParamKeys.useParallel useParallel
 

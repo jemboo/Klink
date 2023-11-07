@@ -33,7 +33,7 @@ module O16_StageRflCfg =
             noiseFractions = [|nf0;nf1;nf2;|];
             rngGens = rndGens 0 2 ;
             tupSorterSetSizes = [|ssz5_6|];
-            sorterSetPruneMethods = [|(sspm1, None);|];
+            sorterSetPruneMethodsOld = [|sspm1;|];
             stageWeights = [|sw0; sw1|];
             switchGenModes = [|switchGenMode.stageSymmetric|];
         } |> runCfgPlex.Shc

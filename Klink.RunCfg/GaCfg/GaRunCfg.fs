@@ -5,6 +5,7 @@ open System.IO
 
 type gaInitRunCfg =
     {
+        runId:runId
         sortableSetCfgType:sortableSetCfgType
         mutationRate:mutationRate
         newGenerations:generation

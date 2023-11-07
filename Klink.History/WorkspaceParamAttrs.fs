@@ -256,14 +256,14 @@ module WorkspaceParamsAttrs =
         =
         result {
           let! cereal = WorkspaceParams.getItem key workspaceParams
-          return! Json.deserialize<sorterSetPruneMethod>(cereal)
+          return! cereal |> SorterSetPruneMethod.fromReport
         }
     let setSorterSetPruneMethod
             (key:workspaceParamsKey) 
             (value:sorterSetPruneMethod)
             (workspaceParams:workspaceParams) 
         =
-        workspaceParams |> WorkspaceParams.addItem key (Json.serialize(value))
+        workspaceParams |> WorkspaceParams.addItem key (value |> SorterSetPruneMethod.toReport )
 
 
     let getStageCount

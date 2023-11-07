@@ -10,6 +10,7 @@ module Generation =
     let create dex = Generation dex
     let next (Generation v) = Generation (v + 1)
     let add ct (Generation v) = Generation (v + ct)
+    let addG (Generation a) (Generation b) = Generation (a + b)
     let binnedValue (binSz:int) (gen:generation) =
         let gv = gen |> value
         gv - 1 - ((gv - 1) % binSz)

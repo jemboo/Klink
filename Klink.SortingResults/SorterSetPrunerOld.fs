@@ -1,5 +1,6 @@
 ﻿namespace global
 open System
+open System.Text.RegularExpressions
 
 type noiseFraction = private NoiseFraction of float
 module NoiseFraction =
@@ -10,6 +11,14 @@ module NoiseFraction =
         | Some v ->  v |> value
         | None -> 0.0
 
+
+type sorterPhenotypeCount = private SorterPhenotypeCount of int
+module SorterPhenotypeCount =
+    let value (SorterPhenotypeCount v) = v
+    let create vl = SorterPhenotypeCount vl
+
+
+
 type sorterSetPrunerId = private SorterSetPrunerId of Guid
 module SorterSetPrunerId =
     let value (SorterSetPrunerId v) = v
@@ -17,7 +26,8 @@ module SorterSetPrunerId =
 
 
 type sorterSetPruner = 
-    private {
+    private 
+        {
             id: sorterSetPrunerId;
             prunedCount:sorterCount;
             noiseFraction:noiseFraction option;
@@ -26,9 +36,49 @@ type sorterSetPruner =
 
 
 type sorterSetPruneMethod = 
-    | Whole = 1
-    | PhenotypeCap = 2
-    | Shc = 3
+    | Whole
+    | PhenotypeCap of sorterPhenotypeCount
+    | Shc
+
+
+module SorterSetPruneMethod =
+
+    let toReport (sspm:sorterSetPruneMethod) 
+        =
+        match sspm with
+        | Whole -> "Whole"
+        | PhenotypeCap sspc -> $"PhenotypeCap({sspc |> SorterPhenotypeCount.value})"
+        | Shc -> "Shc"
+
+
+    let extractWordAndNumber (input: string) =
+        let pattern = @"(\w+)\((\d+)\)"
+        let matchResult = Regex.Match(input, pattern)
+        if matchResult.Success then
+            let word = matchResult.Groups.[1].Value
+            let number = matchResult.Groups.[2].Value
+            Some(word, int number)
+        else
+            None
+
+
+    let fromReport (repVal:string)
+        =
+         match repVal with
+         | "Whole" -> sorterSetPruneMethod.Whole |> Ok
+         | "Shc" -> sorterSetPruneMethod.Shc |> Ok
+         | _ -> 
+            let er = extractWordAndNumber repVal
+            match er with
+            | None -> $"{repVal} not valid in SorterSetPruneMethod.fromReport" |> Error
+            | Some (w, n) ->
+                match w with
+                | "PhenotypeCap" ->
+                    n |> SorterPhenotypeCount.create
+                      |> sorterSetPruneMethod.PhenotypeCap |> Ok
+                | _ ->
+                    $"{repVal} not valid in SorterSetPruneMethod.fromReport" |> Error
+
 
 
 module SorterSetPruner =
@@ -96,6 +146,7 @@ module SorterSetPruner =
 
     let makePrunedSorterSetId
                 (sorterSetPrunerId:sorterSetPrunerId) 
+                (sorterSetPruneMethod:sorterSetPruneMethod)
                 (sorterSetIdParent:sorterSetId) 
                 (sorterSetIdChild:sorterSetId)
                 (stageWeight:stageWeight)
@@ -104,6 +155,7 @@ module SorterSetPruner =
          =
         [|
             sorterSetPrunerId |> SorterSetPrunerId.value :> obj
+            sorterSetPruneMethod |> SorterSetPruneMethod.toReport :> obj
             sorterSetIdParent |> SorterSetId.value :> obj;
             sorterSetIdChild |> SorterSetId.value :> obj;
             stageWeight |> StageWeight.value :> obj
@@ -115,13 +167,15 @@ module SorterSetPruner =
 
 
     let makePrunedSorterSetEvalId
-                (sorterSetPrunerId:sorterSetPrunerId) 
+                (sorterSetPrunerId:sorterSetPrunerId)
+                (sorterSetPruneMethod:sorterSetPruneMethod)
                 (sorterSetEvalIdParent:sorterSetEvalId) 
-                (sorterSetEvalIdChild:sorterSetEvalId) 
+                (sorterSetEvalIdChild:sorterSetEvalId)
                 (rngGen:rngGen) 
          =
         [|
-            sorterSetPrunerId |> SorterSetPrunerId.value :> obj
+            sorterSetPrunerId |> SorterSetPrunerId.value :> obj;
+            sorterSetPruneMethod |> SorterSetPruneMethod.toReport :> obj
             sorterSetEvalIdParent |> SorterSetEvalId.value :> obj;
             sorterSetEvalIdChild |> SorterSetEvalId.value :> obj;
             rngGen :> obj;
@@ -195,8 +249,8 @@ module SorterSetPruner =
 
     let runWholeCappedPrune
             (sorterSetPruner:sorterSetPruner)
-            (maxPhenotypes:int)
             (rngGen:rngGen)
+            (sorterPhenotypeCount:sorterPhenotypeCount)
             (sorterEvalsToPrune:sorterEval[])
          =
             let stageWgt = getStageWeight sorterSetPruner
@@ -206,7 +260,7 @@ module SorterSetPruner =
                 |> Array.filter(SorterEval.failedForSure >> not)
                 |> CollectionOps.getItemsUpToMaxTimes 
                             (SorterEval.getSortrPhenotypeId)
-                            maxPhenotypes
+                            (sorterPhenotypeCount |> SorterPhenotypeCount.value)
                 |> Seq.toArray
                 |> Array.map(fun sEv -> 
                      ( sEv,
@@ -231,7 +285,6 @@ module SorterSetPruner =
             rankedSorters
             |> CollectionOps.takeUpto (sorterSetPruner.prunedCount |> SorterCount.value)
             |> Seq.toArray
-
 
 
 
@@ -266,3 +319,16 @@ module SorterSetPruner =
                     |> Array.mapi(fun dex rg -> runWholePrune familyPruner rg familySorterEvalGroups.[dex])
                     |> Array.concat
 
+
+
+    let runPrune
+            (sorterSetPruneMethod:sorterSetPruneMethod)
+            (rngGen:rngGen)
+            (sorterSetParentMap:sorterSetParentMap)
+            (sorterSetPruner:sorterSetPruner)
+            (sorterEvalsToPrune:sorterEval[])
+         =
+         match sorterSetPruneMethod with
+         | Whole -> runShcPrune sorterSetPruner rngGen sorterSetParentMap sorterEvalsToPrune
+         | Shc -> runShcPrune sorterSetPruner rngGen sorterSetParentMap sorterEvalsToPrune
+         | PhenotypeCap spc -> runWholeCappedPrune sorterSetPruner rngGen spc sorterEvalsToPrune

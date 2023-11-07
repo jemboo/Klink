@@ -52,8 +52,7 @@ module ShcReporting =
             ShcWsParamKeys.sortableSetId;
             ShcWsParamKeys.sorterCount;
             ShcWsParamKeys.sorterCountMutated;
-            ShcWsParamKeys.sorterSetPruneMethod
-            ShcWsParamKeys.maxPrunedPhenotypeCount;
+            ShcWsParamKeys.sorterSetPruneMethod;
             ShcWsParamKeys.stageWeight;
             ShcWsParamKeys.sorterLength;
             ShcWsParamKeys.switchGenMode;
@@ -71,7 +70,6 @@ module ShcReporting =
             ShcWsParamKeys.sorterCount;
             ShcWsParamKeys.sorterCountMutated;
             ShcWsParamKeys.sorterSetPruneMethod;
-            ShcWsParamKeys.maxPrunedPhenotypeCount;
             ShcWsParamKeys.stageWeight;
             ShcWsParamKeys.sorterLength;
             ShcWsParamKeys.switchGenMode;
@@ -93,7 +91,6 @@ module ShcReporting =
             ShcWsParamKeys.sortableSetId;
             ShcWsParamKeys.sorterCount;
             ShcWsParamKeys.sorterCountMutated;
-            ShcWsParamKeys.maxPrunedPhenotypeCount;
             ShcWsParamKeys.stageWeight;
             ShcWsParamKeys.sorterLength;
             ShcWsParamKeys.switchGenMode;

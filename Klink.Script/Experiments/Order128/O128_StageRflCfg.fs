@@ -20,7 +20,7 @@ module O128_StageCfg =
             noiseFractions = [|nf1; nf2; nf3|];
             rngGens = rndGens 0 4 ;
             tupSorterSetSizes = [|ssz4_5|];
-            sorterSetPruneMethods = [|(sspm1, None);|];
+            sorterSetPruneMethodsOld = [|sspm1;|];
             stageWeights = [|sw0; sw1|];
             switchGenModes = [|switchGenMode.stage|];
         } |> runCfgPlex.Shc

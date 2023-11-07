@@ -4,9 +4,11 @@ open System
 
 type sorterSet =
     private
-        { id: sorterSetId
+        { 
+          id: sorterSetId
           order: order
-          sorterMap: Map<sorterId, sorter> }
+          sorterMap: Map<sorterId, sorter> 
+        }
 
 module SorterSet =
 

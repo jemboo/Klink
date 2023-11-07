@@ -115,7 +115,6 @@ module CauseSets =
                 let! order = wsParams |> WorkspaceParamsAttrs.getOrder ShcWsParamKeys.order
                 let! sorterCount = wsParams |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterCount
                 let! sorterCountMutated = wsParams |> WorkspaceParamsAttrs.getSorterCount ShcWsParamKeys.sorterCountMutated
-                let! maxPrunedPhenotypeCount = wsParams |> WorkspaceParamsAttrs.getSorterCountOption ShcWsParamKeys.maxPrunedPhenotypeCount
                 let! sorterSetPruneMethod = wsParams |> WorkspaceParamsAttrs.getSorterSetPruneMethod ShcWsParamKeys.sorterSetPruneMethod
                 let! stageWeight = wsParams |> WorkspaceParamsAttrs.getStageWeight ShcWsParamKeys.stageWeight
                 let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode ShcWsParamKeys.sorterEvalMode
@@ -170,54 +169,76 @@ module CauseSets =
                     ) :> ICause |> Ok
 
 
+
+
+
                 let causePruneSorterSets = 
-                    match sorterSetPruneMethod with
-                    | sorterSetPruneMethod.Whole ->
-                        new causePruneSorterSetsWhole(
-                                wnSorterSetParent,
-                                wnSorterSetMutated,
-                                wnSorterSetEvalParent,
-                                wnSorterSetEvalMutated,
-                                wnSorterSetPruned,
-                                wnSorterSetEvalPruned,
-                                rngGenPrune,
-                                sorterCount,
-                                noiseFraction,
-                                stageWeight
-                                ) :> ICause |> Ok
 
-                    | sorterSetPruneMethod.PhenotypeCap ->
-                        new causePruneSorterSetsMaxPhenotype(
-                                wnSorterSetParent,
-                                wnSorterSetMutated,
-                                wnSorterSetEvalParent,
-                                wnSorterSetEvalMutated,
-                                wnSorterSetPruned,
-                                wnSorterSetEvalPruned,
-                                rngGenPrune,
-                                sorterCount,
-                                maxPrunedPhenotypeCount,
-                                noiseFraction,
-                                stageWeight
-                                ) :> ICause |> Ok
+                    new causePruneSorterSets(
+                            wnSorterSetParent,
+                            wnSorterSetMutated,
+                            wnSorterSetEvalParent,
+                            wnSorterSetEvalMutated,
+                            wnSorterSetPruned,
+                            wnSorterSetEvalPruned,
+                            wnParentMap,
+                            rngGenPrune,
+                            sorterCount,
+                            noiseFraction,
+                            stageWeight,
+                            sorterSetPruneMethod
+                            ) :> ICause |> Ok
 
-                    | sorterSetPruneMethod.Shc ->
-                        new causePruneSorterSetsShc(
-                                wnSorterSetParent,
-                                wnSorterSetMutated,
-                                wnSorterSetEvalParent,
-                                wnSorterSetEvalMutated,
-                                wnSorterSetPruned,
-                                wnParentMap,
-                                wnSorterSetEvalPruned,
-                                rngGenPrune,
-                                sorterCount,
-                                noiseFraction,
-                                stageWeight
-                                ) :> ICause |> Ok
-                    | _ ->
-                        $"sorterSetPruneMethod:{sorterSetPruneMethod} 
-                            not handled in makeMutantsAndPrune" |> Error
+
+
+
+
+
+
+                //let causePruneSorterSets = 
+                //    match sorterSetPruneMethod with
+                //    | sorterSetPruneMethod.Whole ->
+                //        new causePruneSorterSetsWhole(
+                //                wnSorterSetParent,
+                //                wnSorterSetMutated,
+                //                wnSorterSetEvalParent,
+                //                wnSorterSetEvalMutated,
+                //                wnSorterSetPruned,
+                //                wnSorterSetEvalPruned,
+                //                rngGenPrune,
+                //                sorterCount,
+                //                noiseFraction,
+                //                stageWeight
+                //                ) :> ICause |> Ok
+
+                //    | sorterSetPruneMethod.PhenotypeCap spc ->
+                //        new causePruneSorterSetsMaxPhenotype(
+                //                wnSorterSetParent,
+                //                wnSorterSetMutated,
+                //                wnSorterSetEvalParent,
+                //                wnSorterSetEvalMutated,
+                //                wnSorterSetPruned,
+                //                wnSorterSetEvalPruned,
+                //                rngGenPrune,
+                //                sorterCount,
+                //                noiseFraction,
+                //                stageWeight
+                //                ) :> ICause |> Ok
+
+                //    | sorterSetPruneMethod.Shc ->
+                //        new causePruneSorterSetsShc(
+                //                wnSorterSetParent,
+                //                wnSorterSetMutated,
+                //                wnSorterSetEvalParent,
+                //                wnSorterSetEvalMutated,
+                //                wnSorterSetPruned,
+                //                wnParentMap,
+                //                wnSorterSetEvalPruned,
+                //                rngGenPrune,
+                //                sorterCount,
+                //                noiseFraction,
+                //                stageWeight
+                //                ) :> ICause |> Ok
 
 
                 let causeUpdateSorterSetAncestry =
@@ -260,7 +281,6 @@ module CauseSets =
             (wsParams:workspaceParams)
             (history:history)
             =
-
             result {
                 let causeSetupForNextGen = 
                     new causeSetupForNextGen(

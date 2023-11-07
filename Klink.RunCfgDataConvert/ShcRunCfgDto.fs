@@ -14,8 +14,7 @@ type shcInitRunCfgDto =
         sorterEvalMode:sorterEvalMode
         sorterCount:int
         sorterCountMutated:int
-        sorterSetPruneMethod:sorterSetPruneMethod
-        maxPhenotypeForPrune: int option
+        sorterSetPruneMethod:sorterSetPruneMethodDto
         stagesSkipped:int
         stageWeight:float
         switchCount:int
@@ -38,8 +37,7 @@ module ShcInitRunCfgDto =
             sorterEvalMode = cfg.sorterEvalMode
             sorterCount = cfg.sorterCount |> SorterCount.value
             sorterCountMutated = cfg.sorterCountMutated |> SorterCount.value
-            sorterSetPruneMethod = cfg.sorterSetPruneMethod
-            maxPhenotypeForPrune = cfg.maxPhenotypeForPrune |> Option.map(SorterCount.value)
+            sorterSetPruneMethod = cfg.sorterSetPruneMethod |> SorterSetPruneMethodDto.toDto
             stagesSkipped = cfg.stagesSkipped |> StageCount.value
             stageWeight = cfg.stageWeight |> StageWeight.value
             switchCount = cfg.switchCount |> SwitchCount.value
@@ -56,10 +54,7 @@ module ShcInitRunCfgDto =
     let fromDto (cfg:shcInitRunCfgDto) =
         result {
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
-            let maxPt = 
-                match cfg.maxPhenotypeForPrune with
-                | None -> None
-                | Some v -> v |> SorterCount.create |> Some
+            let! sorterSetPruneMethod = cfg.sorterSetPruneMethod |> SorterSetPruneMethodDto.fromDto
             return
                 {
                     shcInitRunCfg.runId = cfg.runId |> RunId.create
@@ -72,8 +67,7 @@ module ShcInitRunCfgDto =
                     sorterEvalMode = cfg.sorterEvalMode
                     sorterCount = cfg.sorterCount |> SorterCount.create
                     sorterCountMutated = cfg.sorterCountMutated |> SorterCount.create
-                    sorterSetPruneMethod = cfg.sorterSetPruneMethod
-                    maxPhenotypeForPrune = maxPt
+                    sorterSetPruneMethod = sorterSetPruneMethod
                     stagesSkipped = cfg.stagesSkipped |> StageCount.create
                     stageWeight = cfg.stageWeight |> StageWeight.create
                     switchCount = cfg.switchCount |> SwitchCount.create

@@ -4,6 +4,7 @@ open System
 
 type gaInitRunCfgDto =
     {
+        runId:Guid
         newGenerations:int
         sortableSetCfgType:sortableSetCfgType
         mutationRate:float
@@ -13,7 +14,7 @@ type gaInitRunCfgDto =
         sorterEvalMode:sorterEvalMode
         sorterCount:int
         sorterCountMutated:int
-        sorterSetPruneMethod:sorterSetPruneMethod
+        sorterSetPruneMethod:sorterSetPruneMethodDto
         stagesSkipped:int
         stageWeight:float
         switchCount:int
@@ -26,6 +27,7 @@ module GaInitRunCfgDto =
 
     let toDto (cfg:gaInitRunCfg) =
         {
+            gaInitRunCfgDto.runId = cfg.runId |> RunId.value
             newGenerations = cfg.newGenerations |> Generation.value
             sortableSetCfgType = cfg.sortableSetCfgType
             mutationRate = cfg.mutationRate |> MutationRate.value
@@ -35,7 +37,7 @@ module GaInitRunCfgDto =
             sorterEvalMode = cfg.sorterEvalMode
             sorterCount = cfg.sorterCount |> SorterCount.value
             sorterCountMutated = cfg.sorterCountMutated |> SorterCount.value
-            sorterSetPruneMethod = cfg.sorterSetPruneMethod
+            sorterSetPruneMethod = cfg.sorterSetPruneMethod |> SorterSetPruneMethodDto.toDto
             stagesSkipped = cfg.stagesSkipped |> StageCount.value
             stageWeight = cfg.stageWeight |> StageWeight.value
             switchCount = cfg.switchCount |> SwitchCount.value
@@ -52,9 +54,11 @@ module GaInitRunCfgDto =
     let fromDto (cfg:gaInitRunCfgDto) =
         result {
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
+            let! sorterSetPruneMethod = cfg.sorterSetPruneMethod |> SorterSetPruneMethodDto.fromDto
             return
                 {
-                    gaInitRunCfg.newGenerations = cfg.newGenerations |> Generation.create
+                    gaInitRunCfg.runId = cfg.runId |> RunId.create
+                    newGenerations = cfg.newGenerations |> Generation.create
                     sortableSetCfgType = cfg.sortableSetCfgType
                     mutationRate = cfg.mutationRate |> MutationRate.create
                     noiseFraction = cfg.noiseFraction |> NoiseFraction.create
@@ -63,7 +67,7 @@ module GaInitRunCfgDto =
                     sorterEvalMode = cfg.sorterEvalMode
                     sorterCount = cfg.sorterCount |> SorterCount.create
                     sorterCountMutated = cfg.sorterCountMutated |> SorterCount.create
-                    sorterSetPruneMethod = cfg.sorterSetPruneMethod
+                    sorterSetPruneMethod = sorterSetPruneMethod
                     stagesSkipped = cfg.stagesSkipped |> StageCount.create
                     stageWeight = cfg.stageWeight |> StageWeight.create
                     switchCount = cfg.switchCount |> SwitchCount.create

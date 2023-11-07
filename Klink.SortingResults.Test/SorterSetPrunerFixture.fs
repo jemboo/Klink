@@ -7,6 +7,20 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 type SorterSetPrunerFixture() =
 
     [<TestMethod>]
+    member this.parse_sorterSetPruneMethod() = 
+        let sspm = 128 
+                    |> SorterPhenotypeCount.create
+                    |> sorterSetPruneMethod.PhenotypeCap
+
+        let rVal = sspm |> SorterSetPruneMethod.toReport
+
+        let sspmBack = rVal |> SorterSetPruneMethod.fromReport
+                            |> Result.ExtractOrThrow
+
+        Assert.AreEqual(sspm, sspmBack)
+
+
+    [<TestMethod>]
     member this.getSigmaSelection() =
         let ordr = 16 |> Order.createNr
         let sorterCt = 64 |> SorterCount.create
