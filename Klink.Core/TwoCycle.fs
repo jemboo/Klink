@@ -56,12 +56,19 @@ module TwoCycle =
     //*******************  operators  *****************************
     //*************************************************************
 
+
     let conjugate (perm: permutation) (tc: twoCycle) =
         { twoCycle.values =
             CollectionOps.conjIntArrays
                 (Permutation.getArray perm)
                 (getArray tc)
                 (Array.zeroCreate perm.values.Length) }
+
+
+    let conjugateBitRep (tc: twoCycle) (perm: permutation) =
+        let oId = Permutation.identity (getOrder tc)
+        let conjLhs = Permutation.permuteBitRep perm oId
+        conjugate conjLhs tc
 
 
     let reflect (tcp: twoCycle) =
@@ -255,6 +262,17 @@ module TwoCycle =
             yield conjugate perm (evenMode order) 
             yield conjugate perm (oddModeWithCap order)
         }
+
+    let bitConjugateEvenMode 
+            (order:order) 
+            (perms: permutation seq) 
+        =
+        let bread = evenMode order
+        let _conjer  (perm: permutation) = 
+            conjugateBitRep bread perm
+    
+        perms |> Seq.map(_conjer)
+
 
     //*************************************************************
     //***************    IRando dependent   ***********************

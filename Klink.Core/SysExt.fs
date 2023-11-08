@@ -125,6 +125,15 @@ type System.Int32 with // x=this
                 aRet.[i] <- true
         aRet
 
+
+    member x.applyBoolArray (bA:bool[]) =
+        let mutable iRet = x
+        for i = 0 to (bA.Length - 1) do
+            if bA.[i] then
+                iRet <- iRet.set i
+        iRet
+
+
     member x.toResizeArray = // to Resizable array of positions set to 1
         let array = ResizeArray()
         for i = 0 to 31 do

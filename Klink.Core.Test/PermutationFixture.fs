@@ -89,12 +89,55 @@ type PermutationFixture() =
 
     [<TestMethod>]
     member this.Permutation_Inverse() =
-        let ord = Order.createNr 16
-        let perm = Permutation.rotate ord 1
-        let inv = Permutation.inverse perm
-        let prod = Permutation.productNr perm inv
-        let id = Permutation.identity ord
-        Assert.AreEqual(id, prod)
+        let seed = RandomSeed.fromNow ()
+        let iRando = Rando.fromRngGen (RngGen.createNet seed)
+        let ord = Order.createNr 32
+        let permCount = 10
+
+        let randPerms =
+            Permutation.createRandoms ord iRando
+            |> CollectionOps.takeUpto permCount
+            |> Seq.toList
+
+        let invPerms = 
+                randPerms |> List.map(Permutation.inverse)
+
+        let testProds =
+            randPerms |> List.mapi(fun dex perm -> Permutation.productNr perm invPerms.[dex])
+
+        let idPerm = Permutation.identity ord
+
+
+        for dex = 0 to (permCount - 1) do
+            Assert.AreEqual(idPerm, testProds.[dex])
+
+
+
+    [<TestMethod>]
+    member this.Permutation_applyToInt32() =
+        let seed = RandomSeed.fromNow ()
+        let iRando = Rando.fromRngGen (RngGen.createNet seed)
+        let ord = Order.createNr 12
+        let modulus = 4096
+        let permCount = 10
+
+        let randPerms =
+            Permutation.createRandoms ord iRando
+            |> CollectionOps.takeUpto permCount
+            |> Seq.toList
+
+        let invPerms = 
+                randPerms |> List.map(Permutation.inverse)
+
+        let testInts = Array.init permCount (fun _ -> iRando.NextInt modulus )
+            
+        for dex = 0 to (permCount - 1) do
+            let unScramb = testInts.[dex]
+            let scramb = unScramb |> Permutation.applyToInt32 randPerms.[dex]
+            let scrBak = scramb |> Permutation.applyToInt32 invPerms.[dex]
+
+            Assert.AreEqual(unScramb, scrBak)
+
 
 
     [<TestMethod>]

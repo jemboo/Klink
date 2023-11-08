@@ -126,7 +126,26 @@ type TwoCycleFixture() =
         Assert.IsTrue((TwoCycle.getArray resO).Length = (Order.value oddDegree))
 
 
+    [<TestMethod>]
+    member this.TwoCyclePerm_conjugateBitRep() = 
+        let seed = RandomSeed.fromNow ()
+        let iRando = Rando.fromRngGen (RngGen.createNet seed)
+        let orderLog = 8 |> Order.createNr
+        let order = 256 |> Order.createNr
+
+        let perms =
+                Permutation.createRandoms orderLog iRando
+                |> Seq.take 100 |> Seq.toArray
+
+        let tcConjs = 
+                TwoCycle.bitConjugateEvenMode order perms
+                |> Seq.zip perms
+                |> Seq.sortBy(fun tc -> tc |> snd |> TwoCycle.getArray |> Array.head)
+                |> Seq.toArray
+
+        Assert.IsTrue(true)
         
+
 
     [<TestMethod>]
     member this.totalSwitchBarLengths() = 

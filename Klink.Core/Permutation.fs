@@ -143,6 +143,24 @@ module Permutation =
         delta |> getWeight
 
 
+    let applyToBoolArray (perm:permutation) (target:bool[]) =
+        let arrayLen = perm |> getOrder |> Order.value
+        let permA = perm |> getArray
+        let aRet = Array.create (target.Length) false
+        for dex = 0 to (arrayLen - 1) do
+            aRet.[permA.[dex]] <- target.[dex]
+        aRet
+
+
+    let applyToInt32 (perm:permutation) (target:int) =
+        let arrayLen = perm |> getOrder |> Order.value
+        let aa = applyToBoolArray perm (target.toBoolArray arrayLen)
+        0l.applyBoolArray aa
+
+
+    let permuteBitRep (perm:permutation) (target:permutation) =
+        target |> getArray |> Array.map(applyToInt32 perm) |> createNr
+
 
     //*************************************************************
     //***************  byte conversions  **************************
