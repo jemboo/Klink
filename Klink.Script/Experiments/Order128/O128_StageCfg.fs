@@ -48,6 +48,7 @@ module O128_StageRflCfg =
 
     let baseGenerationCount = 25000 |> Generation.create
     let baseReportFilter = CommonParams.modulusFilter 25
+    let fullReportFilter = CommonParams.modulusFilter 25
     let initScriptName = "patchScript"
 
     let baseDir = $"c:\Klink"
@@ -57,6 +58,7 @@ module O128_StageRflCfg =
             KlinkScript.createInitRunScriptsFromRunCfgPlex 
                 baseGenerationCount
                 baseReportFilter
+                fullReportFilter
                 initScriptName
                 maxRunsPerScript
                 None
@@ -75,6 +77,7 @@ module O128_StageRflCfg =
                 baseGenerationCount
                 evalScriptComponent
                 baseReportFilter
+                fullReportFilter
                 reportEvalsFileName
                 seqSplicer
                 runCfgPlex

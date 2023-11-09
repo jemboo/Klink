@@ -49,7 +49,8 @@ type WorkspaceFileStore (wsRootDir:string) =
     member this.compStore (wsComp:workspaceComponent) 
         = 
         result {
-            let cereal, wsCompType = wsComp |> WorkspaceComponentDto.toJsonT
+            let wsCompType = wsComp |> WorkspaceComponent.getWorkspaceComponentType
+            let cereal = wsComp |> WorkspaceComponentDto.toJsonT
             let fileName = wsComp |> WorkspaceComponent.getId |> string
             let! res = this.writeToFileIfMissing (Some wsCompType) fileName cereal
             return fileName
@@ -319,20 +320,24 @@ type WorkspaceFileStore (wsRootDir:string) =
             return! wsd |> Workspace.ofWorkspaceDescription this.compRetreive
         }
 
-    member this.saveWorkSpace (workspace:workspace) =
+    member this.saveWorkSpace (workspace:workspace) (filter:wsComponentName -> bool)  =
         result {
             let fileName = workspace |> Workspace.getId |> WorkspaceId.value |> string
             let cereal = workspace |> Workspace.toWorkspaceDescription
                                    |> WorkspaceDescriptionDto.toJson
             let! res = this.writeToFileIfMissing (Some workspaceComponentType.WorkspaceDescription) fileName cereal
             let! res2 = this.markLastWorkspaceId (workspace |> Workspace.getId)
-            let _, comps = workspace |> Workspace.getWsComponents |> Map.toArray |> Array.unzip
+            let _, comps = workspace 
+                            |> Workspace.getWsComponents 
+                            |> Map.toArray
+                            |> Array.filter (fst >> filter )
+                            |> Array.unzip
             let! _ = comps |> Array.toList |> List.map(this.compStore) |> Result.sequence
             return fileName
         }
 
     interface IWorkspaceStore with
-        member this.SaveWorkSpace ws = this.saveWorkSpace ws
+        member this.SaveWorkSpace ws filter = this.saveWorkSpace ws filter
         member this.LoadWorkSpace wsId = this.loadWorkSpace wsId
         member this.WorkSpaceExists wsId = this.workSpaceExists wsId
         member this.GetLastWorkspaceId() = this.getLastWorkspaceId ()

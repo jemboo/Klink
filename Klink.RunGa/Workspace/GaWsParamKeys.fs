@@ -3,7 +3,8 @@
 module GaWsParamKeys =
     let runId = "runId" |> WorkspaceParamsKey.create
     let generation_current = "generation_current" |> WorkspaceParamsKey.create
-    let generation_filter = "generation_filter" |> WorkspaceParamsKey.create
+    let generation_filter_long = "generation_filter_long" |> WorkspaceParamsKey.create
+    let generation_filter_short = "generation_filter_short" |> WorkspaceParamsKey.create
     let generation_max = "generation_max" |> WorkspaceParamsKey.create
     let rngGenCreate = "rngGenCreate" |> WorkspaceParamsKey.create
     let rngGenMutate = "rngGenMutate" |> WorkspaceParamsKey.create

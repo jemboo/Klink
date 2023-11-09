@@ -20,12 +20,14 @@ module GaCfgPlex =
 
     let _fromFunc<'a>
             (newGenerations:generation)
-            (reportFilter:generationFilter option)
+            (reportFilter:generationFilter)
+            (fullReportFilter:generationFilter)
             (plex:gaCfgPlex)
             (daFunc:
                 order -> 
                 generation -> 
-                generationFilter option -> 
+                generationFilter -> 
+                generationFilter -> 
                 rngGen -> 
                 sorterEvalMode ->
                 sortableSetCfgType -> 
@@ -55,6 +57,7 @@ module GaCfgPlex =
                                                         order 
                                                         newGenerations
                                                         reportFilter
+                                                        fullReportFilter
                                                         rngGen
                                                         sorterEvalMode
                                                         sortableSetCfgType
@@ -119,7 +122,8 @@ module GaCfgPlex =
 
     let toInitRunCfgs
             (newGenerations:generation)
-            (reportFilter:generationFilter option)
+            (reportFilter:generationFilter)
+            (fullReportFilter:generationFilter)
             (seqSplicer: (int*int) option)
             (plex:gaCfgPlex)
         =
@@ -128,6 +132,7 @@ module GaCfgPlex =
                 order 
                 newGenerations 
                 reportFilter 
+                fullReportFilter
                 rngGen
                 sorterEvalMode
                 sortableSetCfgType
@@ -170,9 +175,10 @@ module GaCfgPlex =
                     switchCount = (SwitchCount.orderTo999SwitchCount order)
                     switchGenMode = switchGenMode
                     reportFilter = reportFilter
+                    fullReportFilter = fullReportFilter
                 }
 
-        _fromFunc newGenerations reportFilter plex _toIr seqSplicer
+        _fromFunc newGenerations reportFilter fullReportFilter plex _toIr seqSplicer
 
 
 
@@ -214,6 +220,7 @@ module GaCfgPlex =
     let toContinueRunCfgs
             (newGenerations:generation)
             (reportGenFilter:generationFilter)
+            (fullReportGenFilter:generationFilter)
             (seqSplicer: (int*int) option)
             (plex:gaCfgPlex)
         =
@@ -223,6 +230,7 @@ module GaCfgPlex =
                     gaContinueRunCfg.runId = runId;
                     newGenerations = newGenerations;
                     reportGenFilter = reportGenFilter
+                    fullReportGenFilter = fullReportGenFilter
                 }
         toRunIds seqSplicer plex
         |> Seq.map(_toCrc)

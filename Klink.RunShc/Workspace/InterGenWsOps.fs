@@ -153,7 +153,7 @@ module InterGenWsOps =
             let newWorkspaceParams = 
                 curParams 
                         |> WorkspaceParamsAttrs.setGenerationFilter 
-                                ShcWsParamKeys.generation_filter 
+                                ShcWsParamKeys.generation_filter_long 
                                 newGenerationFilter
             let msg = runLoops curgen maxGen newWorkspaceParams curWorkspace workplaceFileStore
             if ((String.IsNullOrEmpty msg) |> ``not`` ) then

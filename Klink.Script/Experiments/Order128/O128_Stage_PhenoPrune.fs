@@ -111,6 +111,7 @@ module O128_Stage_PhenoPrune =
 
     let initReportFilter = CommonParams.modulusFilter 1
     let continueReportFilter = CommonParams.modulusFilter 5
+    let fullReportFilter = CommonParams.modulusFilter 5
 
     let initScriptName = "initScriptLr"
     let continueScriptName = "continueScriptLr"
@@ -122,6 +123,7 @@ module O128_Stage_PhenoPrune =
             KlinkScript.createInitRunScriptsFromRunCfgPlex 
                 initGenerationCount
                 initReportFilter
+                fullReportFilter
                 initScriptName
                 maxRunsPerScript
                 None
@@ -133,6 +135,7 @@ module O128_Stage_PhenoPrune =
             KlinkScript.createContinueRunScriptsFromRunCfgPlex 
                 continueGenerationCount
                 continueReportFilter
+                fullReportFilter
                 continueScriptName
                 maxRunsPerScript
                 None
@@ -152,6 +155,7 @@ module O128_Stage_PhenoPrune =
                 initGenerationCount
                 evalScriptComponent
                 continueReportFilter
+                fullReportFilter
                 reportEvalsFileName
                 seqSplicer
                 runCfgPlex

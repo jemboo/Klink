@@ -7,38 +7,27 @@ module WorkspaceComponentDto =
     let toJsonT (comp:workspaceComponent) =
         match comp with
         | SortableSet sortableSet -> 
-            (sortableSet |> SortableSetDto.toJson, 
-             workspaceComponentType.SortableSet)
+             sortableSet |> SortableSetDto.toJson
         | SorterSet sorterSet -> 
-            (sorterSet |> SorterSetDto.toJson, 
-             workspaceComponentType.SorterSet)
+             sorterSet |> SorterSetDto.toJson
         | SorterSetMutator sorterSetMutator -> 
-            (sorterSetMutator |> SorterSetMutatorDto.toJson, 
-             workspaceComponentType.SorterSetMutator)
+             sorterSetMutator |> SorterSetMutatorDto.toJson
         | SorterSetParentMap sorterSetParentMap -> 
-            (sorterSetParentMap |> SorterSetParentMapDto.toJson, 
-             workspaceComponentType.SorterSetParentMap)
+             sorterSetParentMap |> SorterSetParentMapDto.toJson
         | SorterSetConcatMap sorterSetConcatMap -> 
-            (sorterSetConcatMap |> SorterSetConcatMapDto.toJson, 
-             workspaceComponentType.SorterSetConcatMap)
+             sorterSetConcatMap |> SorterSetConcatMapDto.toJson
         | SorterSetEval sorterSetEval -> 
-            (sorterSetEval |> SorterSetEvalDto.toJson, 
-             workspaceComponentType.SorterSetEval)
+             sorterSetEval |> SorterSetEvalDto.toJson
         | SorterSetAncestry sorterSetAncestry ->
-            (sorterSetAncestry |> SorterSetAncestryDto.toJson, 
-             workspaceComponentType.SorterSetAncestry)
+             sorterSetAncestry |> SorterSetAncestryDto.toJson
         | SorterSpeedBinSet sorterSpeedBinSet ->
-            (sorterSpeedBinSet |> SorterSpeedBinSetDto.toJson, 
-             workspaceComponentType.SorterSpeedBinSet)
+             sorterSpeedBinSet |> SorterSpeedBinSetDto.toJson
         | SorterSetPruner sorterSetPruner ->
-            (sorterSetPruner |> SorterSetPrunerWholeDto.toJson, 
-             workspaceComponentType.SorterSetPruner)
+             sorterSetPruner |> SorterSetPrunerWholeDto.toJson
         | WorkspaceDescription workspaceDescription ->
-            (workspaceDescription |> WorkspaceDescriptionDto.toJson, 
-             workspaceComponentType.WorkspaceParams)
+             workspaceDescription |> WorkspaceDescriptionDto.toJson
         | WorkspaceParams workspaceParams ->
-            (workspaceParams |> WorkspaceParamsDto.toJson, 
-             workspaceComponentType.WorkspaceParams)
+            workspaceParams |> WorkspaceParamsDto.toJson
 
 
 

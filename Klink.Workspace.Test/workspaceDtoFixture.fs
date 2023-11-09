@@ -47,7 +47,7 @@ type workspaceDtoFixture() =
 
         let fs = new WorkspaceFileStore("c:\\Boinky")
 
-        let _ = fs.saveWorkSpace wsIn
+        let _ = fs.saveWorkSpace wsIn (fun _ -> true)
                 |> Result.ExtractOrThrow
 
         let wsBack = fs.loadWorkSpace ssWsId

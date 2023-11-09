@@ -170,10 +170,7 @@ module CauseSets =
 
 
 
-
-
                 let causePruneSorterSets = 
-
                     new causePruneSorterSets(
                             wnSorterSetParent,
                             wnSorterSetMutated,
@@ -188,57 +185,6 @@ module CauseSets =
                             stageWeight,
                             sorterSetPruneMethod
                             ) :> ICause |> Ok
-
-
-
-
-
-
-
-                //let causePruneSorterSets = 
-                //    match sorterSetPruneMethod with
-                //    | sorterSetPruneMethod.Whole ->
-                //        new causePruneSorterSetsWhole(
-                //                wnSorterSetParent,
-                //                wnSorterSetMutated,
-                //                wnSorterSetEvalParent,
-                //                wnSorterSetEvalMutated,
-                //                wnSorterSetPruned,
-                //                wnSorterSetEvalPruned,
-                //                rngGenPrune,
-                //                sorterCount,
-                //                noiseFraction,
-                //                stageWeight
-                //                ) :> ICause |> Ok
-
-                //    | sorterSetPruneMethod.PhenotypeCap spc ->
-                //        new causePruneSorterSetsMaxPhenotype(
-                //                wnSorterSetParent,
-                //                wnSorterSetMutated,
-                //                wnSorterSetEvalParent,
-                //                wnSorterSetEvalMutated,
-                //                wnSorterSetPruned,
-                //                wnSorterSetEvalPruned,
-                //                rngGenPrune,
-                //                sorterCount,
-                //                noiseFraction,
-                //                stageWeight
-                //                ) :> ICause |> Ok
-
-                //    | sorterSetPruneMethod.Shc ->
-                //        new causePruneSorterSetsShc(
-                //                wnSorterSetParent,
-                //                wnSorterSetMutated,
-                //                wnSorterSetEvalParent,
-                //                wnSorterSetEvalMutated,
-                //                wnSorterSetPruned,
-                //                wnParentMap,
-                //                wnSorterSetEvalPruned,
-                //                rngGenPrune,
-                //                sorterCount,
-                //                noiseFraction,
-                //                stageWeight
-                //                ) :> ICause |> Ok
 
 
                 let causeUpdateSorterSetAncestry =

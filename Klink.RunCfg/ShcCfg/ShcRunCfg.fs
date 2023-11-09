@@ -20,7 +20,8 @@ type shcInitRunCfg =
         stageWeight:stageWeight
         switchCount:switchCount
         switchGenMode:switchGenMode
-        reportFilter:generationFilter option
+        reportFilter:generationFilter
+        fullReportFilter:generationFilter
     }
 
 
@@ -107,7 +108,8 @@ module ShcInitRunCfg =
         |> WorkspaceParamsAttrs.setSwitchCount ShcWsParamKeys.sorterLength shcInitRunCfg.switchCount
         |> WorkspaceParamsAttrs.setSwitchGenMode ShcWsParamKeys.switchGenMode shcInitRunCfg.switchGenMode
         |> WorkspaceParamsAttrs.setSorterSetPruneMethod ShcWsParamKeys.sorterSetPruneMethod shcInitRunCfg.sorterSetPruneMethod
-        |> WorkspaceParamsAttrs.setGenerationFilter ShcWsParamKeys.generation_filter (shcInitRunCfg.reportFilter |> Option.get )
+        |> WorkspaceParamsAttrs.setGenerationFilter ShcWsParamKeys.generation_filter_short shcInitRunCfg.reportFilter
+        |> WorkspaceParamsAttrs.setGenerationFilter ShcWsParamKeys.generation_filter_long shcInitRunCfg.fullReportFilter
         |> WorkspaceParamsAttrs.setUseParallel ShcWsParamKeys.useParallel useParallel
 
 
@@ -117,6 +119,7 @@ type shcContinueRunCfg =
         runId:runId
         newGenerations:generation
         reportGenFilter:generationFilter
+        fullReportGenFilter:generationFilter
     }
 
 

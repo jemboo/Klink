@@ -20,6 +20,7 @@ type shcInitRunCfgDto =
         switchCount:int
         switchGenMode:switchGenMode
         reportGenFilter:generationFilterDto
+        fullReportGenFilter:generationFilterDto
     }
 
 
@@ -42,7 +43,8 @@ module ShcInitRunCfgDto =
             stageWeight = cfg.stageWeight |> StageWeight.value
             switchCount = cfg.switchCount |> SwitchCount.value
             switchGenMode = cfg.switchGenMode
-            reportGenFilter = cfg.reportFilter  |> Option.get |> GenerationFilterDto.toDto
+            reportGenFilter = cfg.reportFilter |> GenerationFilterDto.toDto
+            fullReportGenFilter = cfg.fullReportFilter  |> GenerationFilterDto.toDto
         }
 
 
@@ -54,6 +56,7 @@ module ShcInitRunCfgDto =
     let fromDto (cfg:shcInitRunCfgDto) =
         result {
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
+            let! fullReportFilter = cfg.fullReportGenFilter |> GenerationFilterDto.fromDto
             let! sorterSetPruneMethod = cfg.sorterSetPruneMethod |> SorterSetPruneMethodDto.fromDto
             return
                 {
@@ -72,7 +75,9 @@ module ShcInitRunCfgDto =
                     stageWeight = cfg.stageWeight |> StageWeight.create
                     switchCount = cfg.switchCount |> SwitchCount.create
                     switchGenMode = cfg.switchGenMode
-                    reportFilter = reportFilter |> Some
+                    reportFilter = reportFilter
+                    fullReportFilter = fullReportFilter
+
                 }
         }
 
@@ -90,6 +95,7 @@ type shcContinueRunCfgDto =
         runId:string
         newGenerations:int
         reportGenFilter:generationFilterDto
+        fullReportGenFilter:generationFilterDto
     }
 
 module ShcContinueRunCfgDto =
@@ -99,6 +105,7 @@ module ShcContinueRunCfgDto =
             shcContinueRunCfgDto.runId = cfg.runId |> RunId.value |> string
             newGenerations = cfg.newGenerations |> Generation.value
             reportGenFilter = cfg.reportGenFilter |> GenerationFilterDto.toDto
+            fullReportGenFilter = cfg.fullReportGenFilter |> GenerationFilterDto.toDto
         }
 
     let toJson (cfg:shcContinueRunCfg) =
@@ -108,11 +115,13 @@ module ShcContinueRunCfgDto =
     let fromDto (cfg:shcContinueRunCfgDto) =
         result {
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
+            let! fullReportFilter = cfg.fullReportGenFilter |> GenerationFilterDto.fromDto
             return
                 {
                     shcContinueRunCfg.runId = cfg.runId |> Guid.Parse |> RunId.create
                     newGenerations = cfg.newGenerations |> Generation.create
                     reportGenFilter = reportFilter
+                    fullReportGenFilter = fullReportFilter
                 }
         }
 

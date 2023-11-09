@@ -60,7 +60,7 @@ module InterGenWsOps =
             let mutable _curParams = curParams
             let mutable _curWorkspace = curWorkspace
             let mutable _keepGoing = true
-            let mutable _msg = ""
+            let mutable _msg = "no errors"
 
             while ((_curGen < _maxGen ) && _keepGoing) do
                 let tup =
@@ -75,7 +75,6 @@ module InterGenWsOps =
                         wnSorterSetEvalMutated
                         wnSorterSetEvalPruned
                         wnSorterSpeedBinSet
-                        wnSorterSetAncestry
                         workplaceFileStore
                         (fun s-> Console.WriteLine(s))
                         _curParams
@@ -87,7 +86,7 @@ module InterGenWsOps =
                             _curWorkspace <- wsN
                             _curParams <- wsPramsN
                             _curGen <- _curGen + 1
-                            ""
+                            "no errors"
                     | Error m -> 
                             _keepGoing <- false
                             m

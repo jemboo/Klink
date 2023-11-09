@@ -20,6 +20,7 @@ type gaInitRunCfgDto =
         switchCount:int
         switchGenMode:switchGenMode
         reportGenFilter:generationFilterDto
+        fullReportGenFilter:generationFilterDto
     }
 
 
@@ -42,7 +43,8 @@ module GaInitRunCfgDto =
             stageWeight = cfg.stageWeight |> StageWeight.value
             switchCount = cfg.switchCount |> SwitchCount.value
             switchGenMode = cfg.switchGenMode
-            reportGenFilter = cfg.reportFilter  |> Option.get |> GenerationFilterDto.toDto
+            reportGenFilter = cfg.reportFilter |> GenerationFilterDto.toDto
+            fullReportGenFilter = cfg.fullReportFilter  |> GenerationFilterDto.toDto
         }
 
 
@@ -54,6 +56,7 @@ module GaInitRunCfgDto =
     let fromDto (cfg:gaInitRunCfgDto) =
         result {
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
+            let! fullReportFilter = cfg.fullReportGenFilter |> GenerationFilterDto.fromDto
             let! sorterSetPruneMethod = cfg.sorterSetPruneMethod |> SorterSetPruneMethodDto.fromDto
             return
                 {
@@ -72,7 +75,8 @@ module GaInitRunCfgDto =
                     stageWeight = cfg.stageWeight |> StageWeight.create
                     switchCount = cfg.switchCount |> SwitchCount.create
                     switchGenMode = cfg.switchGenMode
-                    reportFilter = reportFilter |> Some
+                    reportFilter = reportFilter
+                    fullReportFilter = fullReportFilter
                 }
         }
 
@@ -90,6 +94,7 @@ type gaContinueRunCfgDto =
         runId:string
         newGenerations:int
         reportGenFilter:generationFilterDto
+        fullReportGenFilter:generationFilterDto
     }
 
 module GaContinueRunCfgDto =
@@ -99,6 +104,7 @@ module GaContinueRunCfgDto =
             runId = cfg.runId |> RunId.value |> string
             newGenerations = cfg.newGenerations |> Generation.value
             reportGenFilter = cfg.reportGenFilter |> GenerationFilterDto.toDto
+            fullReportGenFilter = cfg.fullReportGenFilter |> GenerationFilterDto.toDto
         }
 
     let toJson (cfg:gaContinueRunCfg) =
@@ -107,11 +113,13 @@ module GaContinueRunCfgDto =
     let fromDto (cfg:gaContinueRunCfgDto) =
         result {
             let! reportFilter = cfg.reportGenFilter |> GenerationFilterDto.fromDto
+            let! fullReportFilter = cfg.fullReportGenFilter |> GenerationFilterDto.fromDto
             return
                 {
                     gaContinueRunCfg.runId = cfg.runId |> Guid.Parse |> RunId.create
                     newGenerations = cfg.newGenerations |> Generation.create
                     reportGenFilter = reportFilter
+                    fullReportGenFilter = fullReportFilter
                 }
         }
 

@@ -35,7 +35,7 @@ module IntraGenWsOps =
                                 |> Result.map(Generation.value)
 
 
-                let! res = fs.SaveWorkSpace wsGenZero
+                let! res = fs.SaveWorkSpace wsGenZero (fun _ -> true)
                 logger ($"Saved Gen {curGenNumber} to {wsGenZero |> Workspace.getId |> WorkspaceId.value}")
                 return (wsCfg, wsParams), wsGenZero
              }
@@ -62,7 +62,7 @@ module IntraGenWsOps =
                 
                 let baseWsHistory = History.Empty
 
-                let! wsHistoryWIthPrune = 
+                let! wsHistoryWithPrune = 
                      CauseSets.addMutantsAndPruneCauses
                         wnSortableSet
                         wnSorterSetParent
@@ -94,7 +94,7 @@ module IntraGenWsOps =
                         wnSorterSpeedBinSet
                         wnSorterSetAncestry
                         wsParamsNextGen
-                        wsHistoryWIthPrune
+                        wsHistoryWithPrune
 
                 let! wsNextGen =
                         ws
@@ -106,9 +106,12 @@ module IntraGenWsOps =
                         wsParamsNextGen 
                         |> WorkspaceParamsAttrs.getGeneration ShcWsParamKeys.generation_current
 
-                let! gf = wsParamsNextGen |> WorkspaceParamsAttrs.getGenerationFilter ShcWsParamKeys.generation_filter
-                if (gf |> GenerationFilter.passing nextGen) then
-                    let! res = fs.SaveWorkSpace wsNextGen
+                let! gfLong = wsParamsNextGen |> WorkspaceParamsAttrs.getGenerationFilter ShcWsParamKeys.generation_filter_long
+                let! gfShort = wsParamsNextGen |> WorkspaceParamsAttrs.getGenerationFilter ShcWsParamKeys.generation_filter_short
+
+
+                if (gfLong |> GenerationFilter.passing nextGen) then
+                    let! res = fs.SaveWorkSpace wsNextGen (fun wsc -> true)
                     logger ($"Saved Gen {nextGen |> Generation.value} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
                     let causeAddSorterSpeedBinSet =
                         new causeAddSorterSpeedBinSet(wnSorterSpeedBinSet, wsParams)
@@ -127,6 +130,30 @@ module IntraGenWsOps =
                                 ]
 
                     return resetWs, wsParamsNextGen
+
+
+
+                else if (gfShort |> GenerationFilter.passing nextGen) then
+                    let! res = fs.SaveWorkSpace wsNextGen (fun wsc -> wsc <> wnSorterSetParent)
+                    logger ($"Saved Gen {nextGen |> Generation.value} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
+                    let causeAddSorterSpeedBinSet =
+                        new causeAddSorterSpeedBinSet(wnSorterSpeedBinSet, wsParams)
+
+                    let causeAddSorterSetAncestry =
+                        new causeAddSorterSetAncestry(wnSorterSetAncestry, wsParams, wnSorterSetEvalParent)
+
+
+                    let! resetWs =
+                        wsNextGen
+                        |> History.runWorkspaceCfgOnWorkspace
+                                logger
+                                [
+                                    causeAddSorterSpeedBinSet;
+                                    causeAddSorterSetAncestry
+                                ]
+
+                    return resetWs, wsParamsNextGen
+
 
                 else
                     return wsNextGen, wsParamsNextGen

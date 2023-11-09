@@ -18,12 +18,14 @@ module ShcCfgPlex =
 
     let _fromFunc<'a>
             (newGenerations:generation)
-            (reportFilter:generationFilter option)
+            (reportFilter:generationFilter)
+            (fullReportFilter:generationFilter)
             (plex:shcCfgPlex)
             (daFunc: 
                      order -> 
                      generation -> 
-                     generationFilter option -> 
+                     generationFilter -> 
+                     generationFilter -> 
                      rngGen -> 
                      sorterEvalMode ->
                      sortableSetCfgType -> 
@@ -53,6 +55,7 @@ module ShcCfgPlex =
                                                         order 
                                                         newGenerations
                                                         reportFilter
+                                                        fullReportFilter
                                                         rngGen
                                                         sorterEvalMode
                                                         sortableSetCfgType
@@ -119,7 +122,8 @@ module ShcCfgPlex =
 
     let toInitRunCfgs
             (newGenerations:generation)
-            (reportFilter:generationFilter option)
+            (reportFilter:generationFilter)
+            (fullReportFilter:generationFilter)
             (seqSplicer: (int*int) option)
             (plex:shcCfgPlex)
         =
@@ -127,7 +131,8 @@ module ShcCfgPlex =
         let _toIr 
                 order 
                 newGenerations 
-                reportFilter 
+                reportFilter
+                fullReportFilter
                 rngGen 
                 sorterEvalMode
                 sortableSetCfgType
@@ -173,10 +178,11 @@ module ShcCfgPlex =
                             switchCount = (SwitchCount.orderTo999SwitchCount order)
                             switchGenMode = switchGenMode
                             reportFilter = reportFilter
+                            fullReportFilter = fullReportFilter
                         }
                 shcInitRunCfg
 
-        _fromFunc newGenerations reportFilter plex _toIr seqSplicer
+        _fromFunc newGenerations reportFilter fullReportFilter plex _toIr seqSplicer
 
 
 
@@ -218,6 +224,7 @@ module ShcCfgPlex =
     let toContinueRunCfgs
             (newGenerations:generation)
             (reportGenFilter:generationFilter)
+            (fullReportGenFilter:generationFilter)
             (seqSplicer: (int*int) option)
             (plex:shcCfgPlex)
         =
@@ -226,6 +233,7 @@ module ShcCfgPlex =
                     shcContinueRunCfg.runId = runId;
                     newGenerations = newGenerations;
                     reportGenFilter = reportGenFilter
+                    fullReportGenFilter = fullReportGenFilter
                 }
         toRunIds seqSplicer plex
         |> Seq.map(_toCrc newGenerations)

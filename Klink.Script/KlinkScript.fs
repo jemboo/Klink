@@ -70,6 +70,7 @@ module KlinkScript =
     let createInitRunScriptsFromRunCfgPlex
             (generations:generation)
             (reportFilter:generationFilter)
+            (fullReportFilter:generationFilter)
             (scriptFileNamePfx:string)
             (maxRunCountPerScript:int)
             (seqSplicer: (int*int) option)
@@ -78,7 +79,8 @@ module KlinkScript =
         let runCfgs = 
             RunCfgPlex.toInitRunCfgs
                 generations
-                (Some reportFilter)
+                reportFilter
+                fullReportFilter
                 seqSplicer
                 plex
             |> Seq.chunkBySize maxRunCountPerScript
@@ -99,6 +101,7 @@ module KlinkScript =
     let createContinueRunScriptsFromRunCfgPlex
             (newGenerations:generation)
             (reportGenFilter:generationFilter)
+            (fullReportFilter:generationFilter)
             (scriptFileNamePfx:string)
             (maxRunCountPerScript:int)
             (seqSplicer: (int*int) option)
@@ -108,6 +111,7 @@ module KlinkScript =
             RunCfgPlex.toContinueRunCfgs
                 newGenerations
                 reportGenFilter
+                fullReportFilter
                 seqSplicer
                 plex
             |> Seq.chunkBySize maxRunCountPerScript
@@ -131,6 +135,7 @@ module KlinkScript =
             (genMax:generation)
             (evalCompName:wsComponentName)
             (reportFilter:generationFilter)
+            (fullReportFilter:generationFilter)
             (reportFileName:string)
             (seqSplicer: (int*int) option)
             (plex:runCfgPlex)

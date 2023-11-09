@@ -28,7 +28,7 @@ type WorkspaceFixture () =
 
         let rootDir = "C:\\Klinkster"
         let fs = new WorkspaceFileStore(rootDir)
-        let res = fs.saveWorkSpace ws |> Result.ExtractOrThrow
+        let res = fs.saveWorkSpace ws (fun _ -> true) |> Result.ExtractOrThrow
 
         Assert.AreEqual(ws |> Workspace.getId, secondWsCfg.id);
 
@@ -76,11 +76,11 @@ type WorkspaceFixture () =
         let fileStore = new WorkspaceFileStore(rootDir)
 
 
-        let res = fileStore.saveWorkSpace firstWs |> Result.ExtractOrThrow
+        let res = fileStore.saveWorkSpace firstWs (fun _ -> true) |> Result.ExtractOrThrow
         let fourthWs = fourthWsCfg |> History.runWorkspaceCfg fileStore (fun s->())
                         |> Result.ExtractOrThrow
 
-        let resR = fileStore.saveWorkSpace fourthWs
+        let resR = fileStore.saveWorkSpace fourthWs (fun _ -> true)
         let res = resR |> Result.ExtractOrThrow
 
         Assert.AreEqual(fourthWs |> Workspace.getId, fourthWsCfg.id);

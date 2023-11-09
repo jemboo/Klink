@@ -20,7 +20,8 @@ type gaInitRunCfg =
         stageWeight:stageWeight
         switchCount:switchCount
         switchGenMode:switchGenMode
-        reportFilter:generationFilter option
+        reportFilter:generationFilter
+        fullReportFilter:generationFilter
     }
 
 
@@ -107,10 +108,9 @@ module GaInitRunCfg =
         |> WorkspaceParamsAttrs.setSwitchCount GaWsParamKeys.sorterLength gaInitRunCfg.switchCount
         |> WorkspaceParamsAttrs.setSwitchGenMode GaWsParamKeys.switchGenMode gaInitRunCfg.switchGenMode
         |> WorkspaceParamsAttrs.setSorterSetPruneMethod GaWsParamKeys.sorterSetPruneMethod gaInitRunCfg.sorterSetPruneMethod
-        |> WorkspaceParamsAttrs.setGenerationFilter GaWsParamKeys.generation_filter (gaInitRunCfg.reportFilter |> Option.get )
+        |> WorkspaceParamsAttrs.setGenerationFilter GaWsParamKeys.generation_filter_long gaInitRunCfg.fullReportFilter
+        |> WorkspaceParamsAttrs.setGenerationFilter GaWsParamKeys.generation_filter_short gaInitRunCfg.reportFilter
         |> WorkspaceParamsAttrs.setUseParallel GaWsParamKeys.useParallel useParallel
-
-
 
 
 
@@ -119,6 +119,7 @@ type gaContinueRunCfg =
         runId:runId
         newGenerations:generation
         reportGenFilter:generationFilter
+        fullReportGenFilter:generationFilter
     }
 
 

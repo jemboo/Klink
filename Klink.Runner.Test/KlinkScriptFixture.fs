@@ -9,7 +9,7 @@ type KlinkScriptFixture () =
 
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let maxRunsPerScript = 30
+        let maxRunsPerScript = 1
 
         let klinkScripts = O64_Stage_PhenoPrune.writeInitScripts maxRunsPerScript
 
