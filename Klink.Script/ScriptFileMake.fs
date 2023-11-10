@@ -6,16 +6,15 @@ open System.Threading
 module ScriptFileMake =
 
     let writeScript 
-            (baseDir:string) 
-            (projectPath:string) 
+            (baseDir:string)
             (klinkScript:klinkScript) 
         =
         TextIO.writeToFileOverwrite 
-                    "txt" 
-                    (baseDir |> Some) 
-                    (FolderParams.toDoFolder projectPath)
-                    (klinkScript.name |> ScriptName.value)
-                    (klinkScript |> KlinkScriptDto.toJson)
+                "txt" 
+                (baseDir |> Some) 
+                (FolderParams.toDoFolder (klinkScript.projectFolder |> ProjectFolder.value))
+                (klinkScript.scriptName |> ScriptName.value)
+                (klinkScript |> KlinkScriptDto.toJson)
 
 
             

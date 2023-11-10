@@ -11,6 +11,7 @@ type shcCfgPlex =
         sorterSetPruneMethodsOld:sorterSetPruneMethod[]
         stageWeights:stageWeight[]
         switchGenModes:switchGenMode[]
+        projectFolder:projectFolder
     }
 
 

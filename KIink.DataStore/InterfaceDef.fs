@@ -1,5 +1,16 @@
 ﻿namespace global
 
+
+type projectFolder = private ProjectFolder of string
+module ProjectFolder =
+
+    let value (ProjectFolder v) = v
+
+    let create (value: string) =
+        value |> ProjectFolder
+
+
+
 type IWorkspaceStore = 
     abstract member SaveWorkSpace: workspace -> (wsComponentName -> bool) -> Result<string,string>
     abstract member LoadWorkSpace: workspaceId -> Result<workspace,string>

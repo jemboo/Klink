@@ -6,20 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Workspace\CauseAddWsComponent.fs" />
-    <Compile Include="Workspace\CauseMakeWsComponent.fs" />
-    <Compile Include="Workspace\CauseReporting.fs" />
-    <Compile Include="Workspace\CauseSets.fs" />
-    <Compile Include="Workspace\IntraGenWsOps.fs" />
-    <Compile Include="Workspace\InterGenWsOps.fs" />
+    <Compile Include="WorkspaceParamsDto.fs" />
+    <Compile Include="WorkspaceDescriptionDto.fs" />
+    <Compile Include="WorkspaceComponentDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\KIink.DataStore\KIink.DataStore.fsproj" />
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
-    <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
-    <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
+    <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
+    <ProjectReference Include="..\Klink.RunCfg\Klink.RunCfg.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />

@@ -52,13 +52,18 @@ module ScriptItemDto =
 
 
 
-type klinkScriptDto = {   name:string;
-                          items:scriptItemDto[] }
+type klinkScriptDto = 
+        {   
+            scriptName:string;
+            projectFolder:string;
+            items:scriptItemDto[] 
+        }
 
 module KlinkScriptDto =
     let toDto (klinkScript:klinkScript) =
         {
-            klinkScriptDto.name = klinkScript.name |> ScriptName.value;
+            klinkScriptDto.scriptName = klinkScript.scriptName |> ScriptName.value;
+            projectFolder = klinkScript.projectFolder |> ProjectFolder.value
             items = klinkScript.items |> Array.map(ScriptItemDto.toDto)
         }
 
@@ -74,7 +79,8 @@ module KlinkScriptDto =
                        |> Result.sequence
             return
                 {
-                    klinkScript.name = dto.name |> ScriptName.create;
+                    klinkScript.scriptName = dto.scriptName |> ScriptName.create;
+                    projectFolder = dto.projectFolder |> ProjectFolder.create
                     items = items |> List.toArray
                 }
         }

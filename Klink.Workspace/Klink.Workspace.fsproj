@@ -6,8 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="WsBasicStuff.fs" />
     <Compile Include="WorkspaceParams.fs" />
+    <Compile Include="WorkspaceParamAttrs.fs" />
+    <Compile Include="GaWsParamKeys.fs" />
+    <Compile Include="ShcWsParamKeys.fs" />
     <Compile Include="WorkspaceCompDescr.fs" />
     <Compile Include="Workspace.fs" />
     <Compile Include="Program.fs" />
@@ -19,6 +21,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+    <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
+    <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
   </ItemGroup>

@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Workspace\ShcWsParamKeys.fs" />
     <Compile Include="Workspace\CauseAddWsComponent.fs" />
     <Compile Include="Workspace\CauseMakeWsComponent.fs" />
     <Compile Include="Workspace\CauseStats.fs" />

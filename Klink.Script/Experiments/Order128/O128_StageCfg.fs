@@ -4,6 +4,9 @@ open System
 module O128_StageRflCfg =
 
     open CommonParams
+    let baseDir = $"c:\Klink"
+    let projectFolder  = $"o128\StageRfl" |> ProjectFolder.create
+
 
     let runCfgPlex =
         {
@@ -23,6 +26,7 @@ module O128_StageRflCfg =
             sorterSetPruneMethodsOld = [|sspm1;|];
             stageWeights = [|sw0; sw1|];
             switchGenModes = [|switchGenMode.stageSymmetric|];
+            projectFolder = projectFolder
         } |> runCfgPlex.Shc
 
     //let runCfgPlex =
@@ -51,8 +55,6 @@ module O128_StageRflCfg =
     let fullReportFilter = CommonParams.modulusFilter 25
     let initScriptName = "patchScript"
 
-    let baseDir = $"c:\Klink"
-    let projectFolder  = $"o128\StageRfl"
 
     let writeInitScripts (maxRunsPerScript:int) = 
             KlinkScript.createInitRunScriptsFromRunCfgPlex 
@@ -60,10 +62,11 @@ module O128_StageRflCfg =
                 baseReportFilter
                 fullReportFilter
                 initScriptName
+                projectFolder
                 maxRunsPerScript
                 None
                 runCfgPlex
-            |> Array.map(ScriptFileMake.writeScript baseDir projectFolder)
+            |> Array.map(ScriptFileMake.writeScript baseDir)
 
 
     let reportGenMin = 0 |> Generation.create
@@ -77,12 +80,12 @@ module O128_StageRflCfg =
                 baseGenerationCount
                 evalScriptComponent
                 baseReportFilter
-                fullReportFilter
                 reportEvalsFileName
+                projectFolder
                 seqSplicer
                 runCfgPlex
             
-            |> ScriptFileMake.writeScript baseDir projectFolder
+         |> ScriptFileMake.writeScript baseDir
 
 
     let reportBinsFileName = "reportBinsReport"
@@ -93,7 +96,8 @@ module O128_StageRflCfg =
                 reportGenMin
                 baseGenerationCount
                 reportBinsFileName
+                projectFolder
                 seqSplicer
                 runCfgPlex
             
-            |> ScriptFileMake.writeScript baseDir projectFolder
+            |> ScriptFileMake.writeScript baseDir

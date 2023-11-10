@@ -17,9 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\KIink.DataStore\KIink.DataStore.fsproj" />
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
-    <ProjectReference Include="..\Klink.FileDataStore\Klink.FileDataStore.fsproj" />
-    <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
     <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
     <ProjectReference Include="..\Klink.RunGa\Klink.RunGa.fsproj" />
     <ProjectReference Include="..\Klink.RunShc\Klink.RunShc.fsproj" />

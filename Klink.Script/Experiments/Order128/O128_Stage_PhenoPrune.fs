@@ -5,6 +5,9 @@ module O128_Stage_PhenoPrune =
 
     open CommonParams
 
+    let baseDir = $"c:\Klink"
+    let projectFolder  = $"o128\StagePhenoPruneT" |> ProjectFolder.create
+
     //let runCfgPlex =
     //    {
     //        shcCfgPlex.orders = [| 128 |> Order.createNr |]
@@ -101,6 +104,7 @@ module O128_Stage_PhenoPrune =
                 |];
             stageWeights = [|sw0;|];
             switchGenModes = [|switchGenMode.stageSymmetric|];
+            projectFolder = projectFolder
         } |> runCfgPlex.Shc
 
 
@@ -116,19 +120,17 @@ module O128_Stage_PhenoPrune =
     let initScriptName = "initScriptLr"
     let continueScriptName = "continueScriptLr"
 
-    let baseDir = $"c:\Klink"
-    let projectFolder  = $"o128\StagePhenoPruneT"
-
     let writeInitScripts (maxRunsPerScript:int) = 
             KlinkScript.createInitRunScriptsFromRunCfgPlex 
                 initGenerationCount
                 initReportFilter
                 fullReportFilter
                 initScriptName
+                projectFolder
                 maxRunsPerScript
                 None
                 runCfgPlex
-            |> Array.map(ScriptFileMake.writeScript baseDir projectFolder)
+            |> Array.map(ScriptFileMake.writeScript baseDir)
 
 
     let writeContinueScripts (maxRunsPerScript:int) = 
@@ -137,10 +139,11 @@ module O128_Stage_PhenoPrune =
                 continueReportFilter
                 fullReportFilter
                 continueScriptName
+                projectFolder
                 maxRunsPerScript
                 None
                 runCfgPlex
-            |> Array.map(ScriptFileMake.writeScript baseDir projectFolder)
+            |> Array.map(ScriptFileMake.writeScript baseDir)
 
 
 
@@ -155,12 +158,12 @@ module O128_Stage_PhenoPrune =
                 initGenerationCount
                 evalScriptComponent
                 continueReportFilter
-                fullReportFilter
                 reportEvalsFileName
+                projectFolder
                 seqSplicer
                 runCfgPlex
             
-            |> ScriptFileMake.writeScript baseDir projectFolder
+            |> ScriptFileMake.writeScript baseDir
 
 
     let reportBinsFileName = "reportBinsReport"
@@ -171,7 +174,8 @@ module O128_Stage_PhenoPrune =
                 reportGenMin
                 initGenerationCount
                 reportBinsFileName
+                projectFolder
                 seqSplicer
                 runCfgPlex
             
-            |> ScriptFileMake.writeScript baseDir projectFolder
+            |> ScriptFileMake.writeScript baseDir

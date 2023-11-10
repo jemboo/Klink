@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="WorkspaceParamAttrs.fs" />
     <Compile Include="History_Cause.fs" />
     <Compile Include="CauseLoadWs.fs" />
     <Compile Include="Program.fs" />
@@ -15,7 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\KIink.DataStore\KIink.DataStore.fsproj" />
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
-    <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
     <ProjectReference Include="..\Klink.Run.Core\Klink.Run.Core.fsproj" />
     <ProjectReference Include="..\Klink.SortingOps\Klink.SortingOps.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />

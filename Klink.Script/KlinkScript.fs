@@ -3,13 +3,13 @@ open System
 
 
 type scriptName = private ScriptName of string
-
 module ScriptName =
 
     let value (ScriptName v) = v
 
     let create (value: string) =
         value |> ScriptName
+
 
 
 type scriptItem = 
@@ -37,14 +37,15 @@ module ScriptItem =
 type klinkScript = 
     private 
         {
-            name: scriptName;
+            scriptName: scriptName;
+            projectFolder:projectFolder
             items: scriptItem[]
         }
 
 
 module KlinkScript =
 
-    let getName (ks:klinkScript) = ks.name
+    let getName (ks:klinkScript) = ks.scriptName
 
     let getScriptItems (ks:klinkScript) = ks.items
 
@@ -72,6 +73,7 @@ module KlinkScript =
             (reportFilter:generationFilter)
             (fullReportFilter:generationFilter)
             (scriptFileNamePfx:string)
+            (projectFolder:projectFolder)
             (maxRunCountPerScript:int)
             (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
@@ -90,9 +92,10 @@ module KlinkScript =
         runCfgs |> Array.mapi(
             fun dex cfgs -> 
                     { 
-                        klinkScript.name = 
+                        klinkScript.scriptName = 
                             _scriptFileName scriptFileNamePfx maxRunCountPerScript dex
                             |> ScriptName.create
+                        projectFolder = projectFolder;
                         items = cfgs |> Array.map(scriptItem.Run)
                     }
                 )
@@ -103,6 +106,7 @@ module KlinkScript =
             (reportGenFilter:generationFilter)
             (fullReportFilter:generationFilter)
             (scriptFileNamePfx:string)
+            (projectFolder:projectFolder)
             (maxRunCountPerScript:int)
             (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
@@ -121,9 +125,10 @@ module KlinkScript =
         runCfgs |> Array.mapi(
             fun dex cfgs -> 
                     { 
-                        klinkScript.name = 
+                        klinkScript.scriptName = 
                             _scriptFileName scriptFileNamePfx maxRunCountPerScript dex
                             |> ScriptName.create
+                        projectFolder = projectFolder;
                         items = cfgs |> Array.map(scriptItem.Run)
                     }
                 )
@@ -135,8 +140,8 @@ module KlinkScript =
             (genMax:generation)
             (evalCompName:wsComponentName)
             (reportFilter:generationFilter)
-            (fullReportFilter:generationFilter)
             (reportFileName:string)
+            (projectFolder:projectFolder)
             (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
@@ -164,7 +169,8 @@ module KlinkScript =
                     reportFilter = reportFilter
                 } |> gaReportCfg.Evals |> reportCfg.Ga  |> scriptItem.Report
         {
-            klinkScript.name = reportFileName |> ScriptName.create
+            klinkScript.scriptName = reportFileName |> ScriptName.create
+            projectFolder = projectFolder;
             items = [| scriptItem |]
         }
 
@@ -174,6 +180,7 @@ module KlinkScript =
             (genMin:generation)
             (genMax:generation)
             (reportFileName:string)
+            (projectFolder:projectFolder)
             (seqSplicer: (int*int) option)
             (plex:runCfgPlex)
         =
@@ -197,6 +204,7 @@ module KlinkScript =
                     genMax = genMax
                 } |> gaReportCfg.Bins |> reportCfg.Ga  |> scriptItem.Report
         {
-            klinkScript.name = reportFileName |> ScriptName.create
+            klinkScript.scriptName = reportFileName |> ScriptName.create
+            projectFolder = projectFolder;
             items = [| scriptItem |]
         }
