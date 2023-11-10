@@ -98,7 +98,7 @@ module O64_Stage_PhenoPrune =
             noiseFractions = [|nf2;nf3;nf4;|];
             rngGens = rndGens 0 10 ;
             tupSorterSetSizes = [|ssz5_6|];
-            sorterSetPruneMethodsOld = 
+            sorterSetPruneMethods = 
                 [|
                     spc2;
                     spc4;

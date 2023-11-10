@@ -97,7 +97,7 @@ module O128_Stage_PhenoPrune =
             noiseFractions = [|nf4;|];
             rngGens = rndGens 0 1 ;
             tupSorterSetSizes = [|ssz5_6|];
-            sorterSetPruneMethodsOld = 
+            sorterSetPruneMethods = 
                 [|
                     spc3;
                     spc6;

@@ -13,6 +13,7 @@ type gaCfgPlex =
         sorterSetPruneMethods:sorterSetPruneMethod[]
         stageWeights:stageWeight[]
         switchGenModes:switchGenMode[]
+        projectFolder:projectFolder
     }
 
 

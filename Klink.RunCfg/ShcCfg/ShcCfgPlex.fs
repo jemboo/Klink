@@ -8,7 +8,7 @@ type shcCfgPlex =
         noiseFractions:noiseFraction[]
         rngGens:rngGen[]
         tupSorterSetSizes:(sorterCount*sorterCount)[]
-        sorterSetPruneMethodsOld:sorterSetPruneMethod[]
+        sorterSetPruneMethods:sorterSetPruneMethod[]
         stageWeights:stageWeight[]
         switchGenModes:switchGenMode[]
         projectFolder:projectFolder
@@ -50,7 +50,7 @@ module ShcCfgPlex =
                                 for stageWeight in plex.stageWeights do
                                     for noiseFraction in plex.noiseFractions do
                                         for mutationRate in plex.mutationRates do
-                                            for sorterSetPruneMethod in plex.sorterSetPruneMethodsOld do
+                                            for sorterSetPruneMethod in plex.sorterSetPruneMethods do
                                                 yield
                                                     daFunc 
                                                         order 
@@ -100,7 +100,7 @@ module ShcCfgPlex =
                                 for stageWeight in plex.stageWeights do
                                     for noiseFraction in plex.noiseFractions do
                                         for mutationRate in plex.mutationRates do
-                                            for sorterSetPruneMethod in plex.sorterSetPruneMethodsOld do
+                                            for sorterSetPruneMethod in plex.sorterSetPruneMethods do
                                                 yield
                                                     daFunc 
                                                         sortableSetCfgType
