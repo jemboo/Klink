@@ -2,8 +2,10 @@
 open System
 open System.IO
 
+
 type gaCfgPlex =
     {
+        name:cfgPlexName
         orders:order[]
         sortableSetCfgs:(sortableSetCfgType*stageCount*sorterEvalMode) []
         mutationRates:mutationRate[]
@@ -40,7 +42,7 @@ module GaCfgPlex =
                 mutationRate ->
                 sorterSetPruneMethod -> 
                 'a)
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
             =
         let preSpliced =
             seq {
@@ -70,8 +72,8 @@ module GaCfgPlex =
                                                         mutationRate
                                                         sorterSetPruneMethod
                     }
-        match seqSplicer with
-        | Some (skp, tk) -> preSpliced |> Seq.skip skp |> Seq.take tk
+        match selectedIndexes with
+        | Some dexes -> preSpliced |> CollectionOps.getItemsAtIndexes dexes
         | None -> preSpliced 
 
 
@@ -89,7 +91,7 @@ module GaCfgPlex =
                 mutationRate -> 
                 sorterSetPruneMethod -> 
                 'a)
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
         =
         let preSpliced =
             seq {
@@ -114,8 +116,8 @@ module GaCfgPlex =
                                                         mutationRate 
                                                         sorterSetPruneMethod
             }
-        match seqSplicer with
-        | Some (skp, tk) -> preSpliced |> Seq.skip skp |> Seq.take tk
+        match selectedIndexes with
+        | Some dexes -> preSpliced |> CollectionOps.getItemsAtIndexes dexes
         | None -> preSpliced 
 
 
@@ -125,7 +127,7 @@ module GaCfgPlex =
             (newGenerations:generation)
             (reportFilter:generationFilter)
             (fullReportFilter:generationFilter)
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
             (plex:gaCfgPlex)
         =
 
@@ -179,13 +181,13 @@ module GaCfgPlex =
                     fullReportFilter = fullReportFilter
                 }
 
-        _fromFunc newGenerations reportFilter fullReportFilter plex _toIr seqSplicer
+        _fromFunc newGenerations reportFilter fullReportFilter plex _toIr selectedIndexes
 
 
 
 
     let toRunIds 
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
             (plex:gaCfgPlex)
         =
         let _toRunId 
@@ -214,7 +216,7 @@ module GaCfgPlex =
                     (SwitchCount.orderTo999SwitchCount order)
                     switchGenMode
 
-        _fromFunc2 plex _toRunId seqSplicer
+        _fromFunc2 plex _toRunId selectedIndexes
 
 
 
@@ -222,7 +224,7 @@ module GaCfgPlex =
             (newGenerations:generation)
             (reportGenFilter:generationFilter)
             (fullReportGenFilter:generationFilter)
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
             (plex:gaCfgPlex)
         =
 
@@ -233,5 +235,5 @@ module GaCfgPlex =
                     reportGenFilter = reportGenFilter
                     fullReportGenFilter = fullReportGenFilter
                 }
-        toRunIds seqSplicer plex
+        toRunIds selectedIndexes plex
         |> Seq.map(_toCrc)

@@ -17,7 +17,6 @@
     <Compile Include="Experiments\Order128\O128_Stage_PhenoPrune.fs" />
     <Compile Include="Experiments\Order128\O128_StageCfg.fs" />
     <Compile Include="Experiments\Order128\O128_StageRflCfg.fs" />
-    <Compile Include="Experiments\Order16\Exp1Cfg.fs" />
     <Compile Include="Experiments\Order16\O16_StageRflCfg.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

@@ -1,10 +1,10 @@
 ﻿namespace global
-open System
 open Microsoft.FSharp.Core
     
     
 type shcCfgPlexDto =
     {
+        name:string
         orders:int[]
         sortableSetCfgTypes:sortableSetCfgType[];
         stageCounts: int[];
@@ -32,6 +32,7 @@ module ShcCfgPlexDto =
         let sorterCountMutants = plex.tupSorterSetSizes |> Array.map(fun (_,b) -> b |> SorterCount.value)
 
         {
+            name = plex.name |> CfgPlexName.value
             orders = plex.orders |> Array.map(Order.value)
             sortableSetCfgTypes = sortableSetCfgTypes
             stageCounts = stageCounts
@@ -82,7 +83,8 @@ module ShcCfgPlexDto =
 
             return
                 {
-                    shcCfgPlex.orders =  dto.orders |> Array.map(Order.createNr)
+                    shcCfgPlex.name = dto.name |> CfgPlexName.create
+                    orders =  dto.orders |> Array.map(Order.createNr)
                     sortableSetCfgs = sortableSetCfgs
                     mutationRates = dto.mutationRates |> Array.map(MutationRate.create)
                     noiseFractions = dto.noiseFractions |> Array.map(NoiseFraction.create)
@@ -104,11 +106,10 @@ module ShcCfgPlexDto =
         }
 
 
-
-
     
 type gaCfgPlexDto =
     {
+        name:string
         orders:int[]
         sortableSetCfgTypes:sortableSetCfgType[];
         stageCounts: int[];
@@ -136,6 +137,7 @@ module GaCfgPlexDto =
         let sorterCountMutants = plex.tupSorterSetSizes |> Array.map(fun (_,b) -> b |> SorterCount.value)
 
         {
+            gaCfgPlexDto.name = plex.name |> CfgPlexName.value
             orders = plex.orders |> Array.map(Order.value)
             sortableSetCfgTypes = sortableSetCfgTypes
             stageCounts = stageCounts
@@ -183,10 +185,10 @@ module GaCfgPlexDto =
                         (dto.sorterCountParents |> Array.map(SorterCount.create))
                         (dto.sorterCountMutants |> Array.map(SorterCount.create))
 
-
             return
                 {
-                    gaCfgPlex.orders =  dto.orders |> Array.map(Order.createNr)
+                    gaCfgPlex.name = dto.name |> CfgPlexName.create
+                    orders =  dto.orders |> Array.map(Order.createNr)
                     sortableSetCfgs = sortableSetCfgs
                     mutationRates = dto.mutationRates |> Array.map(MutationRate.create)
                     noiseFractions = dto.noiseFractions |> Array.map(NoiseFraction.create)
@@ -217,13 +219,13 @@ module RunCfgPlexDto =
         match cfg with
         | runCfgPlex.Ga gaCfgPlex -> 
             {
-                duType = "Ga"
+                duType = "Run_ga"
                 cereal = gaCfgPlex |> GaCfgPlexDto.toJson
             }
 
         | runCfgPlex.Shc shcCfgPlex ->
             {
-                duType = "Shc"
+                duType = "Run_shc"
                 cereal = shcCfgPlex |> ShcCfgPlexDto.toJson
             }
 
@@ -234,12 +236,12 @@ module RunCfgPlexDto =
 
     let fromDto (dto:runCfgPlexDto) =
         match dto.duType with
-        | "Ga" ->
+        | "Run_ga" ->
             result {
                 let! gaCfg = dto.cereal |> GaCfgPlexDto.fromJson
                 return gaCfg |> runCfgPlex.Ga
             }
-        | "Shc" -> 
+        | "Run_shc" -> 
             result {
                 let! gaCfg = dto.cereal |> ShcCfgPlexDto.fromJson
                 return gaCfg |> runCfgPlex.Shc

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="CommonProperties.fs" />
     <Compile Include="ShcCfg\ShcRunCfg.fs" />
     <Compile Include="ShcCfg\ShcCfgPlex.fs" />
     <Compile Include="GaCfg\GaRunCfg.fs" />

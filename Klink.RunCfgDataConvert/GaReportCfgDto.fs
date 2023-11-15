@@ -22,7 +22,7 @@ module GaReportAllCfgDto =
             genMax = cfg.genMax |> Generation.value
             evalCompName = cfg.evalCompName |> WsComponentName.value
             reportGenFilter = cfg.reportFilter |> GenerationFilterDto.toDto
-            reportFileName = cfg.reportFileName
+            reportFileName = cfg.reportFileName |> ReportName.value
         }
 
     let toJson (cfg:gaReportEvalsCfg) =
@@ -39,7 +39,7 @@ module GaReportAllCfgDto =
                     genMax = dto.genMax |> Generation.create
                     evalCompName = dto.evalCompName |> WsComponentName.create
                     reportFilter = reportFilter
-                    reportFileName = dto.reportFileName
+                    reportFileName = dto.reportFileName |> ReportName.create
                 }
         }
 
@@ -67,7 +67,7 @@ module GaReportBinsCfgDto =
             gaReportBinsCfgDto.runIds = cfg.runIds |> Array.map(RunId.value >> string)
             genMin = cfg.genMin |> Generation.value
             genMax = cfg.genMax |> Generation.value
-            reportFileName = cfg.reportFileName
+            reportFileName = cfg.reportFileName |> ReportName.value
         }
 
     let toJson (cfg:gaReportBinsCfg) =
@@ -81,7 +81,7 @@ module GaReportBinsCfgDto =
                     gaReportBinsCfg.runIds = dto.runIds |> Array.map(fun sid -> Guid.Parse(sid) |> RunId.create)
                     genMin = dto.genMin |> Generation.create
                     genMax = dto.genMax |> Generation.create
-                    reportFileName = dto.reportFileName
+                    reportFileName = dto.reportFileName |> ReportName.create
                 }
         }
 

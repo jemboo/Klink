@@ -134,7 +134,7 @@ module IntraGenWsOps =
 
 
                 else if (gfShort |> GenerationFilter.passing nextGen) then
-                    let! res = fs.SaveWorkSpace wsNextGen (fun wsc -> wsc <> wnSorterSetParent)
+                    let! res = fs.SaveWorkSpace wsNextGen (fun wsc -> (wsc = wnSorterSpeedBinSet) || (wsc = wnSorterSetEvalParent))
                     logger ($"Saved Gen {nextGen |> Generation.value} to { wsNextGen |> Workspace.getId |> WorkspaceId.value}")
                     let causeAddSorterSpeedBinSet =
                         new causeAddSorterSpeedBinSet(wnSorterSpeedBinSet, wsParams)

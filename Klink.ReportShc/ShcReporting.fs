@@ -179,13 +179,17 @@ module ShcReporting =
     let reportEvals 
                  (fsReporter:IWorkspaceStore) 
                  (forEvalsReaderF: string -> IWorkspaceStore)
-                 (reportFileName:string) 
+                 (reportFileName:reportName) 
                  (evalCompName:wsComponentName)
                  (minGen:generation)
                  (runFolderPath:string) 
         =
         let _lineWriter (lines:string seq) =
-            fsReporter.WriteLinesEnsureHeader None reportFileName [reportHeaderSorterEvals ()] lines
+            fsReporter.WriteLinesEnsureHeader 
+                    None
+                    (reportFileName |> ReportName.value )
+                    [reportHeaderSorterEvals ()] 
+                    lines
 
         result {
             let fsRunReader = forEvalsReaderF runFolderPath
@@ -204,12 +208,16 @@ module ShcReporting =
     let reportBins 
             (fsReporter:IWorkspaceStore)
             (forEvalsReaderF: string -> IWorkspaceStore)
-            (reportFileName:string)
+            (reportFileName:reportName)
             (minGen:generation)
             (runFolderPath:string) 
         =
         let _lineWriter (lines:string seq) =
-            fsReporter.WriteLinesEnsureHeader None reportFileName [reportHeaderSpeedBins ()] lines
+            fsReporter.WriteLinesEnsureHeader 
+                        None 
+                        (reportFileName |> ReportName.value )
+                        [reportHeaderSpeedBins ()] 
+                        lines
 
         result {
             let fsRunReader = forEvalsReaderF runFolderPath

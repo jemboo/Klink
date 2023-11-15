@@ -5,8 +5,17 @@ open Argu
 module Program = 
 
     let [<EntryPoint>] main argv =
-        
-        let projectFolderPath = IO.Path.Combine(O64_Stage_PhenoPrune.baseDir, O64_Stage_PhenoPrune.projectFolder |> ProjectFolder.value)
+        let parser = ArgumentParser.Create<CliArguments>(programName = "Klink.Runner.exe")
+        Console.WriteLine(parser.PrintUsage())
+        let argResults = parser.Parse argv
+        //let all = argResults.GetAllResults()
+        //Console.WriteLine(parser.PrintUsage())
+
+        let workingDirectoryArg = argResults.GetResults Working_Directory |> List.head
+        let projectFolderArg = argResults.GetResults Project_Folder |> List.head
+
+        let projectFolder  = projectFolderArg |> ProjectFolder.create
+        let projectFolderPath = IO.Path.Combine(workingDirectoryArg, projectFolder |> ProjectFolder.value)
 
         let (scriptFileName, klinkScript) = 
                 ScriptFileRun.getNextKlinkScript projectFolderPath
@@ -17,7 +26,7 @@ module Program =
 
         let useParallel = true |> UseParallel.create
 
-
+        Console.WriteLine($"Running script: {scriptFileName}")
         let yow = klinkScript |> KlinkScript.procScript projectFolderPath useParallel _makeFileStore
 
         let fr = scriptFileName |> ScriptFileRun.finishScript projectFolderPath

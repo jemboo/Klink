@@ -1,29 +1,59 @@
 namespace Klink.Runner.Test
 
-open System
 open Microsoft.VisualStudio.TestTools.UnitTesting
-    open CommonParams
 
 [<TestClass>]
 type KlinkScriptFixture () =
 
+    let baseDir = $"c:\Klink"
+    let projectFolder  = $"o64\StagePhenoPrune" |> ProjectFolder.create
+    let runCfgPlex = 
+        O64_Stage_PhenoPrune.runCfgPlex
+            projectFolder
+
+
+    let freqReportFilter = CommonParams.modulusFilter 10
+    let fullReportFilter = CommonParams.modulusFilter 500
+    
+    let reportGenStart = 0 |> Generation.create
+    let initGenerationCount = 10000 |> Generation.create
+    let continueGenerationCount = 49500 |> Generation.create
+    let totalGenerationCount = Generation.addG initGenerationCount continueGenerationCount
+    
+    let maxRunsPerScript = 1
+    let selectedIndexes = [|0;|] |> Option.Some
+
+
     [<TestMethod>]
     member this.shcInitRunCfgDtos () =
-        let maxRunsPerScript = 1
 
-        let klinkScripts = O64_Stage_PhenoPrune.writeInitScripts maxRunsPerScript
+        KlinkScript.createInitRunScriptsFromRunCfgPlex 
+            initGenerationCount
+            freqReportFilter
+            fullReportFilter
+            maxRunsPerScript
+            selectedIndexes
+            runCfgPlex
+        |> Array.map(ScriptFileMake.writeScript baseDir)
+        |> ignore
 
         Assert.AreEqual (1, 1);
 
 
 
 
-
     [<TestMethod>]
     member this.shcContinueRunCfgDtos () =
-        let maxRunsPerScript = 1
 
-        let klinkScript2 = O64_Stage_PhenoPrune.writeContinueScripts maxRunsPerScript
+        KlinkScript.createContinueRunScriptsFromRunCfgPlex 
+            continueGenerationCount
+            freqReportFilter
+            fullReportFilter
+            maxRunsPerScript
+            selectedIndexes
+            runCfgPlex
+        |> Array.map(ScriptFileMake.writeScript baseDir)
+        |> ignore
 
         Assert.AreEqual (1, 1);
 
@@ -33,7 +63,18 @@ type KlinkScriptFixture () =
     [<TestMethod>]
     member this.shcReportEvalCfgDtos () =
 
-        let klinkScript2 = O64_Stage_PhenoPrune.writeReportEvalsScript (Some (0,60))
+
+        let evalScriptComponent = ("sorterSetEvalParent" |> WsComponentName.create)
+
+        KlinkScript.createReportEvalsScriptFromRunCfgPlex 
+            reportGenStart
+            totalGenerationCount
+            evalScriptComponent
+            fullReportFilter
+            selectedIndexes
+            runCfgPlex
+        |> ScriptFileMake.writeScript baseDir
+        |> ignore
 
         Assert.AreEqual (1, 1);
 
@@ -42,7 +83,46 @@ type KlinkScriptFixture () =
 
     [<TestMethod>]
     member this.shcReportBinCfgDtos () =
+        KlinkScript.createReportBinsScriptFromRunCfgPlex 
+            reportGenStart
+            totalGenerationCount
+            selectedIndexes
+            runCfgPlex
+        |> ScriptFileMake.writeScript baseDir
+        |> ignore
+        Assert.AreEqual (1, 1);
 
-        let klinkScript2 = O64_Stage_PhenoPrune.writeReportBinsScript (Some (0, 12))
+
+
+
+    [<TestMethod>]
+    member this.writeCfgPlex () =
+
+        let cereal = runCfgPlex |> RunCfgPlexDto.toJson
+
+        TextIO.writeToFileOverwrite 
+                "txt" 
+                (baseDir |> Some) 
+                (projectFolder |> ProjectFolder.value)
+                (runCfgPlex |> RunCfgPlex.name |> CfgPlexName.value)
+                (cereal)
+        |> ignore
+
+        Assert.AreEqual (1, 1);
+
+
+    [<TestMethod>]
+    member this.readCfgPlex () =
+        let cereal = 
+            TextIO.readAllText 
+                    "txt" 
+                    (baseDir |> Some) 
+                    (projectFolder |> ProjectFolder.value)
+                    (runCfgPlex |> RunCfgPlex.name |> CfgPlexName.value)
+            |> Result.ExtractOrThrow
+
+        let cfg = cereal 
+                    |> RunCfgPlexDto.fromJson
+                    |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);

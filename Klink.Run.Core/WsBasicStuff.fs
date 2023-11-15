@@ -23,6 +23,16 @@ module RunId =
     let create (v: Guid) = RunId v
 
 
+type reportName = private ReportName of string
+module ReportName =
+
+    let value (ReportName v) = v
+
+    let create (value: string) =
+        value |> ReportName
+
+
+
 type wsComponentName = private WsComponentName of string
 module WsComponentName =
     let value (WsComponentName v) = v

@@ -1,13 +1,13 @@
 ﻿namespace global
 
 type sorterSetRndCfg
-            (
-             name:wsComponentName,
-             order: order,
-             switchGenMode: switchGenMode,
-             switchCount: switchCount,
-             sorterCount: sorterCount
-            ) =
+        (
+            name:wsComponentName,
+            order: order,
+            switchGenMode: switchGenMode,
+            switchCount: switchCount,
+            sorterCount: sorterCount
+        ) =
 
     let sorterSetRndCfgId =         
         [|

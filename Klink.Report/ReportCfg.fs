@@ -1,7 +1,5 @@
 ﻿namespace global
 open System
-open System.IO
-open ShcReportEvalsCfg
 
 
 type reportCfg =
@@ -29,3 +27,9 @@ module ReportCfg =
                     match res with
                     | Ok _ -> Console.WriteLine($"report completed")
                     | Error m -> Console.WriteLine($"report error: {m}")
+
+
+    let reportName (reportCfg:reportCfg) =
+        match reportCfg with
+        | Shc shc ->  shc |> ShcReportCfg.reportName
+        | Ga ga -> ga |> GaReportCfg.reportName

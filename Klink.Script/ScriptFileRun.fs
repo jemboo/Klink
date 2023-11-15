@@ -27,19 +27,6 @@ module ScriptFileRun =
             fileNameAndContents
 
 
-
-    //let getNextRunCfgSet (projectFolderPath:string) =
-    //    result {
-    //        let! (filePath, contents) = 
-    //                getNextScript projectFolderPath
-            
-    //        let! cfgSet = contents |> RunCfgSetDto.fromJson
-
-    //        return (filePath, cfgSet)
-    //    }
-
-
-
     let getNextKlinkScript (projectFolderPath:string) =
         result {
             let! (filePath, contents) = 

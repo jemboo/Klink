@@ -4,7 +4,7 @@ open System.IO
 
 type shcReportEvalsCfg =
     {
-        reportFileName:string
+        reportFileName:reportName
         runIds:runId array
         genMin:generation
         genMax:generation
@@ -46,7 +46,7 @@ module ShcReportEvalsCfg =
 
 type shcReportBinsCfg =
     {
-        reportFileName:string
+        reportFileName:reportName
         runIds:runId array
         genMin:generation
         genMax:generation
@@ -108,3 +108,14 @@ module ShcReportCfg =
                     workspaceFileStoreF
                     workspaceFileStoreF
                     shcReportBinsCfg
+
+
+    let reportName
+            (shcReportCfg:shcReportCfg)
+        =
+            match shcReportCfg with
+            | Evals shcReportEvalsCfg ->
+                shcReportEvalsCfg.reportFileName
+
+            | Bins shcReportBinsCfg -> 
+                shcReportBinsCfg.reportFileName

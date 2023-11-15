@@ -17,5 +17,41 @@ module ScriptFileMake =
                 (klinkScript |> KlinkScriptDto.toJson)
 
 
-            
+    
+    let writeInitRunScriptsFromRunCfgPlex
+            (baseDir:string)
+            (generations:generation)
+            (reportFilter:generationFilter)
+            (fullReportFilter:generationFilter)
+            (maxRunCountPerScript:int)
+            (selectedIndexes: int[] option)
+            (plex:runCfgPlex)
+        =
+        KlinkScript.createInitRunScriptsFromRunCfgPlex
+                generations
+                reportFilter
+                fullReportFilter
+                maxRunCountPerScript
+                selectedIndexes
+                plex
+         |> Array.map(writeScript baseDir)
 
+
+    
+    let writeContinueRunScriptsFromRunCfgPlex
+            (baseDir:string)
+            (generations:generation)
+            (reportFilter:generationFilter)
+            (fullReportFilter:generationFilter)
+            (maxRunCountPerScript:int)
+            (selectedIndexes: int[] option)
+            (plex:runCfgPlex)
+        =
+        KlinkScript.createContinueRunScriptsFromRunCfgPlex
+                generations
+                reportFilter
+                fullReportFilter
+                maxRunCountPerScript
+                selectedIndexes
+                plex
+         |> Array.map(writeScript baseDir)

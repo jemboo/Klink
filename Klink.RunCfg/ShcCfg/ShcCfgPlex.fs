@@ -2,6 +2,7 @@
 
 type shcCfgPlex =
     {
+        name:cfgPlexName
         orders:order[]
         sortableSetCfgs:(sortableSetCfgType*stageCount*sorterEvalMode) []
         mutationRates:mutationRate[]
@@ -38,7 +39,7 @@ module ShcCfgPlex =
                      mutationRate ->
                      sorterSetPruneMethod -> 
                      'a)
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
             =
         let preSpliced =
             seq {
@@ -68,9 +69,9 @@ module ShcCfgPlex =
                                                         mutationRate
                                                         sorterSetPruneMethod
             }
-        match seqSplicer with
-        | Some (skp, tk) -> preSpliced |> Seq.skip skp |> Seq.take tk
-        | None -> preSpliced
+        match selectedIndexes with
+        | Some dexes -> preSpliced |> CollectionOps.getItemsAtIndexes dexes
+        | None -> preSpliced 
 
 
 
@@ -88,7 +89,7 @@ module ShcCfgPlex =
                 mutationRate -> 
                 sorterSetPruneMethod -> 
                 'a)
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
         =
         let preSpliced =
             seq {
@@ -114,8 +115,8 @@ module ShcCfgPlex =
                                                         mutationRate 
                                                         sorterSetPruneMethod
             }
-        match seqSplicer with
-        | Some (skp, tk) -> preSpliced |> Seq.skip skp |> Seq.take tk
+        match selectedIndexes with
+        | Some dexes -> preSpliced |> CollectionOps.getItemsAtIndexes dexes
         | None -> preSpliced 
 
 
@@ -125,7 +126,7 @@ module ShcCfgPlex =
             (newGenerations:generation)
             (reportFilter:generationFilter)
             (fullReportFilter:generationFilter)
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
             (plex:shcCfgPlex)
         =
 
@@ -183,12 +184,12 @@ module ShcCfgPlex =
                         }
                 shcInitRunCfg
 
-        _fromFunc newGenerations reportFilter fullReportFilter plex _toIr seqSplicer
+        _fromFunc newGenerations reportFilter fullReportFilter plex _toIr selectedIndexes
 
 
 
     let toRunIds
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
             (plex:shcCfgPlex)
         =
         let _toRunId
@@ -218,7 +219,7 @@ module ShcCfgPlex =
                     (SwitchCount.orderTo999SwitchCount order)
                     switchGenMode
 
-        _fromFunc2 plex _toRunId seqSplicer
+        _fromFunc2 plex _toRunId selectedIndexes
 
 
 
@@ -226,7 +227,7 @@ module ShcCfgPlex =
             (newGenerations:generation)
             (reportGenFilter:generationFilter)
             (fullReportGenFilter:generationFilter)
-            (seqSplicer: (int*int) option)
+            (selectedIndexes: int[] option)
             (plex:shcCfgPlex)
         =
         let _toCrc newGenerations (runId:runId) =
@@ -236,7 +237,7 @@ module ShcCfgPlex =
                     reportGenFilter = reportGenFilter
                     fullReportGenFilter = fullReportGenFilter
                 }
-        toRunIds seqSplicer plex
+        toRunIds selectedIndexes plex
         |> Seq.map(_toCrc newGenerations)
 
 

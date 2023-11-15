@@ -2,7 +2,7 @@
   "profiles": {
     "Klink.Runner": {
       "commandName": "Project",
-      "commandLineArgs": "--working-directory C:\\Klink --project-folder Test --log-level 6"
+      "commandLineArgs": "--working-directory C:\\Klink --project-folder o64\\StagePhenoPrune --log-level 6"
     }
   }
 }

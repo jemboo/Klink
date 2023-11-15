@@ -4,7 +4,7 @@ open System.IO
 
 type gaReportEvalsCfg =
     {
-        reportFileName:string
+        reportFileName:reportName
         runIds:runId array
         genMin:generation
         genMax:generation
@@ -45,7 +45,7 @@ module GaReportEvalsCfg =
 
 type gaReportBinsCfg =
     {
-        reportFileName:string
+        reportFileName:reportName
         runIds:runId array
         genMin:generation
         genMax:generation
@@ -110,3 +110,15 @@ module GaReportCfg =
                     workspaceFileStoreF
                     workspaceFileStoreF
                     gaReportBinsCfg
+
+
+
+    let reportName
+            (gaReportCfg:gaReportCfg)
+        =
+            match gaReportCfg with
+            | Evals gaReportEvalsCfg ->
+                gaReportEvalsCfg.reportFileName
+
+            | Bins gaReportBinsCfg -> 
+                gaReportBinsCfg.reportFileName

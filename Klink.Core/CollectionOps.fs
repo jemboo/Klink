@@ -5,6 +5,21 @@ open System
 
 module CollectionOps =
 
+    let getItemsAtIndexes (indexes: int array)  (sequence: seq<'a>) =
+        seq {
+            for index in indexes do
+                if index >= 0 then
+                    let enumerator = sequence.GetEnumerator()
+                    let mutable currentIndex = 0
+
+                    while currentIndex <= index && enumerator.MoveNext() do
+                        if currentIndex = index then
+                            yield enumerator.Current
+                        currentIndex <- currentIndex + 1
+                else
+                    failwith "Index must be non-negative"
+        }
+
     // returns a sequence of items that occur more than once
     let itemsOccuringMoreThanOnce items =
         seq {
