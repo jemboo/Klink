@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="RunCfgPlexDto.fs" />
     <Compile Include="WorkspaceParamsDto.fs" />
     <Compile Include="WorkspaceDescriptionDto.fs" />
     <Compile Include="WorkspaceComponentDto.fs" />

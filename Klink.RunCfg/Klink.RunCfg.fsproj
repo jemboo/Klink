@@ -13,7 +13,6 @@
     <Compile Include="GaCfg\GaCfgPlex.fs" />
     <Compile Include="AllCfg\RunCfg.fs" />
     <Compile Include="AllCfg\RunCfgPlex.fs" />
-    <Compile Include="AllCfg\RunCfgSet.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

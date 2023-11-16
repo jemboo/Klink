@@ -10,6 +10,9 @@
     <Compile Include="GaRunCfgDto.fs" />
     <Compile Include="ShcReportCfgDto.fs" />
     <Compile Include="ShcRunCfgDto.fs" />
+    <Compile Include="RunCfgDto.fs" />
+    <Compile Include="ReportCfgDto.fs" />
+    <Compile Include="RunCfgPlexDto.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -20,6 +23,7 @@
     <ProjectReference Include="..\Klink.History\Klink.History.fsproj" />
     <ProjectReference Include="..\Klink.ReportGa\Klink.ReportGa.fsproj" />
     <ProjectReference Include="..\Klink.ReportShc\Klink.ReportShc.fsproj" />
+    <ProjectReference Include="..\Klink.Report\Klink.Report.fsproj" />
     <ProjectReference Include="..\Klink.RunCfg\Klink.RunCfg.fsproj" />
     <ProjectReference Include="..\Klink.RunGa\Klink.RunGa.fsproj" />
     <ProjectReference Include="..\Klink.RunShc\Klink.RunShc.fsproj" />
