@@ -1,9 +1,6 @@
 ﻿namespace global
-open System
-open System.IO
 
-
-type gaCfgPlex =
+type shcCfgPlexOld =
     {
         name:cfgPlexName
         orders:order[]
@@ -19,29 +16,29 @@ type gaCfgPlex =
     }
 
 
-module GaCfgPlex =
+module ShcCfgPlexOld =
 
     let _fromFunc<'a>
             (newGenerations:generation)
             (reportFilter:generationFilter)
             (fullReportFilter:generationFilter)
-            (plex:gaCfgPlex)
-            (daFunc:
-                order -> 
-                generation -> 
-                generationFilter -> 
-                generationFilter -> 
-                rngGen -> 
-                sorterEvalMode ->
-                sortableSetCfgType -> 
-                stageCount -> 
-                (sorterCount*sorterCount) -> 
-                switchGenMode -> 
-                stageWeight -> 
-                noiseFraction -> 
-                mutationRate ->
-                sorterSetPruneMethod -> 
-                'a)
+            (plex:shcCfgPlexOld)
+            (daFunc: 
+                     order -> 
+                     generation -> 
+                     generationFilter -> 
+                     generationFilter -> 
+                     rngGen -> 
+                     sorterEvalMode ->
+                     sortableSetCfgType -> 
+                     stageCount -> 
+                     (sorterCount*sorterCount) -> 
+                     switchGenMode -> 
+                     stageWeight -> 
+                     noiseFraction -> 
+                     mutationRate ->
+                     sorterSetPruneMethod -> 
+                     'a)
             (selectedIndexes: int[] option)
             =
         let preSpliced =
@@ -71,7 +68,7 @@ module GaCfgPlex =
                                                         noiseFraction
                                                         mutationRate
                                                         sorterSetPruneMethod
-                    }
+            }
         match selectedIndexes with
         | Some dexes -> preSpliced |> CollectionOps.getItemsAtIndexes dexes
         | None -> preSpliced 
@@ -79,11 +76,12 @@ module GaCfgPlex =
 
 
     let _fromFunc2<'a>
-            (plex:gaCfgPlex)
+            (plex:shcCfgPlexOld)
             (daFunc: 
                 sortableSetCfgType ->
                 order ->
                 rngGen ->
+                sorterEvalMode ->
                 (sorterCount*sorterCount) -> 
                 switchGenMode -> 
                 stageWeight -> 
@@ -109,6 +107,7 @@ module GaCfgPlex =
                                                         sortableSetCfgType
                                                         order 
                                                         rngGen
+                                                        sorterEvalMode
                                                         tupSorterSetSize 
                                                         switchGenMode 
                                                         stageWeight
@@ -128,15 +127,15 @@ module GaCfgPlex =
             (reportFilter:generationFilter)
             (fullReportFilter:generationFilter)
             (selectedIndexes: int[] option)
-            (plex:gaCfgPlex)
+            (plex:shcCfgPlexOld)
         =
 
         let _toIr 
                 order 
                 newGenerations 
-                reportFilter 
+                reportFilter
                 fullReportFilter
-                rngGen
+                rngGen 
                 sorterEvalMode
                 sortableSetCfgType
                 stagesSkipped
@@ -148,7 +147,7 @@ module GaCfgPlex =
                 sorterSetPruneMethod
             =
                 let runId = 
-                    GaInitRunCfg.getRunId2
+                    ShcInitRunCfg.getRunId2
                         sortableSetCfgType
                         mutationRate
                         noiseFraction
@@ -161,54 +160,58 @@ module GaCfgPlex =
                         stageWeight
                         (SwitchCount.orderTo999SwitchCount order)
                         switchGenMode
-                { 
-                    gaInitRunCfg.runId = runId
-                    mutationRate = mutationRate;
-                    sortableSetCfgType = sortableSetCfgType;
-                    newGenerations = newGenerations
-                    noiseFraction = noiseFraction
-                    order = order
-                    rngGen = rngGen
-                    sorterEvalMode = sorterEvalMode
-                    sorterCount = fst tupSorterSetSize
-                    sorterCountMutated = snd tupSorterSetSize
-                    sorterSetPruneMethod = sorterSetPruneMethod;
-                    stagesSkipped = stagesSkipped
-                    stageWeight = stageWeight
-                    switchCount = (SwitchCount.orderTo999SwitchCount order)
-                    switchGenMode = switchGenMode
-                    reportFilter = reportFilter
-                    fullReportFilter = fullReportFilter
-                }
+
+                                
+                let shcInitRunCfg =
+                        { 
+                            shcInitRunCfg.runId = runId
+                            mutationRate = mutationRate;
+                            sortableSetCfgType = sortableSetCfgType;
+                            newGenerations = newGenerations
+                            noiseFraction = noiseFraction
+                            order = order
+                            rngGen = rngGen
+                            sorterEvalMode = sorterEvalMode
+                            sorterCount = fst tupSorterSetSize
+                            sorterCountMutated = snd tupSorterSetSize
+                            sorterSetPruneMethod = sorterSetPruneMethod;
+                            stagesSkipped = stagesSkipped
+                            stageWeight = stageWeight
+                            switchCount = (SwitchCount.orderTo999SwitchCount order)
+                            switchGenMode = switchGenMode
+                            reportFilter = reportFilter
+                            fullReportFilter = fullReportFilter
+                        }
+                shcInitRunCfg
 
         _fromFunc newGenerations reportFilter fullReportFilter plex _toIr selectedIndexes
 
 
 
-
-    let toRunIds 
+    let toRunIds
             (selectedIndexes: int[] option)
-            (plex:gaCfgPlex)
+            (plex:shcCfgPlexOld)
         =
-        let _toRunId 
-                sortableSetCfgType
-                order 
-                rngGen 
-                tupSorterSetSize 
-                switchGenMode 
-                stageWeight 
-                noiseFraction
-                mutationRate 
-                sorterSetPruneMethod
+        let _toRunId
+                  sortableSetCfgType
+                  order 
+                  rngGen
+                  sorterEvalMode
+                  tupSorterSetSize 
+                  switchGenMode 
+                  stageWeight 
+                  noiseFraction 
+                  mutationRate 
+                  sorterSetPruneMethod
             =
 
-                GaInitRunCfg.getRunId2
+                ShcInitRunCfg.getRunId2
                     sortableSetCfgType
                     mutationRate
                     noiseFraction
                     order
                     rngGen
-                    sorterEvalMode.DontCheckSuccess
+                    sorterEvalMode
                     (fst tupSorterSetSize)
                     (snd tupSorterSetSize)
                     sorterSetPruneMethod
@@ -225,15 +228,16 @@ module GaCfgPlex =
             (reportGenFilter:generationFilter)
             (fullReportGenFilter:generationFilter)
             (selectedIndexes: int[] option)
-            (plex:gaCfgPlex)
+            (plex:shcCfgPlexOld)
         =
-
-        let _toCrc (runId:runId) =
+        let _toCrc newGenerations (runId:runId) =
                 { 
-                    gaContinueRunCfg.runId = runId;
+                    shcContinueRunCfg.runId = runId;
                     newGenerations = newGenerations;
                     reportGenFilter = reportGenFilter
                     fullReportGenFilter = fullReportGenFilter
                 }
         toRunIds selectedIndexes plex
-        |> Seq.map(_toCrc)
+        |> Seq.map(_toCrc newGenerations)
+
+

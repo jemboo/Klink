@@ -14,12 +14,13 @@ type sortableSetCfgType =
 module SortableSetCfgType =
     let fromString (cereal:string) =
         match cereal with
-        | "All_Bits" -> sortableSetCfgType.All_Bits
-        | "All_Bits_Reduced" -> sortableSetCfgType.All_Bits_Reduced
-        | "MergeWithBits" -> sortableSetCfgType.MergeWithBits
-        | "MergeWithInts" -> sortableSetCfgType.MergeWithInts
-        | "Orbit" -> sortableSetCfgType.Orbit
-        | _ -> failwith $"{cereal}: not matched in SortableSetCfgType.fromString"
+        | "All_Bits" -> sortableSetCfgType.All_Bits |> Ok
+        | "All_Bits_Reduced" -> sortableSetCfgType.All_Bits_Reduced |> Ok
+        | "MergeWithBits" -> sortableSetCfgType.MergeWithBits |> Ok
+        | "MergeWithInts" -> sortableSetCfgType.MergeWithInts |> Ok
+        | "Orbit" -> sortableSetCfgType.Orbit |> Ok
+        | _ -> $"{cereal}: not matched in SortableSetCfgType.fromString"
+                |> Error
 
 
 type sortableSetCertainCfg =

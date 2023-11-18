@@ -11,7 +11,7 @@ module O128_Stage_PhenoPrune =
 
     let runCfgPlex =
         {
-            shcCfgPlex.name = "O128_Stage_PhenoPrune" |> CfgPlexName.create
+            shcCfgPlexOld.name = "O128_Stage_PhenoPrune" |> CfgPlexName.create
             orders = [| 128 |> Order.createNr |]
             sortableSetCfgs =  
                     [| 

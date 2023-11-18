@@ -12,7 +12,7 @@ module O64_Stage_PhenoPrune =
     let runCfgPlex (projectFolder:projectFolder)  =
         {
             name = "O64_Stage_PhenoPrune" |> CfgPlexName.create
-            shcCfgPlex.orders = [| 64 |> Order.createNr |]
+            shcCfgPlexOld.orders = [| 64 |> Order.createNr |]
             sortableSetCfgs =  
                     [| 
                         (

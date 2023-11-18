@@ -2,7 +2,7 @@
 open Microsoft.FSharp.Core
     
     
-type shcCfgPlexDto =
+type shcCfgPlexDtoOld =
     {
         name:string
         orders:int[]
@@ -21,9 +21,9 @@ type shcCfgPlexDto =
     }
 
 
-module ShcCfgPlexDto =
+module ShcCfgPlexDtoOld =
 
-    let toDto (plex:shcCfgPlex) =
+    let toDto (plex:shcCfgPlexOld) =
         let sortableSetCfgTypes = plex.sortableSetCfgs |> Array.map(fun (a,_,_) -> a)
         let stageCounts = plex.sortableSetCfgs |> Array.map(fun (_,b,_) -> b |> StageCount.value)
         let sorterEvalModes = plex.sortableSetCfgs |> Array.map(fun (_,_,c) -> c)
@@ -50,11 +50,11 @@ module ShcCfgPlexDto =
 
 
     let toJson 
-            (cfg:shcCfgPlex) =
+            (cfg:shcCfgPlexOld) =
         cfg |> toDto |> Json.serialize
 
 
-    let fromDto (dto:shcCfgPlexDto) =
+    let fromDto (dto:shcCfgPlexDtoOld) =
         result {
             //let! fullReportFilter = cfg.fullReportGenFilter |> GenerationFilterDto.fromDto
             let! sorterSetPruneMethods = 
@@ -83,7 +83,7 @@ module ShcCfgPlexDto =
 
             return
                 {
-                    shcCfgPlex.name = dto.name |> CfgPlexName.create
+                    shcCfgPlexOld.name = dto.name |> CfgPlexName.create
                     orders =  dto.orders |> Array.map(Order.createNr)
                     sortableSetCfgs = sortableSetCfgs
                     mutationRates = dto.mutationRates |> Array.map(MutationRate.create)
@@ -101,13 +101,13 @@ module ShcCfgPlexDto =
             (cereal:string)
         =
         result {
-            let! dto = Json.deserialize<shcCfgPlexDto> cereal
+            let! dto = Json.deserialize<shcCfgPlexDtoOld> cereal
             return! fromDto dto
         }
 
 
     
-type gaCfgPlexDto =
+type gaCfgPlexDtoOld =
     {
         name:string
         orders:int[]
@@ -126,18 +126,18 @@ type gaCfgPlexDto =
     }
 
 
-module GaCfgPlexDto =
+module GaCfgPlexDtoOld =
 
-    let toDto (plex:gaCfgPlex) =
+    let toDto (plex:gaCfgPlexOld) =
         let sortableSetCfgTypes = plex.sortableSetCfgs |> Array.map(fun (a,_,_) -> a)
         let stageCounts = plex.sortableSetCfgs |> Array.map(fun (_,b,_) -> b |> StageCount.value)
         let sorterEvalModes = plex.sortableSetCfgs |> Array.map(fun (_,_,c) -> c)
 
-        let sorterCountParents = plex.tupSorterSetSizes |> Array.map(fun (a,_) -> a |> SorterCount.value)
-        let sorterCountMutants = plex.tupSorterSetSizes |> Array.map(fun (_,b) -> b |> SorterCount.value)
+        let sorterCountParents = plex.parentAndChildCounts |> Array.map(fun (a,_) -> a |> SorterCount.value)
+        let sorterCountMutants = plex.parentAndChildCounts |> Array.map(fun (_,b) -> b |> SorterCount.value)
 
         {
-            gaCfgPlexDto.name = plex.name |> CfgPlexName.value
+            gaCfgPlexDtoOld.name = plex.name |> CfgPlexName.value
             orders = plex.orders |> Array.map(Order.value)
             sortableSetCfgTypes = sortableSetCfgTypes
             stageCounts = stageCounts
@@ -155,11 +155,11 @@ module GaCfgPlexDto =
 
 
     let toJson 
-            (cfg:gaCfgPlex) =
+            (cfg:gaCfgPlexOld) =
         cfg |> toDto |> Json.serialize
 
 
-    let fromDto (dto:gaCfgPlexDto) =
+    let fromDto (dto:gaCfgPlexDtoOld) =
         result {
             //let! fullReportFilter = cfg.fullReportGenFilter |> GenerationFilterDto.fromDto
             let! sorterSetPruneMethods = 
@@ -187,13 +187,13 @@ module GaCfgPlexDto =
 
             return
                 {
-                    gaCfgPlex.name = dto.name |> CfgPlexName.create
+                    gaCfgPlexOld.name = dto.name |> CfgPlexName.create
                     orders =  dto.orders |> Array.map(Order.createNr)
                     sortableSetCfgs = sortableSetCfgs
                     mutationRates = dto.mutationRates |> Array.map(MutationRate.create)
                     noiseFractions = dto.noiseFractions |> Array.map(NoiseFraction.create)
                     rngGens = rngGens |> List.toArray
-                    tupSorterSetSizes = tupSorterSetSizes
+                    parentAndChildCounts = tupSorterSetSizes
                     sorterSetPruneMethods = sorterSetPruneMethods |> List.toArray
                     stageWeights = dto.stageWeights |> Array.map(StageWeight.create)
                     switchGenModes = dto.switchGenModes
@@ -205,28 +205,28 @@ module GaCfgPlexDto =
             (cereal:string)
         =
         result {
-            let! dto = Json.deserialize<gaCfgPlexDto> cereal
+            let! dto = Json.deserialize<gaCfgPlexDtoOld> cereal
             return! fromDto dto
         }
 
 
 
 
-type runCfgPlexDto = {duType:string; cereal:string}
+type runCfgPlexDtoOld = {duType:string; cereal:string}
 
-module RunCfgPlexDto =
+module RunCfgPlexDtoOld =
     let toDto (cfg:runCfgPlex) =
         match cfg with
         | runCfgPlex.Ga gaCfgPlex -> 
             {
                 duType = "Run_ga"
-                cereal = gaCfgPlex |> GaCfgPlexDto.toJson
+                cereal = gaCfgPlex |> GaCfgPlexDtoOld.toJson
             }
 
         | runCfgPlex.Shc shcCfgPlex ->
             {
                 duType = "Run_shc"
-                cereal = shcCfgPlex |> ShcCfgPlexDto.toJson
+                cereal = shcCfgPlex |> ShcCfgPlexDtoOld.toJson
             }
 
 
@@ -234,16 +234,16 @@ module RunCfgPlexDto =
         cfg |> toDto |> Json.serialize
 
 
-    let fromDto (dto:runCfgPlexDto) =
+    let fromDto (dto:runCfgPlexDtoOld) =
         match dto.duType with
         | "Run_ga" ->
             result {
-                let! gaCfg = dto.cereal |> GaCfgPlexDto.fromJson
+                let! gaCfg = dto.cereal |> GaCfgPlexDtoOld.fromJson
                 return gaCfg |> runCfgPlex.Ga
             }
         | "Run_shc" -> 
             result {
-                let! gaCfg = dto.cereal |> ShcCfgPlexDto.fromJson
+                let! gaCfg = dto.cereal |> ShcCfgPlexDtoOld.fromJson
                 return gaCfg |> runCfgPlex.Shc
             }
 
@@ -252,7 +252,7 @@ module RunCfgPlexDto =
 
     let fromJson (cereal:string) =
         result {
-            let! dto = Json.deserialize<runCfgPlexDto> cereal
+            let! dto = Json.deserialize<runCfgPlexDtoOld> cereal
             return! fromDto dto
         }
 

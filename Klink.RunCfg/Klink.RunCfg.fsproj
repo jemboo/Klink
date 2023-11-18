@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="CommonProperties.fs" />
+    <Compile Include="Common.fs" />
     <Compile Include="ShcCfg\ShcRunCfg.fs" />
-    <Compile Include="ShcCfg\ShcCfgPlex.fs" />
+    <Compile Include="ShcCfg\shcCfgPlexOld.fs" />
     <Compile Include="GaCfg\GaRunCfg.fs" />
-    <Compile Include="GaCfg\GaCfgPlex.fs" />
+    <Compile Include="GaCfg\gaCfgPlexOld.fs" />
     <Compile Include="AllCfg\RunCfg.fs" />
     <Compile Include="AllCfg\RunCfgPlex.fs" />
     <Compile Include="Program.fs" />

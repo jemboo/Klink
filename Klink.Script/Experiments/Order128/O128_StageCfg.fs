@@ -10,8 +10,8 @@ module O128_StageRflCfg =
 
     let runCfgPlex =
         {
-            shcCfgPlex.name = "O128_StageRflCfg" |> CfgPlexName.create
-            shcCfgPlex.orders = [| 128 |> Order.createNr |]
+            shcCfgPlexOld.name = "O128_StageRflCfg" |> CfgPlexName.create
+            shcCfgPlexOld.orders = [| 128 |> Order.createNr |]
             sortableSetCfgs =  
                     [| 
                         (

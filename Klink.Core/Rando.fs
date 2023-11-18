@@ -15,9 +15,18 @@ module RandomSeed =
 
 
 type rngType =
-    | Lcg = 1
-    | Net = 2
+    | Lcg
+    | Net
 
+module RngType =
+    let fromString (cereal: string) =
+        match cereal with
+        | "Lcg" -> rngType.Lcg |> Ok
+        | "Net" -> rngType.Net |> Ok
+        | _ -> $"Invalid string: { cereal } for rngType" |> Error
+        
+    let toString (rngType: rngType) =
+        rngType |> string
 
 type rngGen = private { rngType:rngType; seed:randomSeed }
 module RngGen =
@@ -27,8 +36,21 @@ module RngGen =
     let createLcg (seed: randomSeed) = create rngType.Lcg seed
     let createNet (seed: randomSeed) = create rngType.Net seed
     let lcgFromNow () = RandomSeed.fromNow () |> createLcg
-
-
+    
+    let toStringArray (rg:rngGen) =
+        [
+            "RngGen"
+            rg |> getType |> string
+            rg |> getSeed |> string
+        ]
+    let fromStrings rgt seed =
+        result {
+            let! rngType = rgt |> RngType.fromString
+            let! seedVal = StringUtil.parseInt seed
+            let rndSeed = seedVal |> RandomSeed.create
+            return create rngType rndSeed
+        }
+        
 
 type IRando =
     abstract member Count: int
@@ -180,15 +202,15 @@ module RndGuid =
 
 
 
-module RngType =
+module RngTypeDto =
 
-    let toDto (rngt: rngType) =
+    let toString (rngt: rngType) =
         match rngt with
         | rngType.Lcg -> nameof rngType.Lcg
         | rngType.Net -> nameof rngType.Net
         | _ -> failwith (sprintf "no match for RngType: %A" rngt)
 
-    let create str =
+    let fromString str =
         match str with
         | nameof rngType.Lcg -> rngType.Lcg |> Ok
         | nameof rngType.Net -> rngType.Net |> Ok
@@ -201,7 +223,7 @@ module RngGenDto =
 
     let fromDto (dto: rngGenDto) =
         result {
-            let! typ = RngType.create dto.rngType
+            let! typ = RngTypeDto.fromString dto.rngType
             let rs = RandomSeed.create dto.seed
             return RngGen.create typ rs
         }
@@ -213,7 +235,7 @@ module RngGenDto =
         }
 
     let toDto (rngGen: rngGen) =
-        { rngType = rngGen |> RngGen.getType |> RngType.toDto
+        { rngType = rngGen |> RngGen.getType |> RngType.toString
           seed =  rngGen |> RngGen.getSeed |> RandomSeed.value }
 
     let toJson (rngGen: rngGen) = rngGen |> toDto |> Json.serialize

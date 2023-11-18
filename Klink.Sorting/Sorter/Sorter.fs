@@ -7,36 +7,45 @@ type switchGenMode =
     | stage = 1
     | stageSymmetric = 2
 
-
+module SwitchGenMode =
+    let toString (sgm:switchGenMode) = 
+        sgm |> string
+    let fromString (cereal:string) =
+        match cereal with
+        | "switch" -> switchGenMode.switch |> Ok
+        | "stage" -> switchGenMode.stage |> Ok
+        | "stageSymmetric" -> switchGenMode.stageSymmetric |> Ok
+        | _ -> $"Invalid string: { cereal } for switchGenMode" |> Error
+        
 type sorter =
     private
-        { sortrId: sorterId
+        { sorterId: sorterId
           order: order
           switches: array<switch> }
 
 module Sorter =
 
-    let getSorterId (sortr: sorter) = sortr.sortrId
+    let getSorterId (sorter: sorter) = sorter.sorterId
 
-    let getOrder (sortr: sorter) = sortr.order
+    let getOrder (sorter: sorter) = sorter.order
 
-    let getSwitches (sortr: sorter) = sortr.switches
+    let getSwitches (sorter: sorter) = sorter.switches
 
-    let getSwitchCount (sortr: sorter) =
-        sortr.switches.Length |> SwitchCount.create
+    let getSwitchCount (sorter: sorter) =
+        sorter.switches.Length |> SwitchCount.create
 
-    let toByteArray (sortr: sorter) =
-        sortr |> getSwitches 
-              |> Switch.toBitPack (sortr |> getOrder) 
-              |> BitPack.getData
-              |> Seq.toArray
+    let toByteArray (sorter: sorter) =
+        sorter |> getSwitches 
+               |> Switch.toBitPack (sorter |> getOrder) 
+               |> BitPack.getData
+               |> Seq.toArray
 
 
     let fromSwitches 
             (sorterD:sorterId)
             (order: order) 
             (switches: seq<switch>) =
-        { sorter.sortrId = sorterD
+        { sorter.sorterId = sorterD
           sorter.order = order
           sorter.switches = switches |> Seq.toArray }
 

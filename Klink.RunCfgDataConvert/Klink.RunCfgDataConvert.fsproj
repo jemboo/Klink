@@ -12,7 +12,7 @@
     <Compile Include="ShcRunCfgDto.fs" />
     <Compile Include="RunCfgDto.fs" />
     <Compile Include="ReportCfgDto.fs" />
-    <Compile Include="RunCfgPlexDto.fs" />
+    <Compile Include="runCfgPlexDtoOld.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

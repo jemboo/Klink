@@ -190,7 +190,7 @@ module KlinkScript =
         let scriptItem = 
             match plex with
             | runCfgPlex.Shc shcCfgPlex ->
-                let runIds = shcCfgPlex |>  ShcCfgPlex.toRunIds selectedIndexes |> Seq.toArray
+                let runIds = shcCfgPlex |>  ShcCfgPlexOld.toRunIds selectedIndexes |> Seq.toArray
                 {
                     shcReportEvalsCfg.reportFileName = 
                             _reportEvalFileName (plex |> RunCfgPlex.name)
@@ -229,7 +229,7 @@ module KlinkScript =
         let scriptItem = 
             match plex with
             | runCfgPlex.Shc shcCfgPlex ->
-                let runIds = shcCfgPlex |> ShcCfgPlex.toRunIds selectedIndexes |> Seq.toArray
+                let runIds = shcCfgPlex |> ShcCfgPlexOld.toRunIds selectedIndexes |> Seq.toArray
                 {
                     shcReportBinsCfg.reportFileName = 
                             _reportBinsFileName (plex |> RunCfgPlex.name)

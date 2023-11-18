@@ -1,8 +1,8 @@
 ﻿namespace global
 
 type runCfgPlex =
-    | Ga of gaCfgPlex
-    | Shc of shcCfgPlex
+    | Ga of gaCfgPlexOld
+    | Shc of shcCfgPlexOld
 
 
 module RunCfgPlex =
@@ -39,7 +39,7 @@ module RunCfgPlex =
             GaCfgPlex.toInitRunCfgs generations reportFilter fullReportFilter selectedIndexes gcp
             |> Seq.map(gaRunCfg.InitRun >> runCfg.Ga)
         | Shc scp ->  
-            ShcCfgPlex.toInitRunCfgs generations reportFilter fullReportFilter selectedIndexes scp
+            ShcCfgPlexOld.toInitRunCfgs generations reportFilter fullReportFilter selectedIndexes scp
             |> Seq.map(shcRunCfg.InitRun >> runCfg.Shc)
 
         
@@ -55,6 +55,6 @@ module RunCfgPlex =
             GaCfgPlex.toContinueRunCfgs newGenerations reportGenFilter fullReportFilter selectedIndexes gcp 
             |> Seq.map(gaRunCfg.Continue >> runCfg.Ga)
         | Shc scp ->  
-            ShcCfgPlex.toContinueRunCfgs newGenerations reportGenFilter fullReportFilter selectedIndexes scp
+            ShcCfgPlexOld.toContinueRunCfgs newGenerations reportGenFilter fullReportFilter selectedIndexes scp
             |> Seq.map(shcRunCfg.Continue >> runCfg.Shc)
 

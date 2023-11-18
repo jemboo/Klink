@@ -5,6 +5,26 @@ open System
 
 module CollectionOps =
 
+    let cartesianProduct 
+            (seq_a: seq<'a>) 
+            (seq_b: seq<'b>) 
+        =
+        seq {  
+            for ae in seq_a do
+               for be in seq_b do
+                  yield (ae, be)
+        }
+
+    let rec crossProduct lists =
+        match lists with
+        | [] -> [[]]  // Base case: an empty list yields a list with an empty list
+        | hd::tl ->
+            // Recursive case: compute the cross product of the tail, then combine with the head
+            [for x in hd do
+                for rest in crossProduct tl do
+                    yield x :: rest]
+
+
     let getItemsAtIndexes (indexes: int array)  (sequence: seq<'a>) =
         seq {
             for index in indexes do
@@ -19,6 +39,7 @@ module CollectionOps =
                 else
                     failwith "Index must be non-negative"
         }
+
 
     // returns a sequence of items that occur more than once
     let itemsOccuringMoreThanOnce items =
@@ -46,7 +67,6 @@ module CollectionOps =
                 | false, _ ->
                     d.[key] <- 1
                     yield i
-                            
                 | true, ct ->
                     d.[key] <- ct + 1
                     if (ct < max) then
@@ -106,17 +126,6 @@ module CollectionOps =
             (robbin:seq<'a>) 
             = 
         seq {while true do yield! robbin}
-
-
-    let cartesianProduct 
-            (seq_a: seq<'a>) 
-            (seq_b: seq<'b>) 
-        =
-        seq {  
-            for ae in seq_a do
-               for be in seq_b do
-                  yield (ae, be)
-        }
 
 
     // product map composition: a(b()).
@@ -241,7 +250,7 @@ module CollectionOps =
             (a_bread: array<int>)
             (a_core: array<int>)
             (a_out: array<int>)
-            =
+        =
         let breadInv = Array.zeroCreate a_bread.Length |> invertArray a_bread
         let step1 = Array.zeroCreate a_bread.Length |> arrayProduct a_core breadInv
         Array.zeroCreate a_bread.Length |> arrayProduct a_bread step1
@@ -251,7 +260,7 @@ module CollectionOps =
     let conjIntArraysR
             (a_conj: array<int>)
             (a_core: array<int>)
-            =
+        =
         try
             let a_out = Array.zeroCreate a_conj.Length
             conjIntArrays a_conj a_core a_out |> Ok
@@ -266,7 +275,6 @@ module CollectionOps =
     //*************************************************************
 
     let stack (lowTohi: 'a[] seq) = lowTohi |> Seq.concat |> Seq.toArray
-
 
     let comboStack
             (subSeqs: 'a[][] seq)

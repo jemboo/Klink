@@ -170,7 +170,7 @@ module WorkspaceParamsAttrs =
         =
         result {
           let! cereal = WorkspaceParams.getItem key workspaceParams
-          return cereal |> SortableSetCfgType.fromString
+          return! cereal |> SortableSetCfgType.fromString
         }
     let setSortableSetCfgType
             (key:workspaceParamsKey) 

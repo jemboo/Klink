@@ -179,6 +179,20 @@ type sorterEvalMode =
     | CheckSuccess 
     | GetSortedSetCount
 
+module SorterEvalMode =
+    let fromString (sv: string) =
+        match sv.ToLowerInvariant() with
+        | "DontCheckSuccess" -> Ok DontCheckSuccess
+        | "CheckSuccess" -> Ok CheckSuccess
+        | "GetSortedSetCount" -> Ok GetSortedSetCount
+        | _ -> Error "Invalid sorterEvalMode string"
+
+    let toString (mode: sorterEvalMode) =
+        match mode with
+        | DontCheckSuccess -> "DontCheckSuccess"
+        | CheckSuccess -> "CheckSuccess"
+        | GetSortedSetCount -> "GetSortedSetCount"
+
 
 type sorterEval =
     private

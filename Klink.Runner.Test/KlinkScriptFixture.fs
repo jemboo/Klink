@@ -98,7 +98,7 @@ type KlinkScriptFixture () =
     [<TestMethod>]
     member this.writeCfgPlex () =
 
-        let cereal = runCfgPlex |> RunCfgPlexDto.toJson
+        let cereal = runCfgPlex |> RunCfgPlexDtoOld.toJson
 
         TextIO.writeToFileOverwrite 
                 "txt" 
@@ -122,7 +122,7 @@ type KlinkScriptFixture () =
             |> Result.ExtractOrThrow
 
         let cfg = cereal 
-                    |> RunCfgPlexDto.fromJson
+                    |> RunCfgPlexDtoOld.fromJson
                     |> Result.ExtractOrThrow
 
         Assert.AreEqual (1, 1);
