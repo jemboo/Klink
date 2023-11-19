@@ -1,6 +1,44 @@
 ﻿namespace global
 open Microsoft.FSharp.Core
     
+type cfgPlexItemDto =
+     private 
+        { 
+            name: string
+            rank: int
+            cfgPlexItems: string[][]
+        }
+    
+ module CfgPlexItemDto =
+        let toDto (cfgPlexItem:cfgPlexItem) : cfgPlexItemDto =
+            {
+                name = cfgPlexItem |> CfgPlexItem.getName |> CfgPlexItemName.value
+                rank = cfgPlexItem |> CfgPlexItem.getRank |> CfgPlexItemRank.value
+                cfgPlexItems =
+                   cfgPlexItem
+                        |> CfgPlexItem.getCfgPlexItemValues
+                        |> Array.map(fun itm -> itm |> CfgPlexItemValue.toArrayOfStrings)
+            }
+    
+        let fromDto (cfgPlexItemDto:cfgPlexItemDto) = 
+            result {
+                let! cfgPlexItemValueList =
+                       cfgPlexItemDto.cfgPlexItems
+                       |> Array.map(CfgPlexItemValue.fromArrayOfStrings)
+                       |> Array.toList
+                       |> Result.sequence
+                
+         return CfgPlexItem.create
+                            cfgPlexItemDto.name
+                            cfgPlexItemDto.rank
+                            (cfgPlexItemValueList |> List.toArray)
+            }
+           
+    
+    
+    
+    
+    
     
 type shcCfgPlexDtoOld =
     {

@@ -14,7 +14,7 @@ module CfgPlexItemName =
     let value (CfgPlexItemName v) = v
     let create (value: string) =
         value |> CfgPlexItemName
-
+        
 
 type cfgPlexItemRank = private CfgPlexItemRank of int
 module CfgPlexItemRank =
@@ -23,7 +23,7 @@ module CfgPlexItemRank =
         value |> CfgPlexItemRank
 
 
-type cfgPlexType =
+type cfgPlexItemValue =
     | Order of order
     | SortableSetCfg of (sortableSetCfgType*stageCount*sorterEvalMode)
     | MutationRate of mutationRate
@@ -35,55 +35,67 @@ type cfgPlexType =
     | SwitchGenMode of switchGenMode
 
 
-module CfgPlexType =
-    let asStringList (cfgPlexType: cfgPlexType) =
-        match cfgPlexType with
-        | Order o -> ["Order"; o |> Order.value |> string]
+module CfgPlexItemValue =
+    let toArrayOfStrings (cfgPlexItemValue: cfgPlexItemValue) =
+        match cfgPlexItemValue with
+        | Order o ->
+                [|
+                    "Order";
+                    o |> Order.value |> string
+                |]
         | SortableSetCfg (sect, sc, sem) ->
-                [
+                [|
                   "SortableSetCfg";
                   sect |> string;
                   sc |> StageCount.value |> string;
                   sem |> string
-                ]
-        | MutationRate o -> ["MutationRate"; o |> MutationRate.value |> string]
-        | NoiseFraction nf -> ["NoiseFraction"; nf |> NoiseFraction.value |> string]
+                |]
+        | MutationRate o ->
+                [|
+                    "MutationRate";
+                    o |> MutationRate.value |> string
+                |]
+        | NoiseFraction nf ->
+                [|
+                    "NoiseFraction";
+                    nf |> NoiseFraction.value |> string
+                |]
         | RngGen rg ->
-                [
-                    "RngGen"
-                    rg |> RngGen.getType |> string
-                    rg |> RngGen.getSeed |> string
-                ]
+                [|
+                    "RngGen";
+                    rg |> RngGen.getType |> string;
+                    rg |> RngGen.getSeed |> string;
+                |]
         | ParentAndChildCounts (sc1, sc2) ->
-                [
+                [|
                      "ParentAndChildCounts";
                      sc1 |> SorterCount.value |> string;
                      sc2 |> SorterCount.value |> string;
-                ]
+                |]
         | SorterSetPruneMethod ssp ->
-                [
+                [|
                     "SorterSetPruneMethod";
                     ssp |> SorterSetPruneMethod.toReport
-                ]
+                |]
         | StageWeight sw ->
-                [
+                [|
                     "StageWeight";
                     sw |> StageWeight.value |> string
-                ]
+                |]
         | SwitchGenMode sgm ->
-                [
+                [|
                         "SwitchGenMode";
                         sgm |> string
-                ]
+                |]
 
-    let fromList (lst: string list) : Result<cfgPlexType, string> =
+    let fromArrayOfStrings (lst: string array) : Result<cfgPlexItemValue, string> =
         match lst with
-        | ["Order"; o] ->
+        | [|"Order"; o|] ->
             result {
                 let! ov = StringUtil.parseInt o
-                return Order.createNr ov |> cfgPlexType.Order
+                return Order.createNr ov |> cfgPlexItemValue.Order
             }
-        | ["SortableSetCfg"; sct; sc; sem] -> 
+        | [|"SortableSetCfg"; sct; sc; sem|] -> 
             result {
                 let! sortableSetCfgType = SortableSetCfgType.fromString sct
                 let! scValue = StringUtil.parseInt sc
@@ -93,48 +105,48 @@ module CfgPlexType =
                        sortableSetCfgType ,
                        scValue |> StageCount.create ,
                        semValue 
-                     ) |> cfgPlexType.SortableSetCfg
+                     ) |> cfgPlexItemValue.SortableSetCfg
             }
-        | ["MutationRate"; o] ->
+        | [|"MutationRate"; o|] ->
             result {
                 let! ov = StringUtil.parseFloat o
-                return ov |> MutationRate.create |> cfgPlexType.MutationRate
+                return ov |> MutationRate.create |> cfgPlexItemValue.MutationRate
             }
-        | ["NoiseFraction"; nf] ->
+        | [|"NoiseFraction"; nf|] ->
             result {
                 let! nfValue = StringUtil.parseFloat nf
-                return nfValue |> NoiseFraction.create |> cfgPlexType.NoiseFraction
+                return nfValue |> NoiseFraction.create |> cfgPlexItemValue.NoiseFraction
             }
-        | ["RngGen"; rgt; seed] ->
+        | [|"RngGen"; rgt; seed|] ->
             result {
                 let! rngGen = RngGen.fromStrings rgt seed
-                return rngGen |> cfgPlexType.RngGen
+                return rngGen |> cfgPlexItemValue.RngGen
             }
-        | ["ParentAndChildCounts"; sc1; sc2] ->
+        | [|"ParentAndChildCounts"; sc1; sc2|] ->
             result {
                 let! sc1Value = StringUtil.parseInt sc1
                 let! sc2Value = StringUtil.parseInt sc2
                 return (
                         sc1Value |> SorterCount.create,
                         sc2Value |> SorterCount.create
-                        ) |> cfgPlexType.ParentAndChildCounts
+                        ) |> cfgPlexItemValue.ParentAndChildCounts
             }
-        | ["SorterSetPruneMethod"; ssp] ->
+        | [|"SorterSetPruneMethod"; ssp|] ->
             result {
                 let! ov = StringUtil.parseFloat ssp
                 let! spm = SorterSetPruneMethod.fromReport ssp
-                return spm |> cfgPlexType.SorterSetPruneMethod
+                return spm |> cfgPlexItemValue.SorterSetPruneMethod
             }
-        | ["StageWeight"; o] ->
+        | [|"StageWeight"; o|] ->
             result {
                 let! swv = StringUtil.parseFloat o
                 let sw = swv |> StageWeight.create
-                return sw |> cfgPlexType.StageWeight
+                return sw |> cfgPlexItemValue.StageWeight
             }
-        | ["SwitchGenMode"; sgm] ->
+        | [|"SwitchGenMode"; sgm|] ->
             result {
                 let! smv = sgm |> SwitchGenMode.fromString
-                return smv |> cfgPlexType.SwitchGenMode
+                return smv |> cfgPlexItemValue.SwitchGenMode
             }
             | uhv -> $"not handled in CfgPlexType.fromList %A{uhv}" |> Error
             
@@ -144,8 +156,8 @@ type cfgPlexItem =
     private 
         { 
             name: cfgPlexItemName
-            rank: cfgPlexItemRank
-            items: cfgPlexType[]
+            cfgPlexItemRank: cfgPlexItemRank
+            cfgPlexItemValues: cfgPlexItemValue[]
         }
 
 
@@ -154,20 +166,57 @@ module CfgPlexItem =
     let create 
             (name: string) 
             (rank: int)
-            (items: cfgPlexType[])
+            (cfgPlexItemValues: cfgPlexItemValue[])
         =
         {
             cfgPlexItem.name = name |> CfgPlexItemName.create;
-            cfgPlexItem.rank = rank |> CfgPlexItemRank.create;
-            cfgPlexItem.items = items;
+            cfgPlexItem.cfgPlexItemRank = rank |> CfgPlexItemRank.create;
+            cfgPlexItem.cfgPlexItemValues = cfgPlexItemValues;
         }
-
+    let getName (cfgPlexItem:cfgPlexItem) =
+        cfgPlexItem.name
+        
+    let getRank (cfgPlexItem:cfgPlexItem) =
+        cfgPlexItem.cfgPlexItemRank
+        
+    let getCfgPlexItemValues (cfgPlexItem:cfgPlexItem) =
+        cfgPlexItem.cfgPlexItemValues
+    
 
     let enumerateItems (cfgPlexItems: cfgPlexItem[]) =
         let listList =
                 cfgPlexItems
-                |> Array.sortBy(fun it -> it.rank |> CfgPlexItemRank.value)
-                |> Array.map(fun it -> it.items |> Array.toList)
+                |> Array.sortBy(fun it -> it.cfgPlexItemRank |> CfgPlexItemRank.value)
+                |> Array.map(fun it -> it.cfgPlexItemValues |> Array.toList)
                 |> Array.toList
         CollectionOps.crossProduct listList
         
+
+type cfgPlex =
+     private 
+        { 
+            name: cfgPlexName
+            rngGen: rngGen
+            cfgPlexItems: cfgPlexItem[]
+        }
+
+module CfgPlex =
+    let load
+            (name:cfgPlexName)
+            (rngGen:rngGen)
+            (cfgPlexItems:cfgPlexItem[])
+         =
+        { 
+            name = name
+            rngGen = rngGen
+            cfgPlexItems = cfgPlexItems
+        }
+        
+    let getName (cfgPlex:cfgPlex) =
+        cfgPlex.name
+        
+    let getRngGen (cfgPlex:cfgPlex) =
+        cfgPlex.rngGen
+        
+    let getCfgPlexItems (cfgPlex:cfgPlex) =
+        cfgPlex.cfgPlexItems
