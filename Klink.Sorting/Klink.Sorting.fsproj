@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -11,12 +11,10 @@
     <Compile Include="Switch.fs" />
     <Compile Include="SwitchGen.fs" />
     <Compile Include="Stage.fs" />
-    <Compile Include="Sorter\Generation.fs" />
     <Compile Include="Sorter\Sorter.fs" />
     <Compile Include="Sorter\SorterMutator.fs" />
     <Compile Include="Sorter\SorterSet.fs" />
     <Compile Include="Sorter\SorterSetParentMap.fs" />
-    <Compile Include="Sorter\SorterAncestry.fs" />
     <Compile Include="Sorter\SorterSetMutator.fs" />
     <Compile Include="Sorter\SorterSetConcatMap.fs" />
     <Compile Include="SortableArrays.fs" />
@@ -26,6 +24,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="8.0.100" />
   </ItemGroup>
 
 </Project>

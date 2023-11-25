@@ -68,7 +68,7 @@ module SorterAncestryDto =
                     |> Array.toList
                     |> Result.sequence
 
-           return SorterAncestryP.load sorterId (ancestors |> List.toArray)
+           return SorterAncestry.load sorterId (ancestors |> List.toArray)
         }
 
     let fromJson (jstr: string) =
@@ -77,20 +77,20 @@ module SorterAncestryDto =
             return! fromDto dto
         }
 
-    let toDto (sorterAncestry:sorterAncestryP) =
+    let toDto (sorterAncestry:sorterAncestry) =
         {
             sorterAncestryDto.sorterId = 
                 sorterAncestry 
-                |> SorterAncestryP.getSorterId
+                |> SorterAncestry.getSorterId
                 |> SorterId.value ;
             ancestors =
                 sorterAncestry 
-                |> SorterAncestryP.getAncestors
+                |> SorterAncestry.getAncestors
                 |> List.map(GenInfoDto.toDto)
                 |> List.toArray;
         }
 
-    let toJson (sorterAncestry: sorterAncestryP) =
+    let toJson (sorterAncestry: sorterAncestry) =
         sorterAncestry |> toDto |> Json.serialize
 
 

@@ -164,13 +164,13 @@ type cfgPlexItem =
 module CfgPlexItem =
 
     let create 
-            (name: string) 
-            (rank: int)
+            (cfgPlexItemName: cfgPlexItemName) 
+            (cfgPlexItemRank: cfgPlexItemRank)
             (cfgPlexItemValues: cfgPlexItemValue[])
         =
         {
-            cfgPlexItem.name = name |> CfgPlexItemName.create;
-            cfgPlexItem.cfgPlexItemRank = rank |> CfgPlexItemRank.create;
+            cfgPlexItem.name = cfgPlexItemName;
+            cfgPlexItem.cfgPlexItemRank = cfgPlexItemRank;
             cfgPlexItem.cfgPlexItemValues = cfgPlexItemValues;
         }
     let getName (cfgPlexItem:cfgPlexItem) =
@@ -201,7 +201,7 @@ type cfgPlex =
         }
 
 module CfgPlex =
-    let load
+    let create
             (name:cfgPlexName)
             (rngGen:rngGen)
             (cfgPlexItems:cfgPlexItem[])

@@ -39,19 +39,19 @@ module GenInfo =
         sa.sorterFitness
 
 
-type sorterAncestryP =
+type sorterAncestry =
         private {
         sorterId: sorterId
         ancestors: List<genInfo>
         }
 
 
-module SorterAncestryP =
+module SorterAncestry =
 
-    let getSorterId (sa:sorterAncestryP) =
+    let getSorterId (sa:sorterAncestry) =
         sa.sorterId
 
-    let getAncestors (sa:sorterAncestryP) =
+    let getAncestors (sa:sorterAncestry) =
         sa.ancestors
 
     let load (sorterId: sorterId)
@@ -69,7 +69,7 @@ module SorterAncestryP =
             (sorterFitness:sorterFitness) 
         =
         {
-            sorterAncestryP.sorterId = sorterId;
+            sorterAncestry.sorterId = sorterId;
             ancestors = 
                 [
                     {
@@ -86,7 +86,7 @@ module SorterAncestryP =
             (generation:generation) 
             (sorterPhenotypeId:sorterPhenotypeId) 
             (sorterFitness:sorterFitness) 
-            (parentSorterAncestry:sorterAncestryP) 
+            (parentSorterAncestry:sorterAncestry) 
         =
         let _replace newInfo last history =
             if newInfo.sorterPhenotypeId = last.sorterPhenotypeId then
@@ -113,16 +113,33 @@ module SorterAncestryP =
                 yab
 
         {
-            sorterAncestryP.sorterId = sorterId;
+            sorterAncestry.sorterId = sorterId;
             ancestors = updatedAncestors
         }
+
+
+
+type sorterSetAncestryId = private SorterSetAncestryId of Guid
+module SorterSetAncestryId =
+    let value (SorterSetAncestryId v) = v
+    let create (v: Guid) = SorterSetAncestryId v
+    let fromTag 
+            (tag:Guid) 
+            (generation:generation)
+        =
+        [|
+            tag:> obj;
+            generation |> Generation.value :> obj;
+            "sorterSetAncestry" :> obj;
+        |] |> GuidUtils.guidFromObjs  
+            |> create
 
 
 type sorterSetAncestry =
         private {
             id: sorterSetAncestryId;
             generation:generation;
-            ancestorMap:Map<sorterId, sorterAncestryP>
+            ancestorMap:Map<sorterId, sorterAncestry>
             tag:Guid
         }
 
@@ -143,7 +160,7 @@ module SorterSetAncestry =
 
     let load (id:sorterSetAncestryId) 
              (generation:generation)
-             (ancestors:sorterAncestryP[])
+             (ancestors:sorterAncestry[])
              (tag:Guid) 
         =
         let ancestorMap = 
@@ -171,7 +188,7 @@ module SorterSetAncestry =
                 (gen:generation)
                 (sw:stageWeight)
             =
-            SorterAncestryP.create
+            SorterAncestry.create
                 sev.sortrId
                 gen
                 (sev.sortrPhenotypeId |> Option.get)
@@ -199,13 +216,13 @@ module SorterSetAncestry =
         let newId = SorterSetAncestryId.fromTag sorterSetAncestry.tag generation
 
         let _updateSorterAncestry 
-                (parentSorterAncestry:sorterAncestryP)
+                (parentSorterAncestry:sorterAncestry)
                 (sev:sorterEval)
                 (gen:generation)
                 (stageWeight:stageWeight)
             =
             parentSorterAncestry
-                |> SorterAncestryP.update
+                |> SorterAncestry.update
                     sev.sortrId
                     gen
                     (sev.sortrPhenotypeId |> Option.get)

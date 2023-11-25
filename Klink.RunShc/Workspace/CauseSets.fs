@@ -21,7 +21,6 @@ module CauseSets =
                 let! switchCount = wsParams |> WorkspaceParamsAttrs.getSwitchCount ShcWsParamKeys.sorterLength
                 let! sorterEvalMode = wsParams |> WorkspaceParamsAttrs.getSorterEvalMode ShcWsParamKeys.sorterEvalMode
                 let! useParallel = wsParams |> WorkspaceParamsAttrs.getUseParallel ShcWsParamKeys.useParallel
-                let! stagesSkipped = wsParams |> WorkspaceParamsAttrs.getStageCount ShcWsParamKeys.stagesSkipped
                 let! sortableSetCfgType = wsParams |> WorkspaceParamsAttrs.getSortableSetCfgType ShcWsParamKeys.sortableSetCfgType
 
                 let sortableSetCfg = 

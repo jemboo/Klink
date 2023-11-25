@@ -25,14 +25,6 @@ module StringUtil =
         |None -> null
 
 
-    let stringOption 
-            (emptyVal:string) 
-            (strVal: string option) 
-        =
-        match strVal with
-        | Some sv -> sv
-        | None -> emptyVal
-
     let toCsvLine<'a> 
             (strFormat:'a->string) 
             (lineData:'a seq)

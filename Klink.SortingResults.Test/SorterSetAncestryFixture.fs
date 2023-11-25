@@ -44,16 +44,16 @@ type SorterSetAncestryFixture() =
         let genInfo2_4 = GenInfo.create gen2 sorterId4 sorterPhenoId4 sorterFitness4
 
 
-        let sorterAncestry1 = SorterAncestryP.create sorterId1 gen1 sorterPhenoId1 sorterFitness1
+        let sorterAncestry1 = SorterAncestry.create sorterId1 gen1 sorterPhenoId1 sorterFitness1
         
 
         let sorterAncestry1un = 
                 sorterAncestry1 
-                    |> SorterAncestryP.update sorterId2 gen2 sorterPhenoId1 sorterFitness1
+                    |> SorterAncestry.update sorterId2 gen2 sorterPhenoId1 sorterFitness1
 
         let sorterAncestry1uy = 
                 sorterAncestry1 
-                    |> SorterAncestryP.update sorterId2 gen2 sorterPhenoId2 sorterFitness2
+                    |> SorterAncestry.update sorterId2 gen2 sorterPhenoId2 sorterFitness2
 
         Assert.IsTrue(CollectionProps.areEqual 1 1)
 

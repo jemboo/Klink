@@ -1,44 +1,96 @@
 ﻿namespace global
+open System
 open Microsoft.FSharp.Core
     
 type cfgPlexItemDto =
-     private 
         { 
             name: string
             rank: int
-            cfgPlexItems: string[][]
+            cfgPlexItemValues: string[][]
         }
     
  module CfgPlexItemDto =
-        let toDto (cfgPlexItem:cfgPlexItem) : cfgPlexItemDto =
-            {
-                name = cfgPlexItem |> CfgPlexItem.getName |> CfgPlexItemName.value
-                rank = cfgPlexItem |> CfgPlexItem.getRank |> CfgPlexItemRank.value
-                cfgPlexItems =
-                   cfgPlexItem
-                        |> CfgPlexItem.getCfgPlexItemValues
-                        |> Array.map(fun itm -> itm |> CfgPlexItemValue.toArrayOfStrings)
-            }
+    let toDto (cfgPlexItem:cfgPlexItem) : cfgPlexItemDto =
+        {
+            name = cfgPlexItem |> CfgPlexItem.getName |> CfgPlexItemName.value
+            rank = cfgPlexItem |> CfgPlexItem.getRank |> CfgPlexItemRank.value
+            cfgPlexItemValues =
+               cfgPlexItem
+                    |> CfgPlexItem.getCfgPlexItemValues
+                    |> Array.map(fun itm -> itm |> CfgPlexItemValue.toArrayOfStrings)
+        }
+    let toJson (cfgPlexItem:cfgPlexItem) =
+        cfgPlexItem |> toDto |> Json.serialize
+
     
-        let fromDto (cfgPlexItemDto:cfgPlexItemDto) = 
-            result {
-                let! cfgPlexItemValueList =
-                       cfgPlexItemDto.cfgPlexItems
-                       |> Array.map(CfgPlexItemValue.fromArrayOfStrings)
-                       |> Array.toList
-                       |> Result.sequence
-                
-         return CfgPlexItem.create
-                            cfgPlexItemDto.name
-                            cfgPlexItemDto.rank
-                            (cfgPlexItemValueList |> List.toArray)
-            }
-           
+    let fromDto (cfgPlexItemDto:cfgPlexItemDto) = 
+        result {
+            let! cfgPlexItemValueList =
+                   cfgPlexItemDto.cfgPlexItemValues
+                   |> Array.map(CfgPlexItemValue.fromArrayOfStrings)
+                   |> Array.toList
+                   |> Result.sequence
+            
+            return CfgPlexItem.create
+                        (cfgPlexItemDto.name |> CfgPlexItemName.create)
+                        (cfgPlexItemDto.rank |> CfgPlexItemRank.create)
+                        (cfgPlexItemValueList |> List.toArray)
+        }
+       
+
+    let fromJson (cereal:string) =
+        result {
+            let! dto = Json.deserialize<cfgPlexItemDto> cereal
+            return! fromDto dto
+        }
+            
+        
+            
     
+ type cfgPlexDto =
+        { 
+            name: string
+            rngGenDto: rngGenDto
+            cfgPlexItemDtos: cfgPlexItemDto[]
+        }
     
-    
-    
-    
+ module CfgPlexDto =
+    let toDto (cfgPlex:cfgPlex) : cfgPlexDto =
+        {
+            name = cfgPlex |> CfgPlex.getName |> CfgPlexName.value
+            rngGenDto = cfgPlex |> CfgPlex.getRngGen |> RngGenDto.toDto
+            cfgPlexItemDtos =
+               cfgPlex
+                    |> CfgPlex.getCfgPlexItems
+                    |> Array.map(fun itm -> itm |> CfgPlexItemDto.toDto)
+        }
+        
+    let toJson (cfgPlex:cfgPlex) =
+        cfgPlex |> toDto |> Json.serialize
+
+   
+    let fromDto (cfgPlexDto:cfgPlexDto) = 
+        result {
+            let! cfgPlexItems =
+                   cfgPlexDto.cfgPlexItemDtos
+                   |> Array.map(CfgPlexItemDto.fromDto)
+                   |> Array.toList
+                   |> Result.sequence
+            let! rngGen = cfgPlexDto.rngGenDto |> RngGenDto.fromDto
+            return CfgPlex.create
+                        (cfgPlexDto.name |> CfgPlexName.create)
+                        rngGen
+                        (cfgPlexItems |> List.toArray)
+        }
+   
+
+    let fromJson (cereal:string) =
+        result {
+            let! dto = Json.deserialize<cfgPlexDto> cereal
+            return! fromDto dto
+        }
+            
+        
     
 type shcCfgPlexDtoOld =
     {

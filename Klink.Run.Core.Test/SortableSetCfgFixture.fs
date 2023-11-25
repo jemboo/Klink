@@ -27,9 +27,17 @@ type SortableSetCfgFixture () =
         let stageWgts = [|0.1; 0.2; 0.3|] |> Array.map(StageWeight.create >> cfgPlexItemValue.StageWeight)
         let orders = [|1; 2; 3|]  |> Array.map(Order.createNr >> cfgPlexItemValue.Order)
         
-        let cpiNoiseFracts = CfgPlexItem.create "noiseFractions"  0 noiseFracts
-        let cpiStageWeights = CfgPlexItem.create "stageWeights"  1 stageWgts
-        let cpiOrders = CfgPlexItem.create "orders"  2 orders
+        let nNoiseFractions = "noiseFractions" |> CfgPlexItemName.create
+        let nStageWeights = "stageWeights" |> CfgPlexItemName.create
+        let nOrders = "orders" |> CfgPlexItemName.create
+
+        let r0 = 0 |> CfgPlexItemRank.create
+        let r1 = 0 |> CfgPlexItemRank.create
+        let r2 = 0 |> CfgPlexItemRank.create
+
+        let cpiNoiseFracts = CfgPlexItem.create nNoiseFractions r0 noiseFracts
+        let cpiStageWeights = CfgPlexItem.create nStageWeights r1 stageWgts
+        let cpiOrders = CfgPlexItem.create nOrders r2 orders
         
         let cfgPlexItems = [| cpiNoiseFracts; cpiStageWeights; cpiOrders; |]
         
@@ -49,11 +57,20 @@ type SortableSetCfgFixture () =
         let orders = [|1; 2; 3|]  |> Array.map(Order.createNr >> cfgPlexItemValue.Order)
         let switchGenModes = [|switchGenMode.stage ; switchGenMode.switch; switchGenMode.stageSymmetric|]  |> Array.map(cfgPlexItemValue.SwitchGenMode)
         
-        
-        let cpiNoiseFracts = CfgPlexItem.create "noiseFractions"  0 noiseFracts
-        let cpiStageWeights = CfgPlexItem.create "stageWeights"  1 stageWgts
-        let cpiOrders = CfgPlexItem.create "orders"  2 orders
-        let cpiSwitchGenModes = CfgPlexItem.create "switchGenModes" 3 switchGenModes
+        let nNoiseFractions = "noiseFractions" |> CfgPlexItemName.create
+        let nStageWeights = "stageWeights" |> CfgPlexItemName.create
+        let nOrders = "orders" |> CfgPlexItemName.create
+        let nSwitchGenModes = "switchGenModes" |> CfgPlexItemName.create
+
+        let r0 = 0 |> CfgPlexItemRank.create
+        let r1 = 0 |> CfgPlexItemRank.create
+        let r2 = 0 |> CfgPlexItemRank.create
+        let r3 = 0 |> CfgPlexItemRank.create
+
+        let cpiNoiseFracts = CfgPlexItem.create nNoiseFractions r0 noiseFracts
+        let cpiStageWeights = CfgPlexItem.create nStageWeights r1 stageWgts
+        let cpiOrders = CfgPlexItem.create nOrders r2 orders
+        let cpiSwitchGenModes = CfgPlexItem.create nSwitchGenModes r3 switchGenModes
         
         let cfgPlexItems = [| cpiSwitchGenModes; cpiNoiseFracts; cpiStageWeights; cpiOrders; |]
         
@@ -62,11 +79,6 @@ type SortableSetCfgFixture () =
                 |> Seq.toArray
         
         Assert.IsTrue(combos.Length = 81)
-        
-        
-        
-        
-        
 
 
     [<TestMethod>]

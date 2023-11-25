@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
     <GenerateProgramFile>false</GenerateProgramFile>
@@ -17,6 +17,7 @@
     <Compile Include="sortableSetDtoFixture.fs" />
     <Compile Include="sorterEvalDtoFixture.fs" />
     <Compile Include="sorterSetAncestryDtoFixture.fs" />
+    <Compile Include="runCfgPlexDtoFixture.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -34,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Klink.Core\Klink.Core.fsproj" />
     <ProjectReference Include="..\Klink.DataConvert\Klink.DataConvert.fsproj" />
+    <ProjectReference Include="..\Klink.RunCfgDataConvert\Klink.RunCfgDataConvert.fsproj" />
     <ProjectReference Include="..\Klink.SortingResults\Klink.SortingResults.fsproj" />
     <ProjectReference Include="..\Klink.Sorting\Klink.Sorting.fsproj" />
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />
