@@ -18,6 +18,7 @@ type rngType =
     | Lcg
     | Net
 
+
 module RngType =
     let fromString (cereal: string) =
         match cereal with

@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Klink.RunCfg\Klink.RunCfg.fsproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="8.0.100" />
+  </ItemGroup>
+
 </Project>

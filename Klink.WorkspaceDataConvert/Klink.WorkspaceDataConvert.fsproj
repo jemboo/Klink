@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Klink.Workspace\Klink.Workspace.fsproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="8.0.100" />
+  </ItemGroup>
+
 </Project>
