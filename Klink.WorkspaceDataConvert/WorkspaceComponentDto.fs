@@ -31,25 +31,29 @@ module WorkspaceComponentDto =
 
 
 
-    let fromJsonT (cerealT:string*workspaceComponentType) =
-        match cerealT with
-        | (c, workspaceComponentType.SortableSet) ->
-            c |> SortableSetDto.fromJson |> Result.map(workspaceComponent.SortableSet)
-        | (c, workspaceComponentType.SorterSet) ->
-            c |> SorterSetDto.fromJson |> Result.map(workspaceComponent.SorterSet)
-        | (c, workspaceComponentType.SorterSetMutator) ->
-            c |> SorterSetMutatorDto.fromJson |> Result.map(workspaceComponent.SorterSetMutator)
-        | (c, workspaceComponentType.SorterSetParentMap) ->
-            c |> SorterSetParentMapDto.fromJson |> Result.map(workspaceComponent.SorterSetParentMap)
-        | (c, workspaceComponentType.SorterSetConcatMap) ->
-            c |> SorterSetConcatMapDto.fromJson |> Result.map(workspaceComponent.SorterSetConcatMap)
-        | (c, workspaceComponentType.SorterSetEval) ->
-            c |> SorterSetEvalDto.fromJson |> Result.map(workspaceComponent.SorterSetEval)
-        | (c, workspaceComponentType.SorterSpeedBinSet) ->
-            c |> SorterSpeedBinSetDto.fromJson |> Result.map(workspaceComponent.SorterSpeedBinSet)
-        | (c, workspaceComponentType.SorterSetPruner) ->
-            c |> SorterSetPrunerWholeDto.fromJson |> Result.map(workspaceComponent.SorterSetPruner)
-        | (c, workspaceComponentType.WorkspaceParams) ->
-            c |> WorkspaceParamsDto.fromJson |> Result.map(workspaceComponent.WorkspaceParams)
+    let fromJson (wct:workspaceComponentType) (cereal:string) =
+        match wct with
+        | workspaceComponentType.SortableSet ->
+            cereal |> SortableSetDto.fromJson |> Result.map(workspaceComponent.SortableSet)
+        | workspaceComponentType.SorterSet ->
+            cereal |> SorterSetDto.fromJson |> Result.map(workspaceComponent.SorterSet)
+        | workspaceComponentType.SorterSetAncestry ->
+            cereal |> SorterSetAncestryDto.fromJson |> Result.map(workspaceComponent.SorterSetAncestry)
+        | workspaceComponentType.SorterSetMutator ->
+            cereal |> SorterSetMutatorDto.fromJson |> Result.map(workspaceComponent.SorterSetMutator)
+        | workspaceComponentType.SorterSetConcatMap ->
+            cereal |> SorterSetConcatMapDto.fromJson |> Result.map(workspaceComponent.SorterSetConcatMap)
+        | workspaceComponentType.SorterSetParentMap ->
+            cereal |> SorterSetParentMapDto.fromJson |> Result.map(workspaceComponent.SorterSetParentMap)
+        | workspaceComponentType.SorterSetEval ->
+            cereal |> SorterSetEvalDto.fromJson |> Result.map(workspaceComponent.SorterSetEval)
+        | workspaceComponentType.SorterSpeedBinSet ->
+            cereal |> SorterSpeedBinSetDto.fromJson |> Result.map(workspaceComponent.SorterSpeedBinSet)
+        | workspaceComponentType.SorterSetPruner ->
+            cereal |> SorterSetPrunerWholeDto.fromJson |> Result.map(workspaceComponent.SorterSetPruner)
+        | workspaceComponentType.WorkspaceDescription ->
+            cereal |> WorkspaceDescriptionDto.fromJson |> Result.map(workspaceComponent.WorkspaceDescription)
+        | workspaceComponentType.WorkspaceParams ->
+            cereal |> WorkspaceParamsDto.fromJson |> Result.map(workspaceComponent.WorkspaceParams)
         | _ -> "unhandled workspaceComponentType" |> Error
 

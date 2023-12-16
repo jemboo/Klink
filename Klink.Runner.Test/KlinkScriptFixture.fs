@@ -1,6 +1,7 @@
 namespace Klink.Runner.Test
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
+open System.IO
 
 [<TestClass>]
 type KlinkScriptFixture () =
@@ -102,8 +103,7 @@ type KlinkScriptFixture () =
 
         TextIO.writeToFileOverwrite 
                 "txt" 
-                (baseDir |> Some) 
-                (projectFolder |> ProjectFolder.value)
+                (Path.Combine(baseDir, FolderParams.toDoFolder (projectFolder |> ProjectFolder.value)))
                 (runCfgPlex |> RunCfgPlex.name |> CfgPlexName.value)
                 (cereal)
         |> ignore
@@ -116,8 +116,7 @@ type KlinkScriptFixture () =
         let cereal = 
             TextIO.readAllText 
                     "txt" 
-                    (baseDir |> Some) 
-                    (projectFolder |> ProjectFolder.value)
+                    (Path.Combine(baseDir, projectFolder |> ProjectFolder.value))
                     (runCfgPlex |> RunCfgPlex.name |> CfgPlexName.value)
             |> Result.ExtractOrThrow
 

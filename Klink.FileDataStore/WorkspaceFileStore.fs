@@ -15,35 +15,39 @@ type WorkspaceFileStore (wsRootDir:string) =
         | None -> ""
 
     member this.writeToFileIfMissing (wsCompType:workspaceComponentType option) (fileName:string) (data: string) =
-        TextIO.writeToFileIfMissing this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
+        TextIO.writeToFileIfMissing this.fileExt (Path.Combine(this.wsRootDir, this.getFolderName wsCompType)) fileName data
 
     member this.writeToFileOverwrite (wsCompType:workspaceComponentType option) (fileName:string) (data: string) =
-        TextIO.writeToFileOverwrite this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
+        TextIO.writeToFileOverwrite this.fileExt (Path.Combine(this.wsRootDir, this.getFolderName wsCompType)) fileName data
 
     member this.writeLinesEnsureHeader (wsCompType:workspaceComponentType option) (fileName:string) (hdr: seq<string>) (data: string seq) =
-        TextIO.writeLinesEnsureHeader this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName hdr data
+        TextIO.writeLinesEnsureHeader this.fileExt (Path.Combine(this.wsRootDir, this.getFolderName wsCompType)) fileName hdr data
 
     member this.appendLines (wsCompType:workspaceComponentType option) (fileName:string) (data: string seq) =
-        TextIO.appendLines this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName data
+        TextIO.appendLines this.fileExt (Path.Combine(this.wsRootDir, this.getFolderName wsCompType)) fileName data
 
     member this.fileExists (wsCompType:workspaceComponentType option) (fileName:string) =
-        TextIO.fileExists this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName
+        TextIO.fileExists this.fileExt (Path.Combine(this.wsRootDir, this.getFolderName wsCompType)) fileName
 
     member this.readAllText (wsCompType:workspaceComponentType option) (fileName:string) =
-        TextIO.readAllText this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName
+        TextIO.readAllText this.fileExt (Path.Combine(this.wsRootDir, this.getFolderName wsCompType)) fileName
 
     member this.readAllLines (wsCompType:workspaceComponentType option) (fileName:string) =
-        TextIO.readAllLines this.fileExt (Some this.wsRootDir) (this.getFolderName wsCompType) fileName
+        TextIO.readAllLines this.fileExt (Path.Combine(this.wsRootDir, this.getFolderName wsCompType)) fileName
 
     member this.getAllFiles (wsCompType:workspaceComponentType option) =
            let filePath = Path.Combine(this.wsRootDir, this.getFolderName wsCompType)
            Directory.GetFiles(filePath)
 
     member this.markLastWorkspaceId (wsId:workspaceId) = 
-           TextIO.writeToFileOverwrite this.fileExt (Some this.wsRootDir) "" "lastUpdate" (wsId |> WorkspaceId.value |> string )
+           TextIO.writeToFileOverwrite 
+                    this.fileExt 
+                    this.wsRootDir
+                    "lastUpdate" 
+                    (wsId |> WorkspaceId.value |> string )
 
     member this.getLastWorkspaceId () =
-           TextIO.readAllText this.fileExt (Some this.wsRootDir) "" "lastUpdate"
+           TextIO.readAllText this.fileExt this.wsRootDir "lastUpdate"
            |> Result.map (Guid.Parse >> WorkspaceId.create)
 
 
@@ -64,54 +68,8 @@ type WorkspaceFileStore (wsRootDir:string) =
         = 
         result {
             let fileName = compId |> string
-            return!
-                match wsCompType with
-                | workspaceComponentType.SortableSet ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(SortableSetDto.fromJson)
-                    |> Result.map(workspaceComponent.SortableSet)
-                | workspaceComponentType.SorterSet ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(SorterSetDto.fromJson)
-                    |> Result.map(workspaceComponent.SorterSet)
-                | workspaceComponentType.SorterSetAncestry ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(SorterSetAncestryDto.fromJson)
-                    |> Result.map(workspaceComponent.SorterSetAncestry)
-                | workspaceComponentType.SorterSetMutator ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(SorterSetMutatorDto.fromJson)
-                    |> Result.map(workspaceComponent.SorterSetMutator)
-                | workspaceComponentType.SorterSetParentMap ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(SorterSetParentMapDto.fromJson)
-                    |> Result.map(workspaceComponent.SorterSetParentMap)
-                | workspaceComponentType.SorterSetConcatMap ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(SorterSetConcatMapDto.fromJson)
-                    |> Result.map(workspaceComponent.SorterSetConcatMap)
-                | workspaceComponentType.SorterSetEval ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(SorterSetEvalDto.fromJson)
-                    |> Result.map(workspaceComponent.SorterSetEval)
-                | workspaceComponentType.SorterSpeedBinSet ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(SorterSpeedBinSetDto.fromJson)
-                    |> Result.map(workspaceComponent.SorterSpeedBinSet)
-                | workspaceComponentType.SorterSetPruner ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(SorterSetPrunerWholeDto.fromJson)
-                    |> Result.map(workspaceComponent.SorterSetPruner)
-                | workspaceComponentType.WorkspaceDescription ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(WorkspaceDescriptionDto.fromJson)
-                    |> Result.map(workspaceComponent.WorkspaceDescription)
-                | workspaceComponentType.WorkspaceParams ->
-                    this.readAllText (Some wsCompType) fileName
-                    |> Result.bind(WorkspaceParamsDto.fromJson)
-                    |> Result.map(workspaceComponent.WorkspaceParams)
-                | _ 
-                    -> $"{wsCompType} not handled (001)" |> Error
+            let! cereal = this.readAllText (Some wsCompType) fileName
+            return! cereal |> WorkspaceComponentDto.fromJson wsCompType
         }
 
 

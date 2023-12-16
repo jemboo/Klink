@@ -11,11 +11,9 @@ module ScriptFileMake =
         =
         TextIO.writeToFileOverwrite 
                 "txt" 
-                (baseDir |> Some) 
-                (FolderParams.toDoFolder (klinkScript.projectFolder |> ProjectFolder.value))
+                (Path.Combine(baseDir, FolderParams.toDoFolder (klinkScript.projectFolder |> ProjectFolder.value)))
                 (klinkScript.scriptName |> ScriptName.value)
                 (klinkScript |> KlinkScriptDto.toJson)
-
 
     
     let writeInitRunScriptsFromRunCfgPlex
