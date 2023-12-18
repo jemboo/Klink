@@ -4,7 +4,7 @@ open Newtonsoft.Json
 
 
 [<TestClass>]
-type FileUtilsFixture() =
+type TextIOFixture() =
 
     [<TestMethod>]
     member this.writeCsvFile() =

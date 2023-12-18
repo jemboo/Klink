@@ -9,7 +9,7 @@
   <ItemGroup>
     <Compile Include="StringUtils.fs" />
     <None Include="Script1.fsx" />
-    <Compile Include="FileUtils.fs" />
+    <Compile Include="TextIO.fs" />
     <Compile Include="InlineScraps.fs" />
     <Compile Include="SysExt.fs" />
     <Compile Include="SparseArray.fs" />
